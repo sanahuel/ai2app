@@ -1,0 +1,124 @@
+.sidebar {
+  background-color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 180px;
+  height: 100%;
+  border-right: 1px solid #f4f4f4;
+}
+
+.sidebar-buttons {
+  position: relative;
+  margin-top: 160px;
+  height: 250px;
+  flex-direction: column;
+}
+
+.sidebar-button {
+  margin: auto;
+  margin-top: 30px;
+  padding-left: 11px;
+  align-items: center;
+  height: 45px;
+  width: 165px;
+  border-radius: 3px;
+}
+.sidebar-button a {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+}
+
+.sidebar-button img {
+  height: 27px;
+  position: relative;
+  top: 7px;
+  color: rgb(191, 191, 191);
+  right: 3px;
+}
+.sidebar-button span {
+  margin-left: 3px;
+}
+
+.sidebar-button:hover {
+  background-color: rgb(229, 242, 255);
+}
+
+.sidebar-button:hover a {
+  color: rgb(10, 113, 215);
+}
+
+.sidebar-button:hover img {
+  filter: invert(40%) sepia(66%) saturate(5627%) hue-rotate(197deg)
+    brightness(90%) contrast(92%);
+}
+
+ul a.active {
+  color: rgb(10, 113, 215);
+}
+
+ul a.active img {
+  filter: invert(40%) sepia(66%) saturate(5627%) hue-rotate(197deg)
+    brightness(90%) contrast(92%);
+}
+
+ul a.active li {
+  background-color: rgb(229, 242, 255);
+}
+
+ul a.active span {
+  font-weight: 500;
+}
+
+.div-border {
+  position: relative;
+  width: 90%;
+  padding-top: 10px;
+  margin: 0 auto;
+  border-bottom: 1.5px solid #f1f1f1;
+}
+
+.sidebar-out {
+  margin-top: 26px;
+  padding-left: 15px;
+  height: 45px;
+  width: 112px;
+  border-radius: 3px;
+  margin-left: 33px;
+}
+.sidebar-out a {
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+}
+
+.sidebar-out img {
+  height: 25px;
+  position: relative;
+  top: 7px;
+  right: 3px;
+  color: rgb(191, 191, 191);
+}
+.sidebar-out span {
+  margin-left: 3px;
+}
+
+.sidebar-out:hover {
+  background-color: rgb(229, 242, 255);
+}
+
+.sidebar-out:hover a {
+  color: rgb(10, 113, 215);
+}
+
+.sidebar-out:hover img {
+  filter: invert(40%) sepia(66%) saturate(5627%) hue-rotate(197deg)
+    brightness(90%) contrast(92%);
+}
+
+.link:hover {
+  color: rgb(10, 113, 215);
+}
+
+.sidebar span {
+  font-weight: 400;
+}

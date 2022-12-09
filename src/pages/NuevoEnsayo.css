@@ -1,0 +1,144 @@
+.nuevo-ensayo {
+  position: relative;
+  padding-right: 10px;
+  align-items: left;
+}
+
+.input-div {
+  margin-left: 10px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.input-field {
+  position: absolute;
+  left: 200px;
+  border-color: rgb(224, 224, 224);
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 1px;
+  color: rgb(52, 52, 52); /*cambiar */
+}
+
+.input-time {
+  border-color: rgb(224, 224, 224);
+  border-style: solid;
+  border-radius: 3px;
+  border-width: 1px;
+}
+
+.tabla-horario {
+  min-height: 130px;
+  padding-bottom: 13px;
+}
+
+.header-tabla {
+  display: flex;
+  margin: 10px;
+  padding-top: 8px;
+}
+
+.nueva-button {
+  position: relative;
+  align-content: center;
+  vertical-align: middle;
+  right: -3px;
+  bottom: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 100%;
+  border-style: none;
+  border-width: 1px;
+  border-color: rgb(224, 224, 224);
+  background-color: rgb(243, 243, 243);
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #ccc;
+  color: black;
+}
+
+.texto-horario {
+  padding-left: 0px;
+  flex: 1;
+}
+
+.nueva-hora {
+  flex: 1;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.horario {
+  margin-top: 15px;
+}
+
+.crear-button {
+  box-shadow: 1px 1px 7px rgb(228, 228, 228);
+  margin: 10px;
+  margin-left: 25px;
+  margin-bottom: 20px;
+  height: 47px;
+  width: 47px;
+  border-style: none;
+  border-radius: 100%;
+  background-color: #d9ecff;
+  color: rgb(0, 0, 0); /*cambiar */
+}
+
+.crear-button img {
+  height: 27px;
+  filter: invert(40%) sepia(66%) saturate(5627%) hue-rotate(197deg)
+    brightness(90%) contrast(92%);
+}
+
+.crear-button:hover {
+  background-color: #bedaf7;
+}
+
+.fila-tabla {
+  display: flex;
+  flex-direction: row;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.hora-tabla {
+  flex: 1;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.nombre-tabla {
+  flex: 1;
+  color: #555;
+  font-style: italic;
+}
+
+.eliminar-fila {
+  flex: 1;
+}
+
+.button-eliminar-fila {
+  display: none;
+  position: relative;
+  text-align: center;
+  left: 8%;
+  top: 1px;
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  background-color: rgba(220, 220, 220, 0);
+  border-style: hidden;
+  color: #333;
+  font-size: 15px;
+}
+
+.fila-tabla:hover .button-eliminar-fila {
+  display: inline;
+}
+
+/* span {
+  color: #444;
+} */
