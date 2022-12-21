@@ -44,7 +44,7 @@
   background-color: rgb(229, 242, 255);
 }
 
-.sidebar-button:hover a {
+.sidebar-button:hover span {
   color: rgb(10, 113, 215);
 }
 
@@ -104,9 +104,10 @@ ul a.active span {
 
 .sidebar-out:hover {
   background-color: rgb(229, 242, 255);
+  cursor: pointer;
 }
 
-.sidebar-out:hover a {
+.sidebar-out:hover span {
   color: rgb(10, 113, 215);
 }
 
@@ -115,8 +116,9 @@ ul a.active span {
     brightness(90%) contrast(92%);
 }
 
-.link:hover {
+.logout:hover {
   color: rgb(10, 113, 215);
+  cursor: pointer;
 }
 
 .sidebar span {

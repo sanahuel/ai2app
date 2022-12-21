@@ -1,9 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+
 import "./NuevoEnsayo.css";
 import crear from "../icons/save_as.svg";
 import del from "../icons/clear.svg";
 
-const NuevoEnsayo = ({ match, history }) => {
+const NuevoEnsayo = () => {
+  let { logoutCall } = useContext(AuthContext);
+  let navigate = useNavigate();
+
   const nombreRef = useRef(null);
   const inicioRef = useRef(null);
   const finRef = useRef(null);
@@ -50,7 +56,11 @@ const NuevoEnsayo = ({ match, history }) => {
   let getEnsayos = async () => {
     let response = await fetch("/ensayos");
     let data = await response.json();
-    setEnsayos(data);
+    if (response.status === 200) {
+      setEnsayos(data);
+    } else if (response.statusText === "Unauthorized") {
+      logoutCall();
+    }
   };
 
   let sortTabla = () => {
@@ -84,7 +94,7 @@ const NuevoEnsayo = ({ match, history }) => {
         horas: horas.join(" "),
       }),
     });
-    history.push("/");
+    navigate("/");
   };
 
   let addHora = () => {
@@ -182,9 +192,14 @@ const NuevoEnsayo = ({ match, history }) => {
           </div>
         </div>
       </div>
-      <button className="crear-button" onClick={createEnsayo}>
-        <img src={crear} alt="" />
-      </button>
+      <div className="crear-div">
+        <button className="crear-button" onClick={createEnsayo}>
+          <img src={crear} alt="" />
+        </button>
+        <span className="crear-span" id="crear-span">
+          Crear Ensayo
+        </span>
+      </div>
     </div>
   );
 };

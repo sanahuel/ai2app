@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+
 import panel from "../icons/display.svg";
 import visual from "../icons/chart.svg";
 import nuevo from "../icons/biotech.png";
 import logout from "../icons/logout.svg";
 import "./sidebar.css";
-const sidebar = () => {
+const Sidebar = () => {
+  let { logoutCall } = useContext(AuthContext);
+
   return (
     <div className="sidebar">
       <ul className="sidebar-buttons">
@@ -41,14 +45,12 @@ const sidebar = () => {
         </NavLink>
       </ul>
       <div className="div-border"></div>
-      <Link to={"/"} style={{ textDecoration: "none" }} className={"link"}>
-        <div className="sidebar-out">
-          <img src={logout} alt="" />
-          <span>Log Out</span>
-        </div>
-      </Link>
+      <div className="sidebar-out" onClick={logoutCall}>
+        <img src={logout} alt="" />
+        <span>Log Out</span>
+      </div>
     </div>
   );
 };
 
-export default sidebar;
+export default Sidebar;

@@ -6,7 +6,7 @@ const navbar = () => {
   return (
     <div className="navbar">
       <div className="navbar-elements">
-        <img src={settings} alt="" />
+        <img src={settings} alt="" style={{ cursor: "pointer" }} />
       </div>
     </div>
   );

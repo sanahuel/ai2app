@@ -42,3 +42,7 @@ body {
   min-width: 400px;
   box-shadow: 1px 1px 7px rgb(228, 228, 228);
 }
+
+input:focus {
+  outline-color: rgb(109, 109, 109);
+}

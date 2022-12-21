@@ -8,11 +8,12 @@
   margin-left: 10px;
   padding-top: 18px;
   padding-bottom: 18px;
+  display: flex;
 }
 
 .input-field {
   position: absolute;
-  left: 200px;
+  left: 220px;
   border-color: rgb(224, 224, 224);
   border-style: solid;
   border-radius: 3px;
@@ -44,8 +45,8 @@
   vertical-align: middle;
   right: -3px;
   bottom: 2px;
-  width: 24px;
-  height: 24px;
+  width: 23px;
+  height: 23px;
   border-radius: 100%;
   border-style: none;
   border-width: 1px;
@@ -95,6 +96,30 @@ button:hover {
 
 .crear-button:hover {
   background-color: #bedaf7;
+}
+
+.crear-div {
+  height: 190px;
+}
+
+.crear-div span {
+  color: white;
+  background-color: #333;
+  padding: 3px;
+  font-size: 14px;
+  border-radius: 3px;
+  position: relative;
+  left: -77px;
+  top: 35px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s linear;
+  transition-delay: 0s;
+}
+
+.crear-button:hover + #crear-span {
+  visibility: visible;
+  opacity: 0.87;
 }
 
 .fila-tabla {
