@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
+// import AuthContext from "../context/AuthContext";
 
 import panel from "../icons/display.svg";
 import visual from "../icons/chart.svg";
@@ -8,7 +8,7 @@ import nuevo from "../icons/biotech.png";
 import logout from "../icons/logout.svg";
 import "./sidebar.css";
 const Sidebar = () => {
-  let { logoutCall } = useContext(AuthContext);
+  // let { logoutCall } = useContext(AuthContext);
 
   return (
     <div className="sidebar">
@@ -45,7 +45,8 @@ const Sidebar = () => {
         </NavLink>
       </ul>
       <div className="div-border"></div>
-      <div className="sidebar-out" onClick={logoutCall}>
+      {/* <div className="sidebar-out" onClick={logoutCall}> */}
+      <div className="sidebar-out">
         <img src={logout} alt="" />
         <span>Log Out</span>
       </div>

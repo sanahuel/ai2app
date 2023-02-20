@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
+// import AuthContext from "../context/AuthContext";
 import "./NuevoEnsayo.css";
 
 import FullCalendar from "@fullcalendar/react";
@@ -15,7 +15,7 @@ import del from "../icons/clear.svg";
 import calendar from "../icons/refresh.svg";
 
 const NuevoEnsayo = () => {
-  let { logoutCall } = useContext(AuthContext);
+  // let { logoutCall } = useContext(AuthContext);
   let navigate = useNavigate();
 
   const nombreRef = useRef(null);
@@ -95,7 +95,7 @@ const NuevoEnsayo = () => {
     if (response.status === 200) {
       setEnsayos(data);
     } else if (response.statusText === "Unauthorized") {
-      logoutCall();
+      // logoutCall();
     }
   };
 
