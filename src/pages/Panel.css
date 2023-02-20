@@ -1,0 +1,81 @@
+.control-container-div {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 3px;
+  border-style: none;
+  box-shadow: 1px 1px 7px rgb(228, 228, 228);
+}
+
+.control-container-div:hover {
+  cursor: pointer;
+}
+
+.control-row-div {
+  content: flex;
+  margin-left: 17px;
+  margin-right: 100px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  max-height: 45.2px;
+}
+
+.skill-box {
+  width: 100%;
+  margin: 5px 0;
+  margin-top: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.skill-box .skill-bar {
+  height: 8px;
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 6px;
+  background: rgba(125, 125, 125, 0.1);
+}
+.skill-bar .skill-per {
+  position: relative;
+  display: block;
+  height: 100%;
+  width: 90%;
+  border-radius: 6px;
+  background: rgb(22, 127, 231);
+  animation: progress 0.4s ease-in-out forwards;
+  opacity: 0;
+}
+.skill-per.a {
+  width: 35%;
+  animation-delay: 0.1s;
+}
+
+.skill-per.b {
+  width: 50%;
+  animation-delay: 0.1s;
+}
+
+.skill-per.c {
+  width: 70%;
+  animation-delay: 0.1s;
+}
+
+.skill-per.d {
+  width: 95%;
+  animation-delay: 0.1s;
+}
+@keyframes progress {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.panel-row-div {
+  display: flex;
+  flex-direction: row;
+}

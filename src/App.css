@@ -7,10 +7,22 @@
   color: inherit;
   font-size: inherit;
   scroll-behavior: smooth;
-  max-width: 100%;
-  overflow-x: hidden;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+
+  /* FullCalendar */
+  --fc-border-color: rgb(231, 231, 231);
+  --fc-button-bg-color: rgb(38, 135, 232);
+  --fc-button-hover-bg-color: rgb(22, 127, 231);
+  --fc-button-border-color: rgb(231, 231, 231);
+  --fc-button-hover-border-color: rgb(231, 231, 231);
+  --fc-today-bg-color: rgb(249, 249, 249);
+  --fc-button-active-bg-color: rgb(22, 127, 231);
+  --fc-button-active-border-color: rgb(231, 231, 231);
+}
+
+.fc-event:hover {
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar {
@@ -38,11 +50,16 @@ body {
   border-radius: 5px;
   margin-top: 10px;
   margin-bottom: 20px;
+  padding-bottom: 3px;
   border-style: none;
-  min-width: 400px;
+  /* min-width: 400px; */
   box-shadow: 1px 1px 7px rgb(228, 228, 228);
 }
 
 input:focus {
   outline-color: rgb(109, 109, 109);
+}
+
+.grabbable {
+  cursor: move;
 }

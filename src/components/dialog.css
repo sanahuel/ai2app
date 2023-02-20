@@ -1,0 +1,36 @@
+.outter-div {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-div {
+  background-color: white;
+  width: 350px;
+  padding: 25px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.dialog-div button {
+  background-color: white;
+  border-style: solid;
+  border-color: grey;
+  border-width: 1px;
+  margin-left: 10px;
+  padding: 5px;
+  width: 38px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.dialog-div button:hover {
+  background-color: rgb(249, 249, 249);
+}

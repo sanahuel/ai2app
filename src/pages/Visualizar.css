@@ -1,0 +1,9 @@
+.visualizar-container-div {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 3px;
+  border-style: none;
+  box-shadow: 1px 1px 7px rgb(228, 228, 228);
+}

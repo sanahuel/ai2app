@@ -5,6 +5,8 @@ import NuevoEnsayo from "./pages/NuevoEnsayo";
 import Login from "./pages/Login";
 import Sidebar from "./components/sidebar";
 import Panel from "./pages/Panel";
+import Lifespan from "./pages/lifespan1";
+import LifespanR from "./pages/lifespanr";
 import Visualizar from "./pages/Visualizar";
 import Nav from "./components/navbar";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -22,6 +24,8 @@ function App() {
             <Route element={<PrivateRoutes />}>
               <Route path="/" element={<Home />} />
               <Route path="/control" element={<Panel />} />
+              <Route path="/control/lifespan-1" element={<Lifespan />} />
+              <Route path="/visualizar/lifespan-r" element={<LifespanR />} />
               <Route path="/nuevo" element={<NuevoEnsayo />} />
               <Route path="/visualizar" element={<Visualizar />} />
             </Route>

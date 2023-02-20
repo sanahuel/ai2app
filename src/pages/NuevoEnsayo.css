@@ -4,16 +4,42 @@
   align-items: left;
 }
 
-.input-div {
+.container-header {
   margin-left: 10px;
+  margin-right: 10px;
+  padding-top: 8px;
+}
+
+.container-header span {
+  font-weight: 500;
+}
+.border-div {
+  position: relative;
+  left: 5px;
+  width: 200px;
+  padding-top: 1px;
+  margin-bottom: 0px;
+  border-bottom: 1.5px solid #f1f1f1;
+}
+
+.container-content {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-left: 8px;
+}
+
+.input-div {
+  content: flex;
+  margin-left: 10px;
+  margin-right: 100px;
   padding-top: 18px;
   padding-bottom: 18px;
-  display: flex;
+  max-height: 45.2px;
 }
 
 .input-field {
   position: absolute;
-  left: 220px;
+  left: 228px;
   border-color: rgb(224, 224, 224);
   border-style: solid;
   border-radius: 3px;
@@ -47,16 +73,21 @@
   bottom: 2px;
   width: 23px;
   height: 23px;
+  margin-top: 7px;
   border-radius: 100%;
   border-style: none;
   border-width: 1px;
   border-color: rgb(224, 224, 224);
-  background-color: rgb(243, 243, 243);
+  background-color: rgb(255, 255, 255);
+}
+
+.condicion-div {
+  background-color: white;
 }
 
 button:hover {
   cursor: pointer;
-  background-color: #ccc;
+  background-color: rgb(243, 243, 243);
   color: black;
 }
 
@@ -75,6 +106,19 @@ button:hover {
   margin-top: 15px;
 }
 
+.crear-ensayo {
+  box-shadow: 1px 1px 7px rgb(228, 228, 228);
+  border-style: none;
+}
+
+.crear-ensayo span {
+  font-weight: 500;
+  color: white;
+  background-color: rgb(38, 135, 232);
+  padding: 15px;
+  height: 40px;
+}
+
 .crear-button {
   box-shadow: 1px 1px 7px rgb(228, 228, 228);
   margin: 10px;
@@ -83,26 +127,25 @@ button:hover {
   height: 47px;
   width: 47px;
   border-style: none;
-  border-radius: 100%;
-  background-color: #d9ecff;
+  border-radius: 20px;
+  background-color: rgb(49, 148, 247);
   color: rgb(0, 0, 0); /*cambiar */
 }
 
 .crear-button img {
   height: 27px;
-  filter: invert(40%) sepia(66%) saturate(5627%) hue-rotate(197deg)
-    brightness(90%) contrast(92%);
+  filter: invert(100%);
 }
 
 .crear-button:hover {
-  background-color: #bedaf7;
+  background-color: rgb(44, 142, 240);
 }
 
 .crear-div {
-  height: 190px;
+  height: 85px;
 }
 
-.crear-div span {
+.hidden-span {
   color: white;
   background-color: #333;
   padding: 3px;
@@ -113,13 +156,13 @@ button:hover {
   top: 35px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.4s linear;
+  transition: opacity 0.3s linear;
   transition-delay: 0s;
 }
 
 .crear-button:hover + #crear-span {
   visibility: visible;
-  opacity: 0.87;
+  opacity: 0.97;
 }
 
 .fila-tabla {
@@ -149,7 +192,7 @@ button:hover {
   display: none;
   position: relative;
   text-align: center;
-  left: 8%;
+  left: 230px;
   top: 1px;
   width: 15px;
   height: 15px;
@@ -160,10 +203,70 @@ button:hover {
   font-size: 15px;
 }
 
-.fila-tabla:hover .button-eliminar-fila {
+.button-eliminar-fila img {
+  filter: invert(40%);
+  width: 13px;
+}
+
+.input-div:hover .button-eliminar-fila {
   display: inline;
 }
 
-/* span {
-  color: #444;
-} */
+.button-eliminar-fila:hover img {
+  filter: invert(20%);
+}
+
+.info {
+  position: relative;
+  width: 18px;
+  vertical-align: middle;
+  left: 4px;
+  filter: invert(33%);
+}
+
+.info:hover {
+  cursor: pointer;
+}
+
+#ventana-span {
+  position: relative;
+  vertical-align: middle;
+  top: 0px;
+  left: 10px;
+  max-width: 250px;
+  text-align: center;
+  z-index: 100;
+}
+
+#info-ventana:hover + #ventana-span {
+  visibility: visible;
+  opacity: 0.97;
+}
+
+#freq-span {
+  font-size: small;
+  position: relative;
+  left: -324px;
+  color: #555;
+}
+
+#h-span {
+  font-size: small;
+  position: relative;
+  left: 68px;
+  color: #555;
+}
+
+#min-span {
+  font-size: small;
+  position: relative;
+  left: 118px;
+  color: #555;
+}
+
+#init-span {
+  font-size: small;
+  position: relative;
+  left: 203px;
+  color: #555;
+}

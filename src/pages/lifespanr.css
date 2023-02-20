@@ -1,0 +1,57 @@
+.graph {
+  padding: 50px;
+}
+
+.table-div {
+  text-align: center;
+}
+
+.border-table {
+  position: relative;
+  width: 470px;
+  padding-top: 1px;
+  margin-bottom: 0px;
+  border: 1.5px solid #bdbdbd;
+  margin: auto;
+}
+
+.table-div table {
+}
+
+.table-div table thead tr {
+  border-bottom: 2px solid black;
+}
+
+.table-div table {
+  margin: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.table-div table td {
+  text-align: center;
+  padding: 1px;
+}
+
+.placa-div {
+  border-radius: 4px;
+}
+
+.placa-div.active {
+  background-color: white;
+}
+
+.placa-div.inactive {
+  /* background-color: rgba(226, 226, 226, 0.15); */
+  color: #c4c4c4;
+}
+
+.placa-div:hover {
+  cursor: pointer;
+}
+
+.condicion-cell {
+  font-weight: 400;
+  text-align: center;
+  height: 25px;
+}

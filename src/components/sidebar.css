@@ -124,3 +124,10 @@ ul a.active span {
 .sidebar span {
   font-weight: 400;
 }
+
+.logo-img {
+  margin-top: 50px;
+  margin-left: 20px;
+  width: 130px;
+  filter: invert(80%);
+}
