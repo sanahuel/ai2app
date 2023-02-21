@@ -337,33 +337,12 @@ const LifespanR = () => {
       <div ref={placasRef}>
         {Object.entries(condiciones).map(([key, placa]) => (
           <div className="container-div" style={{ paddingBottom: "10px" }}>
-            <div className="container-header" style={{ paddingBottom: "10px" }}>
+            <div
+              className="container-header"
+              style={{ paddingBottom: "10px", fontWeight: "500px" }}
+            >
               <span>Condición {key}</span>
             </div>
-
-            {/* <table style={{ width: "100%" }}>
-              <tr>
-                <th>Día</th>
-                {Object.keys(placa).map((key) => (
-                  <th
-                    className={`placa-div ${open[key] ? "active" : "inactive"}`}
-                    onClick={() => {
-                      handlePlaca(key);
-                    }}
-                  >
-                    {key}
-                  </th>
-                ))}
-              </tr>
-              
-              {Object.values(placa).map((item, index) => (
-                <tr key={index}>
-                  <td>{item}</td>
-                  <td>{item}</td>
-                  <td>{item}</td>
-                </tr>
-              ))}
-            </table> */}
 
             <div
               style={{
@@ -380,14 +359,24 @@ const LifespanR = () => {
                   textAlign: "center",
                 }}
               >
-                Día
+                <div style={{ paddingBottom: "1px", textAlign: "center" }}>
+                  Día
+                </div>
                 <div
                   className="border-div"
-                  style={{ width: "90%", marginBottom: "5px" }}
+                  style={{ width: "90%", marginBottom: "7px" }}
                 ></div>
                 {[...Array(21).keys()].map((day) => (
                   <>
                     <div className="condicion-cell">{day + 1}</div>
+                    <div
+                      className="border-div"
+                      style={{
+                        width: "140%",
+                        left: "-17%",
+                        marginBottom: "5px",
+                      }}
+                    ></div>
                   </>
                 ))}
               </div>
@@ -404,13 +393,21 @@ const LifespanR = () => {
                   </div>
                   <div
                     className="border-div"
-                    style={{ width: "90%", marginBottom: "5px" }}
+                    style={{ width: "110%", left: "-8%", marginBottom: "7px" }}
                   ></div>
 
                   <div>
                     {values.map((value) => (
                       <>
                         <div className="condicion-cell">{value}</div>
+                        <div
+                          className="border-div"
+                          style={{
+                            left: "-190%",
+                            width: "450%",
+                            marginBottom: "5px",
+                          }}
+                        ></div>
                       </>
                     ))}
                   </div>

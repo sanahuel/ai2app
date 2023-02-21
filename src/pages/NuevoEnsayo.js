@@ -29,21 +29,21 @@ const NuevoEnsayo = () => {
   let i = 0;
   let j = 0;
   let num_cond = 1;
-  let events = [
-    {
-      title: "",
-      rrule: {
-        // freq: "minutely",
-        // count: numRef.current.value,
-        // interval: hfreqRef.current.value * 60 + minfreqRef.current.value,
-        // dtstart: inicioRef + "T" + horaRef + ":00",
-        freq: "minutely",
-        count: 100,
-        interval: 5 * 60 + 20,
-        dtstart: "2023-02-02",
-      },
-    },
-  ];
+  // let events = [
+  //   {
+  //     title: "",
+  //     rrule: {
+  //       // freq: "minutely",
+  //       // count: numRef.current.value,
+  //       // interval: hfreqRef.current.value * 60 + minfreqRef.current.value,
+  //       // dtstart: inicioRef + "T" + horaRef + ":00",
+  //       freq: "minutely",
+  //       count: 100,
+  //       interval: 24 * 60,
+  //       dtstart: "2023-02-02T09:30:00+01:00",
+  //     },
+  //   },
+  // ];
 
   const [horaInic, setHoraInic] = useState([]);
 
@@ -64,6 +64,8 @@ const NuevoEnsayo = () => {
   let [freqM, setFreqM] = useState([]);
 
   let [initVisibility, setInitVisibility] = useState("hidden");
+
+  let [events, setEvents] = useState([]);
 
   useEffect(() => {
     if (inicioRef.current.value) {
@@ -184,12 +186,29 @@ const NuevoEnsayo = () => {
   };
 
   let createEvents = () => {
-    console.log(
-      hfreqRef.current.value,
-      minfreqRef.current.value,
-      horaRef.current.value,
+    // comprobar != none para todos y después usar setEvents
+    if (
+      hfreqRef.current.value &&
+      numRef.current.value &&
+      minfreqRef.current.value &&
+      horaRef.current.value &&
       inicioRef.current.value
-    );
+    ) {
+      setEvents([
+        {
+          title: "",
+          rrule: {
+            freq: "minutely",
+            count: parseInt(numRef.current.value),
+            interval:
+              parseInt(hfreqRef.current.value) * 60 +
+              parseInt(minfreqRef.current.value),
+            dtstart:
+              inicioRef.current.value + "T" + horaRef.current.value + ":00", //"2023-02-02T09:30:00+01:00",
+          },
+        },
+      ]);
+    }
   };
   return (
     <div className="nuevo-ensayo">
@@ -384,7 +403,7 @@ const NuevoEnsayo = () => {
             initialView="timeGridWeek"
             eventMinHeight="5"
             height="auto"
-            minHeight="1900px !important"
+            // minHeight="1900px !important"
             editable={false}
             selectable={false}
             selectMirror={false}
