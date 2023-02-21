@@ -17,12 +17,14 @@
 
 .sidebar-button {
   margin: auto;
-  margin-top: 30px;
-  padding-left: 11px;
+  margin-top: 23px;
+  padding-left: 62px;
   align-items: center;
   height: 45px;
-  width: 165px;
-  border-radius: 3px;
+  width: 220px;
+  position: relative;
+  left: -50px;
+  border-radius: 22.5px;
 }
 .sidebar-button a {
   text-decoration: none;
@@ -73,19 +75,22 @@ ul a.active span {
 .div-border {
   position: relative;
   width: 90%;
-  padding-top: 10px;
+  padding-top: 0px;
   margin: 0 auto;
   border-bottom: 1.5px solid #f1f1f1;
 }
 
 .sidebar-out {
   margin-top: 26px;
-  padding-left: 15px;
   height: 45px;
-  width: 112px;
   border-radius: 3px;
-  margin-left: 33px;
+  width: 220px;
+  position: relative;
+  left: -50px;
+  padding-left: 92px;
+  border-radius: 22.5px;
 }
+
 .sidebar-out a {
   text-decoration: none;
   color: rgb(0, 0, 0);
