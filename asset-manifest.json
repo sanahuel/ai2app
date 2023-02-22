@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/ai2app/static/css/main.06bc7835.css",
-    "main.js": "/ai2app/static/js/main.f774bfd5.js",
+    "main.css": "/ai2app/static/css/main.e781382d.css",
+    "main.js": "/ai2app/static/js/main.7e568643.js",
     "static/media/settings.svg": "/ai2app/static/media/settings.f00ed6226d32e4231168a0f9c158cb4e.svg",
     "index.html": "/ai2app/index.html",
     "static/media/display.svg": "/ai2app/static/media/display.f9dfe0d47bbb2ece3e06207de6a60338.svg",
@@ -11,11 +11,11 @@
     "static/media/description.svg": "/ai2app/static/media/description.4403be57147502c8134908bff6f29371.svg",
     "static/media/clear.svg": "/ai2app/static/media/clear.244b66874c46718f7e0607d3acebaccf.svg",
     "static/media/chart.svg": "/ai2app/static/media/chart.024f91f08bf648735da450acfb8a7160.svg",
-    "main.06bc7835.css.map": "/ai2app/static/css/main.06bc7835.css.map",
-    "main.f774bfd5.js.map": "/ai2app/static/js/main.f774bfd5.js.map"
+    "main.e781382d.css.map": "/ai2app/static/css/main.e781382d.css.map",
+    "main.7e568643.js.map": "/ai2app/static/js/main.7e568643.js.map"
   },
   "entrypoints": [
-    "static/css/main.06bc7835.css",
-    "static/js/main.f774bfd5.js"
+    "static/css/main.e781382d.css",
+    "static/js/main.7e568643.js"
   ]
 }
