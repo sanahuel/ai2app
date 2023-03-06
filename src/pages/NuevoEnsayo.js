@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-// import AuthContext from "../context/AuthContext";
+import AuthContext from "../context/AuthContext";
 import "./NuevoEnsayo.css";
 
 import FullCalendar from "@fullcalendar/react";
@@ -10,12 +10,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 import rrulePlugin from "@fullcalendar/rrule";
 
+import jwt_decode from "jwt-decode";
+
 import crear from "../icons/save_alt.svg";
 import del from "../icons/clear.svg";
 import calendar from "../icons/refresh.svg";
 
 const NuevoEnsayo = () => {
-  // let { logoutCall } = useContext(AuthContext);
+  let { logoutCall } = useContext(AuthContext);
   let navigate = useNavigate();
 
   const nombreRef = useRef(null);
@@ -24,11 +26,14 @@ const NuevoEnsayo = () => {
   const numRef = useRef(null);
   const hfreqRef = useRef(null);
   const minfreqRef = useRef(null);
+  const proyectoRef = useRef(null);
+  const aplicacionRef = useRef(null);
 
   let ensayos_tabla = [];
   let i = 0;
   let j = 0;
   let num_cond = 1;
+
   // let events = [
   //   {
   //     title: "",
@@ -67,12 +72,12 @@ const NuevoEnsayo = () => {
 
   let [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    if (inicioRef.current.value) {
-      getEnsayos();
-      sortTabla();
-    }
-  }, [horaInic, horaFin]);
+  // useEffect(() => {
+  //   if (inicioRef.current.value) {
+  //     getEnsayos();
+  //     sortTabla();
+  //   }
+  // }, [horaInic, horaFin]);
 
   useEffect(() => {
     ensayos.map((arr) => {
@@ -81,6 +86,15 @@ const NuevoEnsayo = () => {
       });
     });
   }, [ensayos]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch("/new/");
+      const data = await response.json();
+      console.log(data);
+    }
+    fetchData();
+  }, []);
 
   const swap = (start, end, l, arr) =>
     [].concat(
@@ -91,15 +105,15 @@ const NuevoEnsayo = () => {
       arr.slice(end + 1, l)
     );
 
-  let getEnsayos = async () => {
-    let response = await fetch("/ensayos");
-    let data = await response.json();
-    if (response.status === 200) {
-      setEnsayos(data);
-    } else if (response.statusText === "Unauthorized") {
-      // logoutCall();
-    }
-  };
+  // let getEnsayos = async () => {
+  //   let response = await fetch("/ensayos");
+  //   let data = await response.json();
+  //   if (response.status === 200) {
+  //     setEnsayos(data);
+  //   } else if (response.statusText === "Unauthorized") {
+  //     // logoutCall();
+  //   }
+  // };
 
   let sortTabla = () => {
     if (!(ensayos_tabla.lenght === 0)) {
@@ -119,18 +133,60 @@ const NuevoEnsayo = () => {
   };
 
   let createEnsayo = async () => {
-    fetch(`/send/`, {
+    const condiciones = {
+      A: [
+        [1, "multipocillo"],
+        [1, "50mm"],
+      ],
+      B: [
+        [2, "50mm"],
+        [2, "multipocillo"],
+      ],
+    };
+
+    console.log("crear.......");
+    console.log({
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${localStorage.getItem("authTokens")}`,
+      },
+      body: JSON.stringify({
+        nombreExperimento: nombreRef.current.value,
+        fechaInicio: inicioRef.current.value + " " + horaRef.current.value,
+        ventanaEntreCapturas:
+          parseInt(hfreqRef.current.value) * 60 +
+          parseInt(minfreqRef.current.value), //min
+        numeroDeCapturas: numRef.current.value,
+        aplicacion: aplicacionRef.current.value,
+        nombreProyecto: proyectoRef.current.value,
+        nCondiciones: 4, //cambiar!!
+        Condiciones: condiciones,
+      }),
+    });
+
+    fetch(`/new/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        nombre: nombreRef.current.value,
-        inicio: inicioRef.current.value,
-        horas: horas.join(" "),
+        nombreExperimento: nombreRef.current.value,
+        fechaInicio: inicioRef.current.value + " " + horaRef.current.value,
+        ventanaEntreCapturas:
+          parseInt(hfreqRef.current.value) * 60 +
+          parseInt(minfreqRef.current.value), //min
+        numeroDeCapturas: numRef.current.value,
+        aplicacion: aplicacionRef.current.value,
+        nombreProyecto: proyectoRef.current.value,
+        nCondiciones: 4, //cambiar!!
+        Condiciones: condiciones,
       }),
-    });
-    navigate("/");
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+    // navigate("/");
   };
 
   let createCondicion = () => {
@@ -235,6 +291,7 @@ const NuevoEnsayo = () => {
             <span>Nombre del proyecto </span>
             <input
               className="input-field"
+              ref={proyectoRef}
               placeholder=""
               autocomplete="off"
               autocorrect="off"
@@ -245,7 +302,7 @@ const NuevoEnsayo = () => {
 
           <div className="input-div">
             <span>Aplicación</span>
-            <select name="select" className="input-field">
+            <select name="select" ref={aplicacionRef} className="input-field">
               <option disabled selected value>
                 {" "}
               </option>
