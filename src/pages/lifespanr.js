@@ -26,6 +26,29 @@ ChartJS.register(
 );
 
 const LifespanR = () => {
+  const [ensayos, setEnsayos] = useState([]);
+
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/results/20");
+      const data = await response.json();
+      console.log(data);
+      //setEnsayos(formatData(data.capturas));
+    }
+    fetchData();
+    // console.log(capturas);
+  }, []);
+
   const vivosA = [
     120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
     0, 0, 0, 0,
@@ -148,7 +171,6 @@ const LifespanR = () => {
     let fraccB = calculateCond("B");
     let fraccC = calculateCond("C");
     let fraccD = calculateCond("D");
-    console.log(fraccA, fraccB, fraccC, fraccD);
   });
 
   let data = {
@@ -210,18 +232,7 @@ const LifespanR = () => {
   };
 
   let handlePlaca = (key) => {
-    console.log(key);
-    console.log(open);
     setOpen({ ...open, [key]: !open[key] });
-  };
-
-  let dragDrop = (e) => {
-    console.log("dentro!");
-    console.log(e.pageY);
-    console.log(placasRef.current);
-    if (!placasRef.current.contains(e.target)) {
-      console.log("asdfghjsdfghjfghj");
-    }
   };
 
   return (
@@ -237,7 +248,7 @@ const LifespanR = () => {
             type="text"
             value=" Lifespan #0"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -246,7 +257,7 @@ const LifespanR = () => {
             type="text"
             value=" xxxxx"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -255,7 +266,7 @@ const LifespanR = () => {
             type="text"
             value=" Lifespan"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -265,7 +276,7 @@ const LifespanR = () => {
             value=" 25"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -275,7 +286,7 @@ const LifespanR = () => {
             value=" 30"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div" style={{ paddingBottom: "10px" }}>
@@ -285,7 +296,7 @@ const LifespanR = () => {
             value=" 01/02/2023"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
       </div>

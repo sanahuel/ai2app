@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import "./Panel.css";
 import "./lifespan1.css";
 import del from "../icons/clear.svg";
@@ -13,6 +13,29 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 
 const Lifespan1 = () => {
+  const [ensayos, setEnsayos] = useState([]);
+
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/control/17");
+      const data = await response.json();
+      console.log(data);
+      //setEnsayos(formatData(data.capturas));
+    }
+    fetchData();
+    // console.log(capturas);
+  }, []);
+
   const condiciones = ["A", "B", "C"];
   const placas = [
     ["Placa 1", "Placa 2"],
@@ -106,7 +129,7 @@ const Lifespan1 = () => {
             type="text"
             value=" Lifespan #1"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -124,7 +147,7 @@ const Lifespan1 = () => {
             type="text"
             value=" Lifespan"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -134,7 +157,7 @@ const Lifespan1 = () => {
             value=" 25"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div" style={{ paddingBottom: "10px" }}>
@@ -144,7 +167,7 @@ const Lifespan1 = () => {
             value=" 30"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
       </div>

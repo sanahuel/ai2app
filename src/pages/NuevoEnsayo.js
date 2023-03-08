@@ -104,32 +104,6 @@ const NuevoEnsayo = () => {
     // console.log(capturas);
   }, []);
 
-  const swap = (start, end, l, arr) =>
-    [].concat(
-      arr.slice(0, start),
-      arr.slice(end, end + 1),
-      arr.slice(start + 1, end),
-      arr.slice(start, start + 1),
-      arr.slice(end + 1, l)
-    );
-
-  let sortTabla = () => {
-    if (!(ensayos_tabla.lenght === 0)) {
-      for (i = 0; i < ensayos_tabla.length; i++) {
-        for (j = 0; j < ensayos_tabla.length - 1; j++) {
-          let h1 = ensayos_tabla[j].hora.split(":");
-          let h2 = ensayos_tabla[j + 1].hora.split(":");
-          if (
-            Number(h1[0]) > Number(h2[0]) ||
-            (Number(h1[0]) == Number(h2[0]) && Number(h1[1]) > Number(h2[1]))
-          ) {
-            ensayos_tabla = swap(j, j + 1, ensayos_tabla.lenght, ensayos_tabla);
-          }
-        }
-      }
-    }
-  };
-
   let createEnsayo = async () => {
     const condiciones = {
       A: [
@@ -238,10 +212,10 @@ const NuevoEnsayo = () => {
               className="input-field"
               ref={nombreRef}
               placeholder=""
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
           </div>
 
@@ -251,21 +225,26 @@ const NuevoEnsayo = () => {
               className="input-field"
               ref={proyectoRef}
               placeholder=""
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
           </div>
 
           <div className="input-div">
             <span>Aplicación</span>
-            <select name="select" ref={aplicacionRef} className="input-field">
-              <option disabled selected value>
+            <select
+              name="select"
+              ref={aplicacionRef}
+              className="input-field"
+              defaultValue="DEFAULT"
+            >
+              <option value="DEFAULT" disabled>
                 {" "}
               </option>
-              <option value="value1">Lifespan</option>
-              <option value="value2">Healthspan</option>
+              <option value="lifespan">Lifespan</option>
+              <option value="healthspan">Healthspan</option>
             </select>
           </div>
 
@@ -287,7 +266,7 @@ const NuevoEnsayo = () => {
           <span>Condiciones del Ensayo</span>
         </div>
         <div className="border-div"></div>
-        <div className="container-content" style={{ "min-height": "30px" }}>
+        <div className="container-content" style={{ minHeight: "30px" }}>
           {condiciones.map((condicion, index) => (
             <div key={condicion}>
               <div className="condicion-div">
@@ -296,10 +275,10 @@ const NuevoEnsayo = () => {
                   <input
                     className="input-field"
                     placeholder=""
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="false"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                   />
                   <button
                     className="button-eliminar-fila"
@@ -318,10 +297,10 @@ const NuevoEnsayo = () => {
                     type="number"
                     min="1"
                     placeholder=""
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="false"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                     style={{ width: "104px" }}
                   />
                 </div>
@@ -387,7 +366,7 @@ const NuevoEnsayo = () => {
         </button>
       </div>
 
-      <div className="container-div" style={{ "min-height": "100px" }}>
+      <div className="container-div" style={{ minHeight: "100px" }}>
         <div className="container-header">
           <span>Calendario Propuesto</span>
         </div>

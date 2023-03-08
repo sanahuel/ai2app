@@ -1,10 +1,33 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import "./Panel.css";
 import "./Visualizar.css";
 
 const Visualizar = () => {
+  const [ensayos, setEnsayos] = useState([]);
+
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/results/");
+      const data = await response.json();
+      console.log(data);
+      //setEnsayos(formatData(data.capturas));
+    }
+    fetchData();
+    // console.log(capturas);
+  }, []);
+
   return (
     <div className="nuevo-ensayo">
       <div className="panel-row-div">
