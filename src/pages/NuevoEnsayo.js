@@ -33,6 +33,11 @@ const NuevoEnsayo = () => {
   let i = 0;
   let j = 0;
   let num_cond = 1;
+  let [user, setUser] = useState(() =>
+    localStorage.getItem("authTokens")
+      ? jwt_decode(localStorage.getItem("authTokens"))
+      : null
+  );
 
   // let events = [
   //   {
@@ -50,34 +55,15 @@ const NuevoEnsayo = () => {
   //   },
   // ];
 
-  const [horaInic, setHoraInic] = useState([]);
-
-  const [horaFin, setHoraFin] = useState([]);
-
   const [condiciones, setCondiciones] = useState([]);
 
-  let [ensayos, setEnsayos] = useState([]);
+  const [ensayos, setEnsayos] = useState([]);
 
   const [horas, setHoras] = useState([]);
 
-  let [tabla, setTabla] = useState([]);
+  const [events, setEvents] = useState([]);
 
-  let [freqVisibility, setFreqVisibility] = useState("hidden");
-
-  let [freqH, setFreqH] = useState([]);
-
-  let [freqM, setFreqM] = useState([]);
-
-  let [initVisibility, setInitVisibility] = useState("hidden");
-
-  let [events, setEvents] = useState([]);
-
-  // useEffect(() => {
-  //   if (inicioRef.current.value) {
-  //     getEnsayos();
-  //     sortTabla();
-  //   }
-  // }, [horaInic, horaFin]);
+  const [capturas, setCapturas] = useState([]);
 
   useEffect(() => {
     ensayos.map((arr) => {
@@ -86,24 +72,6 @@ const NuevoEnsayo = () => {
       });
     });
   }, [ensayos]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const response = await fetch("/new/");
-      const data = await response.json();
-      console.log(data);
-    }
-    fetchData();
-  }, []);
-
-  const swap = (start, end, l, arr) =>
-    [].concat(
-      arr.slice(0, start),
-      arr.slice(end, end + 1),
-      arr.slice(start + 1, end),
-      arr.slice(start, start + 1),
-      arr.slice(end + 1, l)
-    );
 
   // let getEnsayos = async () => {
   //   let response = await fetch("/ensayos");
@@ -114,6 +82,36 @@ const NuevoEnsayo = () => {
   //     // logoutCall();
   //   }
   // };
+
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/new/");
+      const data = await response.json();
+      setCapturas(formatData(data.capturas));
+    }
+
+    fetchData();
+    // console.log(capturas);
+  }, []);
+
+  const swap = (start, end, l, arr) =>
+    [].concat(
+      arr.slice(0, start),
+      arr.slice(end, end + 1),
+      arr.slice(start + 1, end),
+      arr.slice(start, start + 1),
+      arr.slice(end + 1, l)
+    );
 
   let sortTabla = () => {
     if (!(ensayos_tabla.lenght === 0)) {
@@ -171,6 +169,7 @@ const NuevoEnsayo = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        idUsuarios: user.user_id,
         nombreExperimento: nombreRef.current.value,
         fechaInicio: inicioRef.current.value + " " + horaRef.current.value,
         ventanaEntreCapturas:
@@ -199,48 +198,6 @@ const NuevoEnsayo = () => {
     setCondiciones(condCopy);
   };
 
-  let addHora = () => {
-    let ok = true;
-    for (i = 0; i < ensayos.length; i++) {
-      if (ensayos[i].horas.includes(horaRef.current.value)) {
-        ok = false;
-      }
-    }
-
-    if (horas.includes(horaRef.current.value)) {
-      ok = false;
-    }
-
-    if (ok === true) {
-      setHoras([...horas, horaRef.current.value]);
-      ensayos_tabla.push({
-        hora: horaRef.current.value,
-        nombre: "Nuevo Ensayo",
-      });
-      sortTabla();
-    }
-  };
-
-  let deleteHora = (index) => {
-    const h = [...horas];
-    h.splice(index, 1);
-    setHoras(h);
-  };
-
-  let freqUpdate = (value) => {
-    setFreqVisibility("visible");
-    if (value.slice(0, 1) == "0") {
-      setFreqH(value.slice(1, 2));
-    } else {
-      setFreqH(value.slice(0, 2));
-    }
-    if (value.slice(3, 4) == "0") {
-      setFreqM(value.slice(4, 5));
-    } else {
-      setFreqM(value.slice(3, 5));
-    }
-  };
-
   let createEvents = () => {
     // comprobar != none para todos y después usar setEvents
     if (
@@ -263,6 +220,7 @@ const NuevoEnsayo = () => {
               inicioRef.current.value + "T" + horaRef.current.value + ":00", //"2023-02-02T09:30:00+01:00",
           },
         },
+        ...capturas,
       ]);
     }
   };
@@ -384,16 +342,7 @@ const NuevoEnsayo = () => {
         <div className="container-content">
           <div className="input-div">
             <span>Hora de Inicio </span>
-            <input
-              className="input-field"
-              type="time"
-              ref={horaRef}
-              onChange={(e) => setInitVisibility("visible")}
-            />
-            {/* <span id="init-span" style={{ visibility: initVisibility }}>
-              Se comenzará a una hora tan cercana como sea posible sin causar
-              solapamiento con otros ensayos
-            </span> */}
+            <input className="input-field" type="time" ref={horaRef} />
           </div>
           <div className="input-div">
             <span>Nº de Capturas</span>

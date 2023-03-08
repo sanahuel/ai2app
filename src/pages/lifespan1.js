@@ -72,6 +72,8 @@ const Lifespan1 = () => {
     index: "",
   });
 
+  // const [events, setEvents] = useState([])
+
   const handleDelete = (index, message) => {
     setDialog({
       message: message,
