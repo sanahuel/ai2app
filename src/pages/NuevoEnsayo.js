@@ -159,7 +159,7 @@ const NuevoEnsayo = () => {
       .then((response) => response.json())
       .then((data) => console.log(data))
       .catch((error) => console.log(error));
-    // navigate("/");
+    // navigate("/");                                       volver a activar!!!
   };
 
   let createCondicion = () => {
