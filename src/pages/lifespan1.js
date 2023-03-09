@@ -26,42 +26,42 @@ const Lifespan1 = () => {
   const events = [
     {
       title: "Lifespan #1",
-      start: "2023-02-24T09:30:00+01:00",
+      start: "2023-03-13T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-02-25T09:30:00+01:00",
+      start: "2023-03-14T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-02-26T09:30:00+01:00",
+      start: "2023-03-15T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-02-27T09:30:00+01:00",
+      start: "2023-03-16T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-02-28T09:30:00+01:00",
+      start: "2023-03-17T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-03-01T09:30:00+01:00",
+      start: "2023-03-18T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-03-02T09:30:00+01:00",
+      start: "2023-03-19T09:30:00+01:00",
       allDay: false, // will make the time show
     },
     {
       title: "Lifespan #1",
-      start: "2023-03-03T09:30:00+01:00",
+      start: "2023-03-20T09:30:00+01:00",
       allDay: false, // will make the time show
     },
   ];
@@ -241,7 +241,14 @@ const Lifespan1 = () => {
           />
         </div>
       </div>
-
+      <button
+        className="delete-button"
+        onClick={() =>
+          handleDelete(0, "Eliminar el experimento no es reversible", "Ensayo")
+        }
+      >
+        Delete
+      </button>
       {/* DIALOG */}
 
       {dialog.isLoading && (
