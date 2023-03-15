@@ -50,3 +50,192 @@ En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
     <img src="./docs/AccionesUsuario.drawio.svg" alt= “”>
 </p>
  </div>
+
+## Comunicación Frontend - Backend
+
+La comunicación entre el frontend y el backend se realiza a través de los siguientes endpoints de la API, cada uno con los métodos que se listan.
+
+### Nuevo Ensayo
+
+```py
+'new/'
+```
+
+#### GET
+
+```js
+{
+    capturas: [
+        (
+            nombreExperimentos: ,
+            fechayHora: ,
+        ),
+        (
+            nombreExperimentos: ,
+            fechayHora: ,
+        ),
+        ...
+    ]
+}
+```
+
+#### POST
+
+```js
+{
+    idUsuarios: ,
+    nombreExperimentos: ,
+    fechaInicio: ,
+    ventanaEntreCapturas: ,
+    numeroDeCapturas: ,
+    aplicacion: ,
+    nombreProyecto: ,
+    nCondiciones: ,
+    condiciones: {
+        nombreCondiciones: [
+            [idPallet, tipoPlaca],
+            [idPallet, tipoPlaca],
+            [idPallet, tipoPlaca],
+            ...
+        ],
+        nombreCondiciones: [
+            ...
+        ]
+    }
+}
+```
+
+### Panel de Control
+
+```py
+'control/'
+```
+
+Información de todos los ensayos que aún están en transcurso.
+
+#### GET
+
+```js
+{
+    experimentos: [
+        {
+            id: ,
+            nombre: ,
+            aplicacion: ,
+            proyecto: ,
+            porcentaje: ,
+        },
+        ...
+    ]
+}
+```
+
+```py
+'control/<int:pk>'
+```
+
+Toda la información de un solo ensayo.
+
+#### GET
+
+```js
+{
+    nombre: ,
+    proyecto: ,
+    aplicacion: ,
+    nplacas: ,
+    ncapturas: ,
+    condiciones: [
+        nombreCondicion,
+        nombreCondicion,
+        ...
+    ],
+    placas: [
+        idPlacas,
+        idPlacas,
+        ...
+    ],
+    capturas: [
+        {
+            title: ,
+            start: ,
+            allday: false,
+        },
+        ...
+    ],
+}
+```
+
+#### PUT
+
+```js
+{
+    table: ,
+    id: ,
+}
+```
+
+#### DELETE
+
+### Resultados
+
+```py
+'results/'
+```
+
+Información de todos los ensayos acabados.
+
+#### GET
+
+```js
+{
+    experimentos: [
+        {
+            id: ,
+            nombre: ,
+            aplicacion: ,
+            proyecto: ,
+        },
+        ...
+    ]
+}
+```
+
+```py
+'results/<int:pk>'
+```
+
+Toda la información de un ensayo acabado.
+
+#### GET
+
+```js
+{
+    condiciones: {
+        idCondiciones: [
+            idPlacas,
+            idPlacas,
+            ...
+        ],
+        idCondiciones: [
+            idPlacas,
+            idPlacas,
+            ...
+        ],
+        ...
+    },
+    placas: {
+        idPlacas: [
+            vivos, //dia 1
+            vivos, //dia 2
+            ...
+        ],
+        idPlacas: [
+            vivos, //dia 1
+            vivos, //dia 2
+            ...
+        ],
+        ...
+    },
+}
+```
