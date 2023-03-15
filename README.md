@@ -42,7 +42,7 @@ En todas ellas el usuario tiene cierto grado de control sobre los parámetros de
 
 En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
 
-<p style="align=center">
+<p align="center">
     <img src="./docs/AccionesUsuario.drawio.svg" alt= “”>
 </p>
  </div>
