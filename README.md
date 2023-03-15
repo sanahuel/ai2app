@@ -28,7 +28,9 @@ La tabla Tareas es la que define las acciones de los sistemas, y el campo estado
 
 Cada tarea pasa por los siguientes estados.
 
-![](./docs/Estados.drawio.svg)
+<p style="align=center">
+<img src="./docs/Estados.drawio.svg" alt= “”>
+</p>
 
 Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevado por los propios sistemas.
 
@@ -40,7 +42,7 @@ En todas ellas el usuario tiene cierto grado de control sobre los parámetros de
 
 En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
 
-![](./docs/AccionesUsuario.drawio.svg)
-<img src="./docs/AccionesUsuario.drawio.svg" alt= “” width="100%">
-
+<p style="align=center">
+    <img src="./docs/AccionesUsuario.drawio.svg" alt= “”>
+</p>
  </div>
