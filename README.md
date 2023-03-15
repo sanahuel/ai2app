@@ -1,7 +1,6 @@
 # Interfaz para automatizar ensayos con _C.elegans_
 
-<div style="text-align: justify, align-content: center"> 
-Interfaz diseñada para controlar los sistemas Multiview y Tower para la automatización completa de ensayos con C.elegans. Esta interfaz está estructurada en un frontend realizado en React y un backend realizado en Django.
+<div style="text-align: justify"> Interfaz diseñada para controlar los sistemas Multiview y Tower para la automatización completa de ensayos con C.elegans. Esta interfaz está estructurada en un frontend realizado en React y un backend realizado en Django.
 
 ## Esquema General
 
@@ -11,13 +10,13 @@ El backend se comunica directamente con la base de datos MySQL de los sistemas.
 
 La interacción interfaz - sistemas será a través de esta base de datos.
 
-<img src="./docs/Arquitectura.drawio.svg" alt= “” width="100%">
+![](./docs/Arquitectura.drawio.svg)
 
 ## Base de Datos
 
 La base de datos MySQL cuenta con la siguiente estructura.
 
-<img src="./docs/drawSQL.png" alt= “” width="100%">
+![](./docs/drawSQL.png)
 
 Cuenta con tablas Dispositivos y Pallets, que hacen referencia a los propios sistemas disponibles. Habrá una tabla de Resultados para cada tipo de ensayo, debido a que la información que se extrae de cada uno es necesariamente diferente.
 
@@ -29,7 +28,7 @@ La tabla Tareas es la que define las acciones de los sistemas, y el campo estado
 
 Cada tarea pasa por los siguientes estados.
 
-<img src="./docs/Estados.drawio.svg" alt= “” width="100%">
+![](./docs/Estados.drawio.svg)
 
 Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevado por los propios sistemas???????
 
@@ -41,6 +40,6 @@ En todas ellas el usuario tiene cierto grado de control sobre los parámetros de
 
 En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
 
-<img src="./docs/AccionesUsuario.drawio.svg" alt= “” width="100%">
+![](./docs/AccionesUsuario.drawio.svg)
 
  </div>
