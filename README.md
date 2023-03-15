@@ -41,5 +41,6 @@ En todas ellas el usuario tiene cierto grado de control sobre los parámetros de
 En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
 
 ![](./docs/AccionesUsuario.drawio.svg)
+<img src="./docs/AccionesUsuario.drawio.svg" alt= “” width="100%">
 
  </div>
