@@ -1,70 +1,46 @@
-# Getting Started with Create React App
+# Interfaz para automatizar ensayos con _C.elegans_
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div style="text-align: justify, align-content: center"> 
+Interfaz diseñada para controlar los sistemas Multiview y Tower para la automatización completa de ensayos con C.elegans. Esta interfaz está estructurada en un frontend realizado en React y un backend realizado en Django.
 
-## Available Scripts
+## Esquema General
 
-In the project directory, you can run:
+Mediante la interacción con el frontend el usuario puede definir y controlar nuevos ensayos y visualizar los resultados una vez acaban.
 
-### `npm start`
+El backend se comunica directamente con la base de datos MySQL de los sistemas.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+La interacción interfaz - sistemas será a través de esta base de datos.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+<img src="./docs/Arquitectura.drawio.svg" alt= “” width="100%">
 
-### `npm test`
+## Base de Datos
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+La base de datos MySQL cuenta con la siguiente estructura.
 
-### `npm run build`
+<img src="./docs/drawSQL.png" alt= “” width="100%">
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Cuenta con tablas Dispositivos y Pallets, que hacen referencia a los propios sistemas disponibles. Habrá una tabla de Resultados para cada tipo de ensayo, debido a que la información que se extrae de cada uno es necesariamente diferente.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Las tablas Experimentos, Condiciones, Placas y Tareas estructuran los propios experimentos, y será en esta tabla Tareas en la que, al crear un nuevo ensayo, se definen los puntos de captura que tendrán que ejecutar los sistemas.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Gestión de Estados
 
-### `npm run eject`
+La tabla Tareas es la que define las acciones de los sistemas, y el campo estado el que permite conocer el punto en el que se encuentra cada una de las tareas.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Cada tarea pasa por los siguientes estados.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<img src="./docs/Estados.drawio.svg" alt= “” width="100%">
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevado por los propios sistemas???????
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Acciones del Usuario
 
-## Learn More
+El usuario tiene tres formas de interactuar con la aplicación, creando un ensayo nuevo, controlando los ensayos y visualizando resultados.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+En todas ellas el usuario tiene cierto grado de control sobre los parámetros del experimento, como placas, pallets, condiciones o el propio experimento.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
 
-### Code Splitting
+<img src="./docs/AccionesUsuario.drawio.svg" alt= “” width="100%">
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+ </div>
