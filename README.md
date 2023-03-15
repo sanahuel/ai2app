@@ -1,6 +1,6 @@
 # Interfaz para automatizar ensayos con _C.elegans_
 
-<div text-align="justify"> Interfaz diseñada para controlar los sistemas Multiview y Tower para la automatización completa de ensayos con C.elegans. Esta interfaz está estructurada en un frontend realizado en React y un backend realizado en Django.
+<div align="justify"> Interfaz diseñada para controlar los sistemas Multiview y Tower para la automatización completa de ensayos con C.elegans. Esta interfaz está estructurada en un frontend realizado en React y un backend realizado en Django.
 
 ## Esquema General
 
