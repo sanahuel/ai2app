@@ -30,7 +30,7 @@ Cada tarea pasa por los siguientes estados.
 
 ![](./docs/Estados.drawio.svg)
 
-Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevado por los propios sistemas???????
+Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevado por los propios sistemas.
 
 ## Acciones del Usuario
 
