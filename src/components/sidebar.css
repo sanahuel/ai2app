@@ -6,6 +6,7 @@
   width: 180px;
   height: 100%;
   border-right: 1px solid #f4f4f4;
+  z-index: 100;
 }
 
 .sidebar-buttons {

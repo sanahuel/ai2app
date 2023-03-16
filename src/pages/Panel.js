@@ -1,9 +1,32 @@
-import React from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import "./Panel.css";
 
 const Panel = () => {
+  const [ensayos, setEnsayos] = useState([]);
+
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/control/");
+      const data = await response.json();
+      console.log(data);
+      //setEnsayos(formatData(data.capturas));
+    }
+    fetchData();
+    // console.log(capturas);
+  }, []);
+
   return (
     <div className="nuevo-ensayo">
       <div className="panel-row-div">
@@ -24,8 +47,8 @@ const Panel = () => {
               <span style={{ color: "rgb(112, 112, 112)" }}>Dispositivo</span>
             </div>
             <div className="skill-box">
-              <div class="skill-bar">
-                <span class="skill-per a"></span>
+              <div className="skill-bar">
+                <span className="skill-per a"></span>
               </div>
             </div>
           </div>
@@ -43,8 +66,8 @@ const Panel = () => {
             <span style={{ color: "rgb(112, 112, 112)" }}>Dispositivo</span>
           </div>
           <div className="skill-box">
-            <div class="skill-bar">
-              <span class="skill-per b"></span>
+            <div className="skill-bar">
+              <span className="skill-per b"></span>
             </div>
           </div>
         </div>
@@ -66,8 +89,8 @@ const Panel = () => {
             <span style={{ color: "rgb(112, 112, 112)" }}>Dispositivo</span>
           </div>
           <div className="skill-box">
-            <div class="skill-bar">
-              <span class="skill-per c"></span>
+            <div className="skill-bar">
+              <span className="skill-per c"></span>
             </div>
           </div>
         </div>
@@ -83,8 +106,8 @@ const Panel = () => {
             <span style={{ color: "rgb(112, 112, 112)" }}>Dispositivo</span>
           </div>
           <div className="skill-box">
-            <div class="skill-bar">
-              <span class="skill-per d"></span>
+            <div className="skill-bar">
+              <span className="skill-per d"></span>
             </div>
           </div>
         </div>
@@ -106,8 +129,8 @@ const Panel = () => {
             <span style={{ color: "rgb(112, 112, 112)" }}>Dispositivo</span>
           </div>
           <div className="skill-box">
-            <div class="skill-bar">
-              <span class="skill-per d"></span>
+            <div className="skill-bar">
+              <span className="skill-per d"></span>
             </div>
           </div>
         </div>

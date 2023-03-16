@@ -147,7 +147,7 @@ button:hover {
 
 .hidden-span {
   color: white;
-  background-color: #333;
+  background-color: rgba(44, 44, 44, 0.9);
   padding: 3px;
   font-size: 14px;
   border-radius: 3px;

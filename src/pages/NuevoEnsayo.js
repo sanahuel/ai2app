@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-// import AuthContext from "../context/AuthContext";
+import AuthContext from "../context/AuthContext";
 import "./NuevoEnsayo.css";
 
 import FullCalendar from "@fullcalendar/react";
@@ -10,12 +10,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 import rrulePlugin from "@fullcalendar/rrule";
 
+import jwt_decode from "jwt-decode";
+
 import crear from "../icons/save_alt.svg";
 import del from "../icons/clear.svg";
 import calendar from "../icons/refresh.svg";
 
 const NuevoEnsayo = () => {
-  // let { logoutCall } = useContext(AuthContext);
+  let { logoutCall } = useContext(AuthContext);
   let navigate = useNavigate();
 
   const nombreRef = useRef(null);
@@ -24,11 +26,19 @@ const NuevoEnsayo = () => {
   const numRef = useRef(null);
   const hfreqRef = useRef(null);
   const minfreqRef = useRef(null);
+  const proyectoRef = useRef(null);
+  const aplicacionRef = useRef(null);
 
   let ensayos_tabla = [];
   let i = 0;
   let j = 0;
   let num_cond = 1;
+  let [user, setUser] = useState(() =>
+    localStorage.getItem("authTokens")
+      ? jwt_decode(localStorage.getItem("authTokens"))
+      : null
+  );
+
   // let events = [
   //   {
   //     title: "",
@@ -45,34 +55,15 @@ const NuevoEnsayo = () => {
   //   },
   // ];
 
-  const [horaInic, setHoraInic] = useState([]);
-
-  const [horaFin, setHoraFin] = useState([]);
-
   const [condiciones, setCondiciones] = useState([]);
 
-  let [ensayos, setEnsayos] = useState([]);
+  const [ensayos, setEnsayos] = useState([]);
 
   const [horas, setHoras] = useState([]);
 
-  let [tabla, setTabla] = useState([]);
+  const [events, setEvents] = useState([]);
 
-  let [freqVisibility, setFreqVisibility] = useState("hidden");
-
-  let [freqH, setFreqH] = useState([]);
-
-  let [freqM, setFreqM] = useState([]);
-
-  let [initVisibility, setInitVisibility] = useState("hidden");
-
-  let [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    if (inicioRef.current.value) {
-      getEnsayos();
-      sortTabla();
-    }
-  }, [horaInic, horaFin]);
+  const [capturas, setCapturas] = useState([]);
 
   useEffect(() => {
     ensayos.map((arr) => {
@@ -82,55 +73,93 @@ const NuevoEnsayo = () => {
     });
   }, [ensayos]);
 
-  const swap = (start, end, l, arr) =>
-    [].concat(
-      arr.slice(0, start),
-      arr.slice(end, end + 1),
-      arr.slice(start + 1, end),
-      arr.slice(start, start + 1),
-      arr.slice(end + 1, l)
-    );
+  // let getEnsayos = async () => {
+  //   let response = await fetch("/ensayos");
+  //   let data = await response.json();
+  //   if (response.status === 200) {
+  //     setEnsayos(data);
+  //   } else if (response.statusText === "Unauthorized") {
+  //     // logoutCall();
+  //   }
+  // };
 
-  let getEnsayos = async () => {
-    let response = await fetch("/ensayos");
-    let data = await response.json();
-    if (response.status === 200) {
-      setEnsayos(data);
-    } else if (response.statusText === "Unauthorized") {
-      // logoutCall();
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/new/");
+      const data = await response.json();
+      setCapturas(formatData(data.capturas));
     }
-  };
 
-  let sortTabla = () => {
-    if (!(ensayos_tabla.lenght === 0)) {
-      for (i = 0; i < ensayos_tabla.length; i++) {
-        for (j = 0; j < ensayos_tabla.length - 1; j++) {
-          let h1 = ensayos_tabla[j].hora.split(":");
-          let h2 = ensayos_tabla[j + 1].hora.split(":");
-          if (
-            Number(h1[0]) > Number(h2[0]) ||
-            (Number(h1[0]) == Number(h2[0]) && Number(h1[1]) > Number(h2[1]))
-          ) {
-            ensayos_tabla = swap(j, j + 1, ensayos_tabla.lenght, ensayos_tabla);
-          }
-        }
-      }
-    }
-  };
+    fetchData();
+    // console.log(capturas);
+  }, []);
 
   let createEnsayo = async () => {
-    fetch(`/send/`, {
+    const condiciones = {
+      A: [
+        [1, "multipocillo"],
+        [1, "50mm"],
+      ],
+      B: [
+        [2, "50mm"],
+        [2, "multipocillo"],
+      ],
+    };
+
+    console.log("crear.......");
+    console.log({
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${localStorage.getItem("authTokens")}`,
+      },
+      body: JSON.stringify({
+        nombreExperimento: nombreRef.current.value,
+        fechaInicio: inicioRef.current.value + " " + horaRef.current.value,
+        ventanaEntreCapturas:
+          parseInt(hfreqRef.current.value) * 60 +
+          parseInt(minfreqRef.current.value), //min
+        numeroDeCapturas: numRef.current.value,
+        aplicacion: aplicacionRef.current.value,
+        nombreProyecto: proyectoRef.current.value,
+        nCondiciones: 4, //cambiar!!
+        Condiciones: condiciones,
+      }),
+    });
+
+    fetch(`/new/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        nombre: nombreRef.current.value,
-        inicio: inicioRef.current.value,
-        horas: horas.join(" "),
+        idUsuarios: user.user_id,
+        nombreExperimento: nombreRef.current.value,
+        fechaInicio: inicioRef.current.value + " " + horaRef.current.value,
+        ventanaEntreCapturas:
+          parseInt(hfreqRef.current.value) * 60 +
+          parseInt(minfreqRef.current.value), //min
+        numeroDeCapturas: numRef.current.value,
+        aplicacion: aplicacionRef.current.value,
+        nombreProyecto: proyectoRef.current.value,
+        nCondiciones: 4, //cambiar!!
+        Condiciones: condiciones,
       }),
-    });
-    navigate("/");
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
+    // navigate("/");                                       volver a activar!!!
   };
 
   let createCondicion = () => {
@@ -141,48 +170,6 @@ const NuevoEnsayo = () => {
     let condCopy = [...condiciones];
     condCopy.splice(index, 1);
     setCondiciones(condCopy);
-  };
-
-  let addHora = () => {
-    let ok = true;
-    for (i = 0; i < ensayos.length; i++) {
-      if (ensayos[i].horas.includes(horaRef.current.value)) {
-        ok = false;
-      }
-    }
-
-    if (horas.includes(horaRef.current.value)) {
-      ok = false;
-    }
-
-    if (ok === true) {
-      setHoras([...horas, horaRef.current.value]);
-      ensayos_tabla.push({
-        hora: horaRef.current.value,
-        nombre: "Nuevo Ensayo",
-      });
-      sortTabla();
-    }
-  };
-
-  let deleteHora = (index) => {
-    const h = [...horas];
-    h.splice(index, 1);
-    setHoras(h);
-  };
-
-  let freqUpdate = (value) => {
-    setFreqVisibility("visible");
-    if (value.slice(0, 1) == "0") {
-      setFreqH(value.slice(1, 2));
-    } else {
-      setFreqH(value.slice(0, 2));
-    }
-    if (value.slice(3, 4) == "0") {
-      setFreqM(value.slice(4, 5));
-    } else {
-      setFreqM(value.slice(3, 5));
-    }
   };
 
   let createEvents = () => {
@@ -207,6 +194,7 @@ const NuevoEnsayo = () => {
               inicioRef.current.value + "T" + horaRef.current.value + ":00", //"2023-02-02T09:30:00+01:00",
           },
         },
+        ...capturas,
       ]);
     }
   };
@@ -224,10 +212,10 @@ const NuevoEnsayo = () => {
               className="input-field"
               ref={nombreRef}
               placeholder=""
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
           </div>
 
@@ -235,22 +223,28 @@ const NuevoEnsayo = () => {
             <span>Nombre del proyecto </span>
             <input
               className="input-field"
+              ref={proyectoRef}
               placeholder=""
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
           </div>
 
           <div className="input-div">
             <span>Aplicación</span>
-            <select name="select" className="input-field">
-              <option disabled selected value>
+            <select
+              name="select"
+              ref={aplicacionRef}
+              className="input-field"
+              defaultValue="DEFAULT"
+            >
+              <option value="DEFAULT" disabled>
                 {" "}
               </option>
-              <option value="value1">Lifespan</option>
-              <option value="value2">Healthspan</option>
+              <option value="lifespan">Lifespan</option>
+              <option value="healthspan">Healthspan</option>
             </select>
           </div>
 
@@ -272,7 +266,7 @@ const NuevoEnsayo = () => {
           <span>Condiciones del Ensayo</span>
         </div>
         <div className="border-div"></div>
-        <div className="container-content" style={{ "min-height": "30px" }}>
+        <div className="container-content" style={{ minHeight: "30px" }}>
           {condiciones.map((condicion, index) => (
             <div key={condicion}>
               <div className="condicion-div">
@@ -281,10 +275,10 @@ const NuevoEnsayo = () => {
                   <input
                     className="input-field"
                     placeholder=""
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="false"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                   />
                   <button
                     className="button-eliminar-fila"
@@ -303,10 +297,10 @@ const NuevoEnsayo = () => {
                     type="number"
                     min="1"
                     placeholder=""
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="false"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                     style={{ width: "104px" }}
                   />
                 </div>
@@ -327,16 +321,7 @@ const NuevoEnsayo = () => {
         <div className="container-content">
           <div className="input-div">
             <span>Hora de Inicio </span>
-            <input
-              className="input-field"
-              type="time"
-              ref={horaRef}
-              onChange={(e) => setInitVisibility("visible")}
-            />
-            {/* <span id="init-span" style={{ visibility: initVisibility }}>
-              Se comenzará a una hora tan cercana como sea posible sin causar
-              solapamiento con otros ensayos
-            </span> */}
+            <input className="input-field" type="time" ref={horaRef} />
           </div>
           <div className="input-div">
             <span>Nº de Capturas</span>
@@ -381,7 +366,7 @@ const NuevoEnsayo = () => {
         </button>
       </div>
 
-      <div className="container-div" style={{ "min-height": "100px" }}>
+      <div className="container-div" style={{ minHeight: "100px" }}>
         <div className="container-header">
           <span>Calendario Propuesto</span>
         </div>

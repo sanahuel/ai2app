@@ -1,5 +1,6 @@
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Panel.css";
 import "./lifespan1.css";
 import del from "../icons/clear.svg";
@@ -13,6 +14,32 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 
 const Lifespan1 = () => {
+  let navigate = useNavigate();
+
+  const [ensayos, setEnsayos] = useState([]);
+  const [put, setPut] = useState([]);
+
+  useEffect(() => {
+    let formatData = (data) => {
+      return data.map((str) => {
+        return {
+          title: " ",
+          start: str,
+          allDay: false,
+          color: "#ddd",
+        };
+      });
+    };
+    async function fetchData() {
+      const response = await fetch("/control/18");
+      const data = await response.json();
+      console.log(data);
+      //setEnsayos(formatData(data.capturas));
+    }
+    fetchData();
+    // console.log(capturas);
+  }, []);
+
   const condiciones = ["A", "B", "C"];
   const placas = [
     ["Placa 1", "Placa 2"],
@@ -23,6 +50,7 @@ const Lifespan1 = () => {
     ["Placa 11", "Placa 12"],
     ["Placa 13", "Placa 14"],
   ];
+
   const events = [
     {
       title: "Lifespan #1",
@@ -72,22 +100,68 @@ const Lifespan1 = () => {
     index: "",
   });
 
-  const handleDelete = (index, message) => {
+  // const [events, setEvents] = useState([])
+
+  const handleDelete = (index, message, table) => {
+    setPut([table, index]);
     setDialog({
       message: message,
       isLoading: true,
       index: index,
     });
-    console.log(dialog);
   };
 
   const areUSureDelete = (choose) => {
-    if (choose) {
-      setDialog("", false, "");
-      console.log("...");
+    if (put[0] == "Ensayo") {
+      if (choose) {
+        setDialog("", false, "");
+        deleteEnsayo();
+      } else {
+        setDialog("", false, "");
+      }
     } else {
-      setDialog("", false, "");
+      if (choose) {
+        setDialog("", false, "");
+        putEnsayo();
+      } else {
+        setDialog("", false, "");
+      }
     }
+  };
+
+  const deleteEnsayo = async () => {
+    fetch("/control/1", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: " ",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status != "error") {
+          navigate("/control");
+        } else {
+          alert("Error al eliminar ensayo");
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const putEnsayo = async () => {
+    fetch("/control/18", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        table: put[0],
+        id: put[1],
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -104,7 +178,7 @@ const Lifespan1 = () => {
             type="text"
             value=" Lifespan #1"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -113,7 +187,7 @@ const Lifespan1 = () => {
             type="text"
             value=" xxxxx"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -122,7 +196,7 @@ const Lifespan1 = () => {
             type="text"
             value=" Lifespan"
             className="input-field"
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div">
@@ -132,7 +206,7 @@ const Lifespan1 = () => {
             value=" 25"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
         <div className="control-row-div" style={{ paddingBottom: "10px" }}>
@@ -142,7 +216,7 @@ const Lifespan1 = () => {
             value=" 30"
             className="input-field"
             style={{ width: "104px" }}
-            readonly
+            readOnly
           ></input>
         </div>
       </div>
@@ -162,7 +236,11 @@ const Lifespan1 = () => {
             </span>
             <button
               onClick={() =>
-                handleDelete(index, "Eliminar una condición no es reversible")
+                handleDelete(
+                  index,
+                  "Eliminar una condición no es reversible",
+                  "Condiciones"
+                )
               }
             >
               <img src={del} alt="" />
@@ -184,7 +262,11 @@ const Lifespan1 = () => {
               <span>{placa[0]}</span>
               <button
                 onClick={() =>
-                  handleDelete(index, "Eliminar una placa no es reversible")
+                  handleDelete(
+                    index,
+                    "Eliminar una placa no es reversible",
+                    "Placas"
+                  )
                 }
               >
                 <img src={del} alt="" />
@@ -194,7 +276,11 @@ const Lifespan1 = () => {
               <span>{placa[1]}</span>
               <button
                 onClick={() =>
-                  handleDelete(index, "Eliminar una placa no es reversible")
+                  handleDelete(
+                    index,
+                    "Eliminar una placa no es reversible",
+                    "Placas"
+                  )
                 }
               >
                 <img src={del} alt="" />
@@ -222,7 +308,7 @@ const Lifespan1 = () => {
             initialView="timeGridWeek"
             eventMinHeight="5"
             height="auto"
-            minHeight="1900px !important"
+            //minHeight="1900px !important"
             editable={false}
             selectable={false}
             selectMirror={false}
@@ -231,16 +317,17 @@ const Lifespan1 = () => {
             firstDay={1}
             locale={esLocale}
             events={events}
-            eventClick={() => {
-              setDialog({
-                message: "Eliminar una captura no es reversible",
-                isLoading: true,
-                index: 0,
-              });
+            eventClick={(info) => {
+              handleDelete(
+                info.event.start.toISOString(),
+                "Eliminar una tarea no es reversible",
+                "Tareas"
+              );
             }}
           />
         </div>
       </div>
+
       <button
         className="delete-button"
         onClick={() =>
@@ -249,6 +336,7 @@ const Lifespan1 = () => {
       >
         Delete
       </button>
+
       {/* DIALOG */}
 
       {dialog.isLoading && (
