@@ -5,7 +5,7 @@ import NuevoEnsayo from "./pages/NuevoEnsayo";
 import Login from "./pages/Login";
 import Sidebar from "./components/sidebar";
 import Panel from "./pages/Panel";
-import Lifespan from "./pages/Lifespan1";
+import Lifespan from "./pages/lifespan1";
 import LifespanR from "./pages/lifespanr";
 import Visualizar from "./pages/Visualizar";
 import Nav from "./components/navbar";
