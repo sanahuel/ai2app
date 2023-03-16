@@ -23,11 +23,15 @@ function App() {
           {/* <Route path="/login" element={<Login />} /> */}
           {/* <Route element={<PrivateRoutes />}> */}
           <Route path="/" element={<Home />} />
-          <Route path="/control" element={<Panel />} />
-          <Route path="/control/lifespan-1" element={<Lifespan />} />
-          <Route path="/visualizar/lifespan-r" element={<LifespanR />} />
-          <Route path="/nuevo" element={<NuevoEnsayo />} />
-          <Route path="/visualizar" element={<Visualizar />} />
+          <Route path="control">
+            <Route index element={<Panel />} />
+            <Route path="lifespan-1" element={<Lifespan />} />
+          </Route>
+          <Route path="nuevo" element={<NuevoEnsayo />} />
+          <Route path="visualizar">
+            <Route index element={<Visualizar />} />
+            <Route path="lifespan-r" element={<LifespanR />} />
+          </Route>
           {/* </Route> */}
         </Routes>
       </div>
