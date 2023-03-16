@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/ai2app/static/css/main.b11e211c.css",
-    "main.js": "/ai2app/static/js/main.2b0f971a.js",
+    "main.js": "/ai2app/static/js/main.1809b9b7.js",
     "static/media/settings.svg": "/ai2app/static/media/settings.f00ed6226d32e4231168a0f9c158cb4e.svg",
     "index.html": "/ai2app/index.html",
     "static/media/display.svg": "/ai2app/static/media/display.f9dfe0d47bbb2ece3e06207de6a60338.svg",
@@ -12,10 +12,10 @@
     "static/media/clear.svg": "/ai2app/static/media/clear.244b66874c46718f7e0607d3acebaccf.svg",
     "static/media/chart.svg": "/ai2app/static/media/chart.024f91f08bf648735da450acfb8a7160.svg",
     "main.b11e211c.css.map": "/ai2app/static/css/main.b11e211c.css.map",
-    "main.2b0f971a.js.map": "/ai2app/static/js/main.2b0f971a.js.map"
+    "main.1809b9b7.js.map": "/ai2app/static/js/main.1809b9b7.js.map"
   },
   "entrypoints": [
     "static/css/main.b11e211c.css",
-    "static/js/main.2b0f971a.js"
+    "static/js/main.1809b9b7.js"
   ]
 }
