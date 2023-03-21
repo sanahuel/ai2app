@@ -198,6 +198,85 @@ const NuevoEnsayo = () => {
       ]);
     }
   };
+
+  let createDatetimeArray = (date) => {
+    const datetimeArray = [];
+    for (let i = 0; i < parseInt(numRef.current.value); i++) {
+      datetimeArray.push(new Date(date.getTime()));
+      date.setTime(
+        date.getTime() +
+          (parseInt(hfreqRef.current.value) * 60 +
+            parseInt(minfreqRef.current.value)) *
+            60000
+      );
+    }
+    return datetimeArray;
+  };
+
+  let checkEvents = () => {
+    // fecha u hora en blanco = "auto"
+    // if (inicioRef.current.value == "") {
+    //   let fecha = Date.todaysDate();
+    // } else {
+    //   let fecha = inicioRef.current.value;
+    // }
+    // if (hora == "") {
+    //   hora = Date.todaysTime();
+    // }
+    let hora = horaRef.current.value;
+    let fecha = inicioRef.current.value;
+    let inicio = new Date(fecha + " " + hora);
+
+    // capturas de otros ensayos
+    let oldEvents = [
+      new Date("2023-03-13 12:30:00"),
+      new Date("2023-03-13 13:30:00"),
+      new Date("2023-03-13 14:30:00"),
+    ];
+
+    // por ahora duración = 30 min
+    let duracion = 30;
+    let conf = false;
+
+    // seguir iterando mientas no se encuentre punto de inicio sin conflictos
+    do {
+      conf = false;
+      let newEvents = createDatetimeArray(inicio);
+      inicio = newEvents[0];
+      let conflicto = 0;
+
+      newEvents.forEach((newEvent) => {
+        oldEvents.forEach((oldEvent) => {
+          let newTime = newEvent.getTime();
+          let oldTime = oldEvent.getTime();
+
+          // si el principio de la nueva están entre el principio y el final de la antigua = conflicto
+          if (newTime >= oldTime && newTime <= oldTime + duracion * 60000) {
+            conf = true;
+            if (newTime - oldTime > conflicto) {
+              conflicto = newTime - oldTime;
+            }
+          } // si el final de la nueva están entre el principio y el final de la antigua = conflicto
+          else if (
+            newTime + duracion * 60000 >= oldTime &&
+            newTime + duracion * 60000 <= oldTime + duracion * 60000
+          ) {
+            conf = true;
+            if (newTime + duracion * 60000 - oldTime > conflicto) {
+              conflicto = newTime + duracion * 60000 - oldTime;
+            }
+          }
+        });
+      });
+
+      if (conf) {
+        inicio = new Date(inicio.getTime() + conflicto);
+      }
+    } while (conf == true);
+
+    console.log("inicio final:");
+    console.log(inicio);
+  };
   return (
     <div className="nuevo-ensayo">
       <div className="container-div">
@@ -359,7 +438,7 @@ const NuevoEnsayo = () => {
         </div>
         <button
           className="nueva-button"
-          onClick={createEvents}
+          onClick={checkEvents}
           style={{ left: "10px", marginBottom: "3px" }}
         >
           <img src={calendar} alt="" style={{ filter: "invert(50%)" }} />
