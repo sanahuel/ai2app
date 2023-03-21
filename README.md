@@ -38,7 +38,13 @@ Cada tarea pasa por los siguientes estados.
     <img src="./docs/Estados.drawio.svg" alt= “”>
 </p>
 
-Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevada por los propios sistemas.
+Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevada por los propios sistemas mientras el ensayo transcurra con normalidad.
+
+También existe una gestión de los errores durante el transcurso de los ensayos. Esto permite cancelar durante el ensayo una de sus placas, una condición completa, una de las capturas de imagen o el propio ensayo.
+
+<p align="center">
+    <img src="./docs/GestionEstados.drawio.svg" alt= “”>
+</p>
 
 ## Acciones del Usuario
 
