@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import "./Panel.css";
 import "./lifespan1.css";
@@ -23,48 +23,26 @@ const Lifespan1 = () => {
     ["Placa 11", "Placa 12"],
     ["Placa 13", "Placa 14"],
   ];
-  const events = [
-    {
-      title: "Lifespan #1",
-      start: "2023-03-13T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-14T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-15T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-16T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-17T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-18T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-19T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-20T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-  ];
+
+  let [events, setEvents] = useState([]);
+  let [dragEvent, setDragEvent] = useState({});
+  const [put, setPut] = useState([]);
+  let [ids, setIds] = useState(0);
+
+  useEffect(() => {
+    const temporalEvents = [];
+    let temporalIds = ids;
+    for (let i = 0; i < 14; i++) {
+      temporalEvents.push({
+        title: "Lifespan #1",
+        start: new Date(new Date().getTime() + i * (24 * 60) * 60000),
+        id: temporalIds,
+      });
+      temporalIds++;
+    }
+    setIds(temporalIds);
+    setEvents([...temporalEvents]);
+  }, []);
 
   const [dialog, setDialog] = useState({
     message: "",
@@ -78,16 +56,43 @@ const Lifespan1 = () => {
       isLoading: true,
       index: index,
     });
-    console.log(dialog);
   };
 
   const areUSureDelete = (choose) => {
-    if (choose) {
-      setDialog("", false, "");
-      console.log("...");
+    if (put[0] == "Ensayo") {
+      if (choose) {
+        setDialog("", false, "");
+        // deleteEnsayo();
+      } else {
+        setDialog("", false, "");
+      }
+    } else if (put[0] == "Drag") {
+      if (choose) {
+        setDialog("", false, "");
+        dragCalendarEvent();
+      } else {
+        setDialog("", false, "");
+        cancelDragCalendarEvent();
+      }
     } else {
-      setDialog("", false, "");
+      if (choose) {
+        setDialog("", false, "");
+        // putEnsayo();
+      } else {
+        setDialog("", false, "");
+      }
     }
+  };
+
+  let dragCalendarEvent = () => {
+    let temporalEvents = events.filter((e) => e.id != dragEvent.id);
+    setEvents([...temporalEvents, dragEvent]);
+  };
+
+  let cancelDragCalendarEvent = () => {
+    let old = events.filter((e) => e.id == dragEvent.id);
+    setEvents(events.filter((e) => e.id != dragEvent.id));
+    setEvents([...events, ...old]);
   };
 
   return (
@@ -139,7 +144,7 @@ const Lifespan1 = () => {
           <span>Capturas Programadas</span>
           <input
             type="text"
-            value=" 30"
+            value=" 21"
             className="input-field"
             style={{ width: "104px" }}
             readonly
@@ -223,7 +228,9 @@ const Lifespan1 = () => {
             eventMinHeight="5"
             height="auto"
             minHeight="1900px !important"
-            editable={false}
+            editable={true}
+            eventOverlap={false}
+            eventDurationEditable={false}
             selectable={false}
             selectMirror={false}
             dayMaxEvents={true}
@@ -237,6 +244,25 @@ const Lifespan1 = () => {
                 isLoading: true,
                 index: 0,
               });
+            }}
+            eventDrop={(eventDropInfo) => {
+              if (eventDropInfo.event.start.getTime() >= new Date().getTime()) {
+                setDragEvent({
+                  title: eventDropInfo.event.title,
+                  start: eventDropInfo.event.start,
+                  id: eventDropInfo.event.id,
+                });
+                setPut(["Drag"]);
+                setDialog({
+                  message: "Vas a cambiar la hora de captura",
+                  isLoading: true,
+                  index: 0,
+                });
+              } else {
+                let old = events.filter((e) => e.id == eventDropInfo.event.id);
+                setEvents(events.filter((e) => e.id != eventDropInfo.event.id));
+                setEvents([...events, ...old]);
+              }
             }}
           />
         </div>

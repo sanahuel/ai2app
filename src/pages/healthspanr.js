@@ -24,7 +24,7 @@ ChartJS.register(
   Legend
 );
 
-const LifespanR = () => {
+const HealthspanR = () => {
   const vivosA = [
     120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
     0, 0, 0, 0,
@@ -153,29 +153,30 @@ const LifespanR = () => {
   let data = {
     labels: dias,
     datasets: [
+      // más tonos #187741 #155239 #A8EEC1 #E3FCEC
       {
         label: "Cond. A",
-        data: fraccA,
-        borderColor: "#0608B4",
-        backgroundColor: "#0608B4",
+        data: fraccB,
+        borderColor: "#249D57",
+        backgroundColor: "#249D57",
       },
       {
         label: "Cond. B",
-        data: fraccB,
-        borderColor: "#0077b6",
-        backgroundColor: "#0077b6",
+        data: fraccA,
+        borderColor: "#38C172",
+        backgroundColor: "#38C172",
       },
       {
         label: "Cond. C",
         data: fraccC,
-        borderColor: "#00b4d8",
-        backgroundColor: "#00b4d8",
+        borderColor: "#74D99F",
+        backgroundColor: "#74D99F",
       },
       {
         label: "Cond. D",
         data: fraccD,
-        borderColor: "#90e0ef",
-        backgroundColor: "#90e0ef",
+        borderColor: "#B9F6CA",
+        backgroundColor: "#B9F6CA",
       },
     ],
   };
@@ -196,7 +197,7 @@ const LifespanR = () => {
       y: {
         title: {
           display: true,
-          text: "Fracción Vivos %",
+          text: "Cantidad de Movimiento",
         },
       },
       x: {
@@ -223,7 +224,7 @@ const LifespanR = () => {
           <span>Ensayo</span>
           <input
             type="text"
-            value=" Lifespan #0"
+            value=" Healthspan #0"
             className="input-field"
             readonly
           ></input>
@@ -241,7 +242,7 @@ const LifespanR = () => {
           <span>Aplicación</span>
           <input
             type="text"
-            value=" Lifespan"
+            value=" Healthspan"
             className="input-field"
             readonly
           ></input>
@@ -392,4 +393,4 @@ const LifespanR = () => {
   );
 };
 
-export default LifespanR;
+export default HealthspanR;

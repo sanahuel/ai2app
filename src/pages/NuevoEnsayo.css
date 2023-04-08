@@ -22,6 +22,58 @@
   border-bottom: 1.5px solid #f1f1f1;
 }
 
+/* .buttons-header {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.buttons-header button {
+  pointer-events: auto;
+  cursor: pointer;
+  position: inherit;
+  align-content: center;
+  vertical-align: middle;
+  margin-right: 5px;
+  right: -3px;
+  bottom: 2px;
+  width: 23px;
+  height: 23px;
+  margin-top: 7px;
+  border-radius: 100%;
+  border-style: none;
+  border-width: 1px;
+  border-color: rgb(224, 224, 224);
+  background-color: rgb(255, 255, 255);
+}
+
+.buttons-header button:hover {
+  background-color: rgb(255, 255, 255);
+}
+
+#auto-span {
+  left: -120%;
+  top: 0px;
+}
+
+#manual-span {
+  left: -105%;
+  top: 0px;
+}
+
+#div1 {
+  pointer-events: none;
+}
+
+#auto-button:hover + #auto-span {
+  visibility: visible;
+  opacity: 0.97;
+}
+
+#manual-button:hover + #manual-span {
+  visibility: visible;
+  opacity: 0.97;
+} */
+
 .container-content {
   margin-top: 3px;
   margin-bottom: 3px;
@@ -29,17 +81,22 @@
 }
 
 .input-div {
-  content: flex;
-  margin-left: 10px;
+  margin-left: 0px;
   margin-right: 100px;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   max-height: 45.2px;
 }
 
+.input-div span {
+  display: inline-block;
+  width: 200px;
+}
+
 .input-field {
-  position: absolute;
-  left: 228px;
+  /* position: absolute;
+  left: 228px; */
+  display: inline-block;
   border-color: rgb(224, 224, 224);
   border-style: solid;
   border-radius: 3px;
@@ -124,10 +181,10 @@ button:hover {
   margin: 10px;
   margin-left: 25px;
   margin-bottom: 20px;
-  height: 47px;
-  width: 47px;
+  height: 45px;
+  width: 45px;
   border-style: none;
-  border-radius: 20px;
+  border-radius: 50%;
   background-color: rgb(49, 148, 247);
   color: rgb(0, 0, 0); /*cambiar */
 }
@@ -253,14 +310,15 @@ button:hover {
 #h-span {
   font-size: small;
   position: relative;
-  left: 68px;
+  left: 6px;
+  width: 22px;
   color: #555;
 }
 
 #min-span {
   font-size: small;
   position: relative;
-  left: 118px;
+  left: 6px;
   color: #555;
 }
 

@@ -7,6 +7,7 @@ import Sidebar from "./components/sidebar";
 import Panel from "./pages/Panel";
 import Lifespan from "./pages/lifespan1";
 import LifespanR from "./pages/lifespanr";
+import HealthspanR from "./pages/healthspanr";
 import Visualizar from "./pages/Visualizar";
 import Nav from "./components/navbar";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -31,6 +32,7 @@ function App() {
           <Route path="visualizar">
             <Route index element={<Visualizar />} />
             <Route path="lifespan-r" element={<LifespanR />} />
+            <Route path="healthspan-r" element={<HealthspanR />} />
           </Route>
           {/* </Route> */}
         </Routes>
