@@ -6,13 +6,19 @@ import panel from "../icons/display.svg";
 import visual from "../icons/chart.svg";
 import nuevo from "../icons/biotech.png";
 import logout from "../icons/logout.svg";
-// import ai2 from "../icons/Logo_ai2.png";
+import ai2 from "../icons/ai2.png";
 import "./sidebar.css";
 const Sidebar = () => {
   // let { logoutCall } = useContext(AuthContext);
 
   return (
     <div className="sidebar">
+      <NavLink to={"/"} style={{ textDecoration: "none" }}>
+        <div className="logo-div">
+          <img src={ai2} alt="" />
+        </div>
+      </NavLink>
+
       <ul className="sidebar-buttons">
         <NavLink
           to={"/visualizar"}
@@ -45,7 +51,7 @@ const Sidebar = () => {
           </li>
         </NavLink>
       </ul>
-      <div className="div-border"></div>
+      <div className="div-border" style={{ marginTop: "-40px" }}></div>
       {/* <div className="sidebar-out" onClick={logoutCall}> */}
       <div className="sidebar-out">
         <img src={logout} alt="" />
