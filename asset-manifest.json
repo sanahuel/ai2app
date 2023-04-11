@@ -1,9 +1,11 @@
 {
   "files": {
-    "main.css": "/ai2app/static/css/main.7aacb80f.css",
-    "main.js": "/ai2app/static/js/main.828d528f.js",
+    "main.css": "/ai2app/static/css/main.fd7147a8.css",
+    "main.js": "/ai2app/static/js/main.a9720db0.js",
+    "static/media/ai2.png": "/ai2app/static/media/ai2.ed2f43ce878bdbee075a.png",
     "static/media/settings.svg": "/ai2app/static/media/settings.f00ed6226d32e4231168a0f9c158cb4e.svg",
     "index.html": "/ai2app/index.html",
+    "static/media/stats.svg": "/ai2app/static/media/stats.09020a09c460f0b4a9a3dbf6b0b1093a.svg",
     "static/media/display.svg": "/ai2app/static/media/display.f9dfe0d47bbb2ece3e06207de6a60338.svg",
     "static/media/pen.svg": "/ai2app/static/media/pen.4fa02ba3eeb22ca444b3fa80117773ac.svg",
     "static/media/refresh.svg": "/ai2app/static/media/refresh.9a571eb846bb15da9ccbc4c12f2fb416.svg",
@@ -12,12 +14,11 @@
     "static/media/save_alt.svg": "/ai2app/static/media/save_alt.9509090b50b4201e32aa4ded1e940e67.svg",
     "static/media/clear.svg": "/ai2app/static/media/clear.244b66874c46718f7e0607d3acebaccf.svg",
     "static/media/add.svg": "/ai2app/static/media/add.376e9b6a44e5b3142f1239a3cc8504d0.svg",
-    "static/media/chart.svg": "/ai2app/static/media/chart.024f91f08bf648735da450acfb8a7160.svg",
-    "main.7aacb80f.css.map": "/ai2app/static/css/main.7aacb80f.css.map",
-    "main.828d528f.js.map": "/ai2app/static/js/main.828d528f.js.map"
+    "main.fd7147a8.css.map": "/ai2app/static/css/main.fd7147a8.css.map",
+    "main.a9720db0.js.map": "/ai2app/static/js/main.a9720db0.js.map"
   },
   "entrypoints": [
-    "static/css/main.7aacb80f.css",
-    "static/js/main.828d528f.js"
+    "static/css/main.fd7147a8.css",
+    "static/js/main.a9720db0.js"
   ]
 }
