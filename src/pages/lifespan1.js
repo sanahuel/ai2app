@@ -5,6 +5,7 @@ import "./Panel.css";
 import "./lifespan1.css";
 import del from "../icons/clear.svg";
 import Dialog from "../components/dialog";
+import file from "../icons/file.svg";
 
 import { formatDate } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
@@ -18,6 +19,25 @@ const Lifespan1 = () => {
 
   const [ensayos, setEnsayos] = useState([]);
   const [put, setPut] = useState([]);
+  let [events, setEvents] = useState([]);
+  let [dragEvent, setDragEvent] = useState({});
+  let [ids, setIds] = useState(0);
+
+  useEffect(() => {
+    // PARA CREAR EVENTOS - TEMPORAL - BORRAR
+    const temporalEvents = [];
+    let temporalIds = ids;
+    for (let i = 0; i < 14; i++) {
+      temporalEvents.push({
+        title: "Lifespan #1",
+        start: new Date(new Date().getTime() + i * (24 * 60) * 60000),
+        id: temporalIds,
+      });
+      temporalIds++;
+    }
+    setIds(temporalIds);
+    setEvents([...temporalEvents]);
+  }, []);
 
   useEffect(() => {
     let formatData = (data) => {
@@ -51,49 +71,6 @@ const Lifespan1 = () => {
     ["Placa 13", "Placa 14"],
   ];
 
-  const events = [
-    {
-      title: "Lifespan #1",
-      start: "2023-03-13T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-14T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-15T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-16T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-17T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-18T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-19T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-    {
-      title: "Lifespan #1",
-      start: "2023-03-20T09:30:00+01:00",
-      allDay: false, // will make the time show
-    },
-  ];
-
   const [dialog, setDialog] = useState({
     message: "",
     isLoading: false,
@@ -115,9 +92,17 @@ const Lifespan1 = () => {
     if (put[0] == "Ensayo") {
       if (choose) {
         setDialog("", false, "");
-        deleteEnsayo();
+        // deleteEnsayo();
       } else {
         setDialog("", false, "");
+      }
+    } else if (put[0] == "Drag") {
+      if (choose) {
+        setDialog("", false, "");
+        dragCalendarEvent();
+      } else {
+        setDialog("", false, "");
+        cancelDragCalendarEvent();
       }
     } else {
       if (choose) {
@@ -146,6 +131,17 @@ const Lifespan1 = () => {
         }
       })
       .catch((error) => console.log(error));
+  };
+
+  let dragCalendarEvent = () => {
+    let temporalEvents = events.filter((e) => e.id != dragEvent.id);
+    setEvents([...temporalEvents, dragEvent]);
+  };
+
+  let cancelDragCalendarEvent = () => {
+    let old = events.filter((e) => e.id == dragEvent.id);
+    setEvents(events.filter((e) => e.id != dragEvent.id));
+    setEvents([...events, ...old]);
   };
 
   const putEnsayo = async () => {
@@ -308,8 +304,10 @@ const Lifespan1 = () => {
             initialView="timeGridWeek"
             eventMinHeight="5"
             height="auto"
-            //minHeight="1900px !important"
-            editable={false}
+            minHeight="1900px !important"
+            editable={true}
+            eventOverlap={false}
+            eventDurationEditable={false}
             selectable={false}
             selectMirror={false}
             dayMaxEvents={true}
@@ -317,12 +315,31 @@ const Lifespan1 = () => {
             firstDay={1}
             locale={esLocale}
             events={events}
-            eventClick={(info) => {
-              handleDelete(
-                info.event.start.toISOString(),
-                "Eliminar una tarea no es reversible",
-                "Tareas"
-              );
+            eventClick={() => {
+              setDialog({
+                message: "Eliminar una captura no es reversible",
+                isLoading: true,
+                index: 0,
+              });
+            }}
+            eventDrop={(eventDropInfo) => {
+              if (eventDropInfo.event.start.getTime() >= new Date().getTime()) {
+                setDragEvent({
+                  title: eventDropInfo.event.title,
+                  start: eventDropInfo.event.start,
+                  id: eventDropInfo.event.id,
+                });
+                setPut(["Drag"]);
+                setDialog({
+                  message: "Vas a cambiar la hora de captura",
+                  isLoading: true,
+                  index: 0,
+                });
+              } else {
+                let old = events.filter((e) => e.id == eventDropInfo.event.id);
+                setEvents(events.filter((e) => e.id != eventDropInfo.event.id));
+                setEvents([...events, ...old]);
+              }
             }}
           />
         </div>

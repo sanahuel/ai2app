@@ -6,12 +6,11 @@
   width: 180px;
   height: 100%;
   border-right: 1px solid #f4f4f4;
-  z-index: 100;
 }
 
 .sidebar-buttons {
   position: relative;
-  margin-top: 160px;
+  margin-top: 47px;
   height: 250px;
   flex-direction: column;
 }
@@ -90,6 +89,8 @@ ul a.active span {
   left: -50px;
   padding-left: 92px;
   border-radius: 22.5px;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar-out a {
@@ -100,7 +101,7 @@ ul a.active span {
 .sidebar-out img {
   height: 25px;
   position: relative;
-  top: 7px;
+  top: 1px;
   right: 3px;
   color: rgb(191, 191, 191);
 }
@@ -109,7 +110,7 @@ ul a.active span {
 }
 
 .sidebar-out:hover {
-  background-color: rgb(229, 242, 255);
+  background-color: rgb(239, 247, 255);
   cursor: pointer;
 }
 
@@ -136,4 +137,22 @@ ul a.active span {
   margin-left: 20px;
   width: 130px;
   filter: invert(80%);
+}
+
+.logo-div {
+  position: relative;
+  width: 175px;
+  height: 54px;
+  background-color: rgb(49, 148, 247); /*rgb(22, 127, 231)*/
+  border-radius: 27px;
+  left: -25px;
+  margin-top: 30px;
+}
+
+.logo-div img {
+  height: 33px;
+  position: relative;
+  top: 9px;
+  left: 63px;
+  filter: invert(100%);
 }

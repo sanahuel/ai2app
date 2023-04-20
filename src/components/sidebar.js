@@ -3,27 +3,23 @@ import { Link, NavLink } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 import panel from "../icons/display.svg";
-import visual from "../icons/chart.svg";
+import visual from "../icons/stats.svg";
 import nuevo from "../icons/biotech.png";
 import logout from "../icons/logout.svg";
-// import ai2 from "../icons/Logo_ai2.png";
+import ai2 from "../icons/ai2.png";
 import "./sidebar.css";
 const Sidebar = () => {
   let { logoutCall } = useContext(AuthContext);
 
   return (
     <div className="sidebar">
+      <NavLink to={"/"} style={{ textDecoration: "none" }}>
+        <div className="logo-div">
+          <img src={ai2} alt="" />
+        </div>
+      </NavLink>
+
       <ul className="sidebar-buttons">
-        <NavLink
-          to={"/visualizar"}
-          style={{ textDecoration: "none" }}
-          className={"link"}
-        >
-          <li className="sidebar-button">
-            <img src={visual} alt="" />
-            <span>Resultados</span>
-          </li>
-        </NavLink>
         <NavLink
           to={"/nuevo"}
           style={{ textDecoration: "none" }}
@@ -44,8 +40,18 @@ const Sidebar = () => {
             <span>Panel de Control</span>
           </li>
         </NavLink>
+        <NavLink
+          to={"/visualizar"}
+          style={{ textDecoration: "none" }}
+          className={"link"}
+        >
+          <li className="sidebar-button">
+            <img src={visual} alt="" />
+            <span>Resultados</span>
+          </li>
+        </NavLink>
       </ul>
-      <div className="div-border"></div>
+      <div className="div-border" style={{ marginTop: "-40px" }}></div>
       <div className="sidebar-out" onClick={logoutCall}>
         <img src={logout} alt="" />
         <span>Log Out</span>

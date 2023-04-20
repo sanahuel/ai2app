@@ -8,6 +8,7 @@ import Panel from "./pages/Panel";
 import Lifespan from "./pages/lifespan1";
 import LifespanR from "./pages/lifespanr";
 import Visualizar from "./pages/Visualizar";
+import Results from "./pages/Results";
 import Nav from "./components/navbar";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
@@ -28,6 +29,7 @@ function App() {
               <Route path="/visualizar/lifespan-r" element={<LifespanR />} />
               <Route path="/nuevo" element={<NuevoEnsayo />} />
               <Route path="/visualizar" element={<Visualizar />} />
+              <Route path="/visualizar/:id" element={<Results />} />
             </Route>
           </Routes>
         </div>

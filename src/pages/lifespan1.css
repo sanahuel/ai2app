@@ -21,9 +21,14 @@
   font-weight: 400;
   pointer-events: none;
 }
+.control-row-div span {
+  display: inline-block;
+  width: 200px;
+}
 
 .control-row-div input {
   pointer-events: none;
+  display: inline-block;
 }
 
 .descripcion-condicion {

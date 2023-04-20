@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 
 import "./lifespanr.css";
-import exp from "../icons/description.svg";
+import file from "../icons/file.svg";
 import { borderBottom } from "@mui/system";
 
 ChartJS.register(
@@ -345,7 +345,7 @@ const LifespanR = () => {
         ))}
       </div> */}
 
-      <div ref={placasRef}>
+      <div ref={placasRef} style={{ maxWidth: "100%", overflowX: "hidden" }}>
         {Object.entries(condiciones).map(([key, placa]) => (
           <div className="container-div" style={{ paddingBottom: "10px" }}>
             <div
@@ -432,10 +432,17 @@ const LifespanR = () => {
       {/* EXPORT */}
       <div className="crear-div">
         <button className="crear-button">
-          <img src={exp} alt="" style={{ position: "relative", top: "1px" }} />
+          <img
+            src={file}
+            alt=""
+            style={{
+              position: "relative",
+              top: "1px",
+            }}
+          />{" "}
         </button>
         <span className="hidden-span" id="crear-span">
-          Exportar .xlsx
+          Descargar .xlsx
         </span>
       </div>
     </div>

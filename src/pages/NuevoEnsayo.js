@@ -11,7 +11,8 @@ import esLocale from "@fullcalendar/core/locales/es";
 import rrulePlugin from "@fullcalendar/rrule";
 
 import jwt_decode from "jwt-decode";
-
+import add from "../icons/add.svg";
+import pen from "../icons/pen.svg";
 import crear from "../icons/save_alt.svg";
 import del from "../icons/clear.svg";
 import calendar from "../icons/refresh.svg";
@@ -28,8 +29,11 @@ const NuevoEnsayo = () => {
   const minfreqRef = useRef(null);
   const proyectoRef = useRef(null);
   const aplicacionRef = useRef(null);
+  const hholgRef = useRef(null);
+  const minholgRef = useRef(null);
 
   let ensayos_tabla = [];
+  let dispositivos = ["1", "2", "3"];
   let i = 0;
   let j = 0;
   let num_cond = 1;
@@ -39,21 +43,7 @@ const NuevoEnsayo = () => {
       : null
   );
 
-  // let events = [
-  //   {
-  //     title: "",
-  //     rrule: {
-  //       // freq: "minutely",
-  //       // count: numRef.current.value,
-  //       // interval: hfreqRef.current.value * 60 + minfreqRef.current.value,
-  //       // dtstart: inicioRef + "T" + horaRef + ":00",
-  //       freq: "minutely",
-  //       count: 100,
-  //       interval: 24 * 60,
-  //       dtstart: "2023-02-02T09:30:00+01:00",
-  //     },
-  //   },
-  // ];
+  const [horaInic, setHoraInic] = useState([]);
 
   const [condiciones, setCondiciones] = useState([]);
 
@@ -63,25 +53,29 @@ const NuevoEnsayo = () => {
 
   const [events, setEvents] = useState([]);
 
-  const [capturas, setCapturas] = useState([]);
+  let [auto, setAuto] = useState(true);
+
+  let [capturas, setCapturas] = useState([]);
+
+  let [ids, setIds] = useState(0);
+
+  let [selectedOption, setSelectedOption] = useState("0");
 
   useEffect(() => {
-    ensayos.map((arr) => {
-      arr.horas.split(" ").forEach((h) => {
-        ensayos_tabla.push({ hora: h, nombre: arr.nombre });
-      });
-    });
-  }, [ensayos]);
-
-  // let getEnsayos = async () => {
-  //   let response = await fetch("/ensayos");
-  //   let data = await response.json();
-  //   if (response.status === 200) {
-  //     setEnsayos(data);
-  //   } else if (response.statusText === "Unauthorized") {
-  //     // logoutCall();
-  //   }
-  // };
+    setCapturas([
+      {
+        title: "",
+        color: "#ddd",
+        editable: false,
+        rrule: {
+          freq: "minutely",
+          count: 14,
+          interval: 24 * 60,
+          dtstart: new Date().toISOString(),
+        },
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     let formatData = (data) => {
@@ -101,7 +95,6 @@ const NuevoEnsayo = () => {
     }
 
     fetchData();
-    // console.log(capturas);
   }, []);
 
   let createEnsayo = async () => {
@@ -172,31 +165,25 @@ const NuevoEnsayo = () => {
     setCondiciones(condCopy);
   };
 
-  let createEvents = () => {
-    // comprobar != none para todos y después usar setEvents
-    if (
-      hfreqRef.current.value &&
-      numRef.current.value &&
-      minfreqRef.current.value &&
-      horaRef.current.value &&
-      inicioRef.current.value
-    ) {
-      setEvents([
-        {
-          title: "",
-          rrule: {
-            freq: "minutely",
-            count: parseInt(numRef.current.value),
-            interval:
-              parseInt(hfreqRef.current.value) * 60 +
-              parseInt(minfreqRef.current.value),
-            dtstart:
-              inicioRef.current.value + "T" + horaRef.current.value + ":00", //"2023-02-02T09:30:00+01:00",
-          },
-        },
-        ...capturas,
-      ]);
+  let createEvents = (inicio) => {
+    const temporalEvents = [];
+    let temporalIds = ids;
+    for (let i = 0; i < parseInt(numRef.current.value); i++) {
+      temporalEvents.push({
+        title: "",
+        start: new Date(
+          inicio.getTime() +
+            i *
+              (parseInt(hfreqRef.current.value) * 60 +
+                parseInt(minfreqRef.current.value)) *
+              60000
+        ),
+        id: temporalIds,
+      });
+      temporalIds++;
     }
+    setIds(temporalIds);
+    setEvents([...temporalEvents]);
   };
 
   let createDatetimeArray = (date) => {
@@ -213,70 +200,189 @@ const NuevoEnsayo = () => {
     return datetimeArray;
   };
 
-  let checkEvents = () => {
-    // fecha u hora en blanco = "auto"
-    // if (inicioRef.current.value == "") {
-    //   let fecha = Date.todaysDate();
-    // } else {
-    //   let fecha = inicioRef.current.value;
-    // }
-    // if (hora == "") {
-    //   hora = Date.todaysTime();
-    // }
-    let hora = horaRef.current.value;
-    let fecha = inicioRef.current.value;
-    let inicio = new Date(fecha + " " + hora);
-
+  let checkCalendarEvents = (inicio) => {
     // capturas de otros ensayos
-    let oldEvents = [
-      new Date("2023-03-13 12:30:00"),
-      new Date("2023-03-13 13:30:00"),
-      new Date("2023-03-13 14:30:00"),
-    ];
+    let temporal = eventsFromRrule("events");
+    let oldEvents = temporal.concat(eventsFromRrule("capturas"));
 
     // por ahora duración = 30 min
-    let duracion = 30;
+    let duracion = 60;
     let conf = false;
 
-    // seguir iterando mientas no se encuentre punto de inicio sin conflictos
+    let n = 1; //nuevos
+    let m = oldEvents.length; //antiguos
+
     do {
+      let i = 0;
+      let j = 0;
       conf = false;
-      let newEvents = createDatetimeArray(inicio);
-      inicio = newEvents[0];
       let conflicto = 0;
 
-      newEvents.forEach((newEvent) => {
-        oldEvents.forEach((oldEvent) => {
-          let newTime = newEvent.getTime();
-          let oldTime = oldEvent.getTime();
-
-          // si el principio de la nueva están entre el principio y el final de la antigua = conflicto
-          if (newTime >= oldTime && newTime <= oldTime + duracion * 60000) {
-            conf = true;
-            if (newTime - oldTime > conflicto) {
-              conflicto = newTime - oldTime;
-            }
-          } // si el final de la nueva están entre el principio y el final de la antigua = conflicto
-          else if (
-            newTime + duracion * 60000 >= oldTime &&
-            newTime + duracion * 60000 <= oldTime + duracion * 60000
-          ) {
-            conf = true;
-            if (newTime + duracion * 60000 - oldTime > conflicto) {
-              conflicto = newTime + duracion * 60000 - oldTime;
-            }
+      //bucle
+      while (j < m) {
+        let comienzo = Math.max(inicio.getTime(), oldEvents[j].getTime());
+        let fin = Math.min(
+          inicio.getTime() + duracion * 60000,
+          oldEvents[j].getTime() + duracion * 60000
+        );
+        if (comienzo < fin) {
+          conf = true;
+          if (fin - comienzo > conflicto) {
+            conflicto = fin - comienzo;
           }
-        });
-      });
+          conflicto = Math.max(fin - comienzo, conflicto);
+        }
+        j++;
+      }
 
       if (conf) {
         inicio = new Date(inicio.getTime() + conflicto);
       }
     } while (conf == true);
 
-    console.log("inicio final:");
-    console.log(inicio);
+    return inicio;
   };
+
+  let checkEvents = (inicio, dispositivo) => {
+    //añadir oldEvents->dispositivo!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // capturas de otros ensayos
+    let oldEvents = eventsFromRrule("capturas");
+
+    // por ahora duración = 30 min
+    let duracion = 60;
+    let conf = false;
+
+    let n = parseInt(numRef.current.value); //nuevos
+    let m = oldEvents.length; //antiguos
+
+    do {
+      let i = 0;
+      let j = 0;
+      conf = false;
+      let newEvents = createDatetimeArray(inicio);
+      inicio = newEvents[0];
+      let conflicto = 0;
+
+      //bucle
+      while (i < n && j < m) {
+        let comienzo = Math.max(newEvents[i].getTime(), oldEvents[j].getTime());
+        let fin = Math.min(
+          newEvents[i].getTime() + duracion * 60000,
+          oldEvents[j].getTime() + duracion * 60000
+        );
+        if (comienzo < fin) {
+          conf = true;
+          if (fin - comienzo > conflicto) {
+            conflicto = fin - comienzo;
+          }
+          conflicto = Math.max(fin - comienzo, conflicto);
+        }
+        if (newEvents[i] < oldEvents[j]) {
+          i++;
+        } else {
+          j++;
+        }
+      }
+
+      if (conf) {
+        inicio = new Date(inicio.getTime() + conflicto);
+      }
+    } while (conf == true);
+
+    return inicio;
+  };
+
+  let updateCalendar = () => {
+    if (
+      // solo si todos los campos tienen valores
+      hfreqRef.current.value &&
+      numRef.current.value &&
+      minfreqRef.current.value &&
+      horaRef.current.value &&
+      inicioRef.current.value
+    ) {
+      if (selectedOption == "0") {
+        // comparar para cada dispositivo
+        let inicios = {};
+        for (let i = 0; i < dispositivos.length; i++) {
+          let inicio = checkCalendarEvents(
+            new Date(inicioRef.current.value + " " + horaRef.current.value)
+          );
+          inicios[dispositivos[i]] = inicio;
+        }
+        const earliestDateTime = Object.entries(inicios).reduce(
+          (a, [k, v]) => (v < a[1] ? [k, v] : a),
+          [null, new Date()]
+        );
+        setSelectedOption(earliestDateTime[0]);
+        createEvents(earliestDateTime[1]);
+      } else {
+        // calcular para el dispositivo seleccionado
+        let inicio = checkEvents(
+          new Date(inicioRef.current.value + " " + horaRef.current.value)
+        );
+        createEvents(inicio);
+      }
+    }
+  };
+
+  let eventsFromRrule = (array) => {
+    let old = [];
+    if (array == "capturas") {
+      for (let i = 0; i < capturas.length; i++) {
+        if ("rrule" in capturas[i]) {
+          for (let j = 0; j < capturas[i].rrule.count; j++) {
+            old.push(
+              new Date(
+                new Date(capturas[i].rrule.dtstart).getTime() +
+                  j * capturas[i].rrule.interval * 60000
+              )
+            );
+          }
+        } else {
+          old.push(capturas[i].start);
+        }
+      }
+    } else {
+      for (i = 0; i < events.length; i++) {
+        old.push(events[i].start);
+      }
+    }
+    return old;
+  };
+
+  let createCalendarEvent = (ini) => {
+    const j = new Date(ini.getTime());
+    let i = checkCalendarEvents(ini);
+    if (i.getTime() == j.getTime()) {
+      setEvents([
+        ...events,
+        {
+          title: "",
+          start: j,
+          id: ids,
+        },
+      ]);
+      setIds(ids + 1);
+    }
+  };
+
+  let deleteCalendarEvent = (id) => {
+    setEvents(events.filter((e) => e.id != id));
+  };
+
+  let dragCalendarEvent = (event) => {
+    let temporalEvents = events.filter((e) => e.id != event.id);
+    setEvents([
+      ...temporalEvents,
+      {
+        title: "",
+        start: event.start,
+        id: event.id,
+      },
+    ]);
+  };
+
   return (
     <div className="nuevo-ensayo">
       <div className="container-div">
@@ -328,14 +434,18 @@ const NuevoEnsayo = () => {
           </div>
 
           <div className="input-div">
-            <span>Fecha de Inicio </span>
-            <input
+            <span>Dispositivo</span>
+            <select
+              name="select"
               className="input-field"
-              ref={inicioRef}
-              placeholder="Fecha de Inicio"
-              type={"date"}
-              // onChange={(e) => setHoraInic(e.target.value)}
-            />
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
+            >
+              <option value="0">Cualquiera</option>
+              <option value="1">Dispositivo 1</option>
+              <option value="2">Dispositivo 2</option>
+              <option value="3">Dispositivo 3</option>
+            </select>
           </div>
         </div>
       </div>
@@ -399,6 +509,16 @@ const NuevoEnsayo = () => {
         <div className="border-div"></div>
         <div className="container-content">
           <div className="input-div">
+            <span>Fecha de Inicio </span>
+            <input
+              className="input-field"
+              ref={inicioRef}
+              placeholder="Fecha de Inicio"
+              type="date"
+              onChange={(e) => setHoraInic(e.target.value)}
+            />
+          </div>
+          <div className="input-div">
             <span>Hora de Inicio </span>
             <input className="input-field" type="time" ref={horaRef} />
           </div>
@@ -412,6 +532,28 @@ const NuevoEnsayo = () => {
               ref={numRef}
               style={{ width: "138.4px" }}
             />
+          </div>
+          <div className="input-div">
+            <span>Holgura Máxima</span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              defaultValue="0"
+              ref={hholgRef}
+              style={{ width: "42px" }}
+            />
+            <span id="h-span">h.</span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              max="59"
+              defaultValue="0"
+              ref={minholgRef}
+              style={{ left: "289px", width: "42px" }}
+            />
+            <span id="min-span">min.</span>
           </div>
           <div className="input-div">
             <span>Frecuencia entre Capturas</span>
@@ -468,20 +610,39 @@ const NuevoEnsayo = () => {
             eventMinHeight="5"
             height="auto"
             // minHeight="1900px !important"
-            editable={false}
+            editable={true}
             selectable={false}
             selectMirror={false}
             dayMaxEvents={true}
             allDaySlot={false}
             firstDay={1}
             locale={esLocale}
-            events={events}
+            events={events.concat(capturas)}
+            eventClick={(eventClickInfo) => {
+              deleteCalendarEvent(eventClickInfo.event.id);
+            }}
+            dateClick={(dateClickInfo) => {
+              if (dateClickInfo.date.getTime() >= new Date().getTime()) {
+                createCalendarEvent(dateClickInfo.date);
+              }
+            }}
+            eventDrop={(eventDropInfo) => {
+              if (eventDropInfo.event.start.getTime() >= new Date().getTime()) {
+                dragCalendarEvent(eventDropInfo.event);
+              } else {
+                let old = events.filter((e) => e.id == eventDropInfo.event.id);
+                setEvents(events.filter((e) => e.id != eventDropInfo.event.id));
+                setEvents([...events, ...old]);
+              }
+            }}
+            eventOverlap={false}
+            eventDurationEditable={false}
           />
         </div>
       </div>
       <div className="crear-div">
         <button className="crear-button" onClick={createEnsayo}>
-          <img src={crear} alt="" />
+          <img src={add} alt="" style={{ position: "relative", top: "1px" }} />
         </button>
         <span className="hidden-span" id="crear-span">
           Crear Ensayo

@@ -29,17 +29,22 @@
 }
 
 .input-div {
-  content: flex;
-  margin-left: 10px;
+  margin-left: 0px;
   margin-right: 100px;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   max-height: 45.2px;
 }
 
+.input-div span {
+  display: inline-block;
+  width: 200px;
+}
+
 .input-field {
-  position: absolute;
-  left: 228px;
+  /* position: absolute;
+  left: 228px; */
+  display: inline-block;
   border-color: rgb(224, 224, 224);
   border-style: solid;
   border-radius: 3px;
@@ -124,10 +129,10 @@ button:hover {
   margin: 10px;
   margin-left: 25px;
   margin-bottom: 20px;
-  height: 47px;
-  width: 47px;
+  height: 45px;
+  width: 45px;
   border-style: none;
-  border-radius: 20px;
+  border-radius: 50%;
   background-color: rgb(49, 148, 247);
   color: rgb(0, 0, 0); /*cambiar */
 }
@@ -147,7 +152,7 @@ button:hover {
 
 .hidden-span {
   color: white;
-  background-color: rgba(44, 44, 44, 0.9);
+  background-color: #2c2c2ce6;
   padding: 3px;
   font-size: 14px;
   border-radius: 3px;
@@ -253,14 +258,15 @@ button:hover {
 #h-span {
   font-size: small;
   position: relative;
-  left: 68px;
+  left: 6px;
+  width: 22px;
   color: #555;
 }
 
 #min-span {
   font-size: small;
   position: relative;
-  left: 118px;
+  left: 6px;
   color: #555;
 }
 
