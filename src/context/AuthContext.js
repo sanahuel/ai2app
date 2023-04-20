@@ -24,9 +24,10 @@ export const AuthProvider = ({ children }) => {
   let navigate = useNavigate();
 
   let loginCall = async (e) => {
+    console.log("sssss");
     e.preventDefault();
 
-    let response = await fetch("/token/", {
+    let response = await fetch("http://127.0.0.1:8000/token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

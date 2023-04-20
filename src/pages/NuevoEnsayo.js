@@ -523,6 +523,60 @@ const NuevoEnsayo = () => {
             <input className="input-field" type="time" ref={horaRef} />
           </div>
           <div className="input-div">
+            <span>Holgura</span>
+            <span
+              style={{
+                width: "13px",
+                position: "relative",
+                left: "-13px",
+                color: "#555",
+              }}
+            >
+              -
+            </span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              max="59"
+              defaultValue="0"
+              ref={minholgRef}
+              style={{ position: "relative", left: "-13px", width: "42px" }}
+            />
+            <span
+              id="min-span"
+              style={{
+                position: "relative",
+                left: "-5px",
+                width: "2px",
+              }}
+            >
+              min.
+            </span>
+            <span
+              style={{
+                width: "63px",
+                paddingLeft: "34px",
+                color: "#555",
+              }}
+            >
+              +
+            </span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              max="59"
+              defaultValue="0"
+              ref={minholgRef}
+              style={{ position: "relative", left: "-13px", width: "42px" }}
+            />
+            <span id="min-span" style={{ position: "relative", left: "-5px" }}>
+              min.
+            </span>
+          </div>
+
+          <div className="input-div">
             <span>Nº de Capturas</span>
             <input
               className="input-field"
@@ -532,28 +586,6 @@ const NuevoEnsayo = () => {
               ref={numRef}
               style={{ width: "138.4px" }}
             />
-          </div>
-          <div className="input-div">
-            <span>Holgura Máxima</span>
-            <input
-              className="input-field"
-              type="number"
-              min="0"
-              defaultValue="0"
-              ref={hholgRef}
-              style={{ width: "42px" }}
-            />
-            <span id="h-span">h.</span>
-            <input
-              className="input-field"
-              type="number"
-              min="0"
-              max="59"
-              defaultValue="0"
-              ref={minholgRef}
-              style={{ left: "289px", width: "42px" }}
-            />
-            <span id="min-span">min.</span>
           </div>
           <div className="input-div">
             <span>Frecuencia entre Capturas</span>
