@@ -27,6 +27,8 @@ const NuevoEnsayo = () => {
   const minfreqRef = useRef(null);
   const fechaManualRef = useRef(null);
   const horaManualRef = useRef(null);
+  const hholgRef = useRef(null);
+  const minholgRef = useRef(null);
 
   let ensayos_tabla = [];
   let dispositivos = ["1", "2", "3"];
@@ -576,6 +578,28 @@ const NuevoEnsayo = () => {
               ref={numRef}
               style={{ width: "138.4px" }}
             />
+          </div>
+          <div className="input-div">
+            <span>Holgura Máxima</span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              defaultValue="0"
+              ref={hholgRef}
+              style={{ width: "42px" }}
+            />
+            <span id="h-span">h.</span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              max="59"
+              defaultValue="0"
+              ref={minholgRef}
+              style={{ left: "289px", width: "42px" }}
+            />
+            <span id="min-span">min.</span>
           </div>
           <div className="input-div">
             <span>Frecuencia entre Capturas</span>

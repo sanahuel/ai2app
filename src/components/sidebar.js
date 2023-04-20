@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 // import AuthContext from "../context/AuthContext";
 
 import panel from "../icons/display.svg";
-import visual from "../icons/chart.svg";
+import visual from "../icons/stats.svg"; //chart.svg
 import nuevo from "../icons/biotech.png";
 import logout from "../icons/logout.svg";
 import ai2 from "../icons/ai2.png";
@@ -20,16 +20,6 @@ const Sidebar = () => {
       </NavLink>
 
       <ul className="sidebar-buttons">
-        <NavLink
-          to={"/visualizar"}
-          style={{ textDecoration: "none" }}
-          className={"link"}
-        >
-          <li className="sidebar-button">
-            <img src={visual} alt="" />
-            <span>Resultados</span>
-          </li>
-        </NavLink>
         <NavLink
           to={"/nuevo"}
           style={{ textDecoration: "none" }}
@@ -48,6 +38,16 @@ const Sidebar = () => {
           <li className="sidebar-button">
             <img src={panel} alt="" />
             <span>Panel de Control</span>
+          </li>
+        </NavLink>
+        <NavLink
+          to={"/visualizar"}
+          style={{ textDecoration: "none" }}
+          className={"link"}
+        >
+          <li className="sidebar-button">
+            <img src={visual} alt="" />
+            <span>Resultados</span>
           </li>
         </NavLink>
       </ul>
