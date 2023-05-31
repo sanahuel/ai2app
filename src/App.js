@@ -12,8 +12,45 @@ import Results from "./pages/Results";
 import Nav from "./components/navbar";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function App() {
+  const router = useLocation();
+  let [prev, setPrev] = useState(null);
+  //let [num, setNum] = useState(0);
+  let [semaphore, setSemaphore] = useState(false);
+
+  const releaseLock = () => {
+    if (semaphore) {
+      fetch("http://127.0.0.1:8000/new/", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          release: "release",
+          //code: num,
+        }),
+      });
+      setSemaphore(false);
+    }
+    console.log("RELEASE...");
+  };
+
+  useEffect(() => {
+    if (prev == "/nuevo") {
+      releaseLock();
+    }
+    setPrev(router.pathname);
+  }, [router.pathname]);
+
+  const updateSemaphore = (data) => {
+    setSemaphore(data);
+  };
+
+  window.addEventListener("beforeunload", releaseLock);
+
   return (
     <>
       <AuthProvider>
@@ -27,7 +64,15 @@ function App() {
               <Route path="/control" element={<Panel />} />
               <Route path="/control/lifespan-1" element={<Lifespan />} />
               <Route path="/visualizar/lifespan-r" element={<LifespanR />} />
-              <Route path="/nuevo" element={<NuevoEnsayo />} />
+              <Route
+                path="/nuevo"
+                element={
+                  <NuevoEnsayo
+                    semaphore={semaphore}
+                    updateSemaphore={updateSemaphore}
+                  />
+                }
+              />
               <Route path="/visualizar" element={<Visualizar />} />
               <Route path="/visualizar/:id" element={<Results />} />
             </Route>
