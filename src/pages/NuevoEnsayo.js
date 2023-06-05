@@ -1771,7 +1771,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           </div>
         </>
       )}
-      {!semaphore && (
+      {!semaphore && repeat && (
         <div className="loading-div">
           <img src={loading} alt="" className="loading-img" />
           <br />

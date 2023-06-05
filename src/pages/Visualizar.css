@@ -7,3 +7,14 @@
   border-style: none;
   box-shadow: 1px 1px 7px rgb(228, 228, 228);
 }
+
+.skill {
+  width: 100%;
+  background: rgb(22, 127, 231);
+  position: relative;
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 6px;
+  background: rgb(22, 127, 231);
+}

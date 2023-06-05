@@ -5,6 +5,7 @@ const blacklist = ["/nuevo"];
 
 export const IdleTimer = ({ semaphore }) => {
   let [prev, setPrev] = useState(null);
+  let [dialog, setDialog] = useState(false);
   const navigate = useNavigate();
 
   const sendRequest = () => {
@@ -37,6 +38,7 @@ export const IdleTimer = ({ semaphore }) => {
   const router = useLocation();
 
   let timeout = null;
+  let timeoutDialog = null;
   let lastActivityTime = new Date().getTime();
 
   // Si hay inactividad volver a home
@@ -46,13 +48,20 @@ export const IdleTimer = ({ semaphore }) => {
   };
 
   const restartAutoReset = () => {
+    setDialog(false);
     console.log("act...");
     if (timeout) {
       clearTimeout(timeout);
     }
+    if (timeoutDialog) {
+      clearTimeout(timeoutDialog);
+    }
     timeout = setTimeout(() => {
       trigger();
     }, 1000 * 60 * 0.25); // Segundos para Timeout
+    timeoutDialog = setTimeout(() => {
+      setDialog(true);
+    }, 1000 * 60 * 0.1);
 
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - lastActivityTime;
@@ -98,6 +107,7 @@ export const IdleTimer = ({ semaphore }) => {
     return () => {
       if (timeout) {
         clearTimeout(timeout);
+        clearTimeout(timeoutDialog);
         window.removeEventListener("mousemove", onMouseMove);
         window.removeEventListener("scroll", onMouseMove);
         window.removeEventListener("click", onMouseMove);
@@ -105,5 +115,20 @@ export const IdleTimer = ({ semaphore }) => {
     };
   }, [router.pathname]);
   // window.addEventListener("beforeunload", releaseLock);
-  return <div />;
+  return (
+    <>
+      {dialog && (
+        <div className="outter-div">
+          <div className="dialog-div">
+            <div>
+              <span>
+                En 1 minuto expirará la sesión para crear ensayos por
+                inactividad
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };

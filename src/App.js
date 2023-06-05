@@ -18,11 +18,11 @@ import { useEffect, useState } from "react";
 function App() {
   const router = useLocation();
   let [prev, setPrev] = useState(null);
-  //let [num, setNum] = useState(0);
   let [semaphore, setSemaphore] = useState(false);
 
   const releaseLock = () => {
-    if (semaphore) {
+    if (semaphore === true) {
+      console.log("releasing..... semaphore", semaphore);
       fetch("http://127.0.0.1:8000/new/", {
         method: "PUT",
         headers: {
@@ -30,26 +30,42 @@ function App() {
         },
         body: JSON.stringify({
           release: "release",
-          //code: num,
         }),
       });
+
       setSemaphore(false);
     }
-    console.log("RELEASE...");
+    setSemaphore(false);
   };
 
+  // liberar semáforo si sale de la página
   useEffect(() => {
-    if (prev == "/nuevo") {
+    if (prev == "/nuevo" && semaphore === true) {
       releaseLock();
     }
     setPrev(router.pathname);
   }, [router.pathname]);
 
+  //liberar semáforo si cierra o refresca la página
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (semaphore === true) {
+        releaseLock();
+      }
+    };
+
+    if (semaphore === true) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [semaphore]);
+
   const updateSemaphore = (data) => {
     setSemaphore(data);
   };
-
-  window.addEventListener("beforeunload", releaseLock);
 
   return (
     <>

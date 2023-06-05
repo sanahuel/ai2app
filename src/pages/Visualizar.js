@@ -47,6 +47,11 @@ const Visualizar = () => {
             <div className="control-row-div">
               <span style={{ color: "rgb(112, 112, 112)" }}>Aplicación</span>
             </div>
+            <div className="skill-box">
+              <div className="skill-bar">
+                <span className="skill"></span>
+              </div>
+            </div>
           </div>
         </Link>
 
@@ -65,6 +70,11 @@ const Visualizar = () => {
             </div>
             <div className="control-row-div">
               <span style={{ color: "rgb(112, 112, 112)" }}>Aplicación</span>
+            </div>
+            <div className="skill-box">
+              <div className="skill-bar">
+                <span className="skill"></span>
+              </div>
             </div>
           </div>
         </Link>
@@ -86,6 +96,11 @@ const Visualizar = () => {
             </div>
             <div className="control-row-div">
               <span style={{ color: "rgb(112, 112, 112)" }}>Aplicación</span>
+            </div>
+            <div className="skill-box">
+              <div className="skill-bar">
+                <span className="skill"></span>
+              </div>
             </div>
           </div>
         </Link>
