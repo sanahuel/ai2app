@@ -12,6 +12,8 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 import rrulePlugin from "@fullcalendar/rrule";
 
+import { BlockPicker } from "react-color";
+
 import jwt_decode from "jwt-decode";
 import add from "../icons/add.svg";
 import pen from "../icons/pen.svg";
@@ -19,9 +21,11 @@ import crear from "../icons/save_alt.svg";
 import del from "../icons/clear.svg";
 import calendar from "../icons/refresh.svg";
 import loading from "../icons/clock_loading.svg";
+import expand from "../icons/expand.svg";
 
 const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   let { logoutCall } = useContext(AuthContext);
+  let { authTokens } = useContext(AuthContext);
   let navigate = useNavigate();
 
   const nombreRef = useRef(null);
@@ -57,11 +61,30 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
   let [oldEvents, setOldEvents] = useState([]);
 
-  //let [semaphore, setSemaphore] = useState(false);
-
   let [repeat, setRepeat] = useState(null);
 
+  let [expandDiv, setExpandDiv] = useState("none");
+
+  let [selectedColor, setSelectedColor] = useState("#69b1fa");
+
+  let [colorPicker, setColorPicker] = useState("none");
+
   let changes = {};
+
+  // Color picker
+  let colorRef = useRef();
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (!colorRef.current.contains(e.target)) {
+        setColorPicker("none");
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  });
 
   useEffect(() => {
     setDatabaseEvents({
@@ -111,17 +134,20 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     let checkResponse = (data) => {
       if (data.capturas != null) {
         updateSemaphore(true);
-        console.log("semaforo ok...");
       }
       if (data.status == "repeat") {
         setRepeat(true);
       }
     };
     async function fetchData() {
-      fetch("http://127.0.0.1:8000/new/")
+      fetch("http://127.0.0.1:8000/new/", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           //updateNum(data.num);
           checkResponse(data);
           setCapturas(formatCapturas(data.capturas));
@@ -142,8 +168,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     if (repeat) {
       // Start the interval when repeat is true
       intervalId = setInterval(() => {
+        console.log("Fetching...!!!!");
         // Perform the fetch request here
-        fetch("http://127.0.0.1:8000/new/")
+        fetch("http://127.0.0.1:8000/new/", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${authTokens}`,
+          },
+        })
           .then((response) => response.json())
           .then((data) => {
             // Process the fetched data
@@ -177,7 +209,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       ],
     };
 
-    console.log("crear.......");
     // console.log({
     //   method: "POST",
     //   headers: {
@@ -218,7 +249,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
       .catch((error) => console.log(error));
     // navigate("/");                                       volver a activar!!!
   };
@@ -1455,6 +1485,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     ]);
   };
 
+  let changeExpand = () => {
+    if (expandDiv === "none") {
+      setExpandDiv("block");
+    } else {
+      setExpandDiv("none");
+    }
+  };
+
   return (
     <div className="nuevo-ensayo">
       {semaphore && <IdleTimer semaphore={semaphore} />}
@@ -1522,6 +1560,36 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   <option value="3">Dispositivo 3</option>
                 </select>
               </div>
+
+              <div className="input-div">
+                <span>Color</span>
+                <span
+                  className="color-span"
+                  style={{
+                    backgroundColor: selectedColor,
+                    width: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    marginLeft: "2px",
+                  }}
+                  onClick={() => setColorPicker("inline")}
+                />
+              </div>
+              <div
+                style={{
+                  display: colorPicker,
+                  position: "absolute",
+                  zIndex: 9999,
+                  left: "143px",
+                }}
+                ref={colorRef}
+              >
+                <BlockPicker
+                  color={selectedColor}
+                  onChange={(color, e) => setSelectedColor(color.hex)}
+                  triangle="hide"
+                />
+              </div>
             </div>
           </div>
 
@@ -1572,7 +1640,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 </div>
               ))}
               <button className="nueva-button" onClick={createCondicion}>
-                +
+                <span style={{ color: "#666" }}>+</span>
               </button>
             </div>
           </div>
@@ -1694,6 +1762,88 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             >
               <img src={calendar} alt="" style={{ filter: "invert(50%)" }} />
             </button>
+          </div>
+
+          <div className="container-div">
+            <div className="container-header">
+              <span>Parámetros de Captura</span>
+            </div>
+            <div className="border-div"></div>
+            <div className="container-content">
+              <div style={{ display: expandDiv }}>
+                <div className="input-div">
+                  <span>Tipo de Imagen </span>
+                  <select
+                    name="select"
+                    className="input-field"
+                    value={selectedOption}
+                  >
+                    <option value="rgb">RGB</option>
+                    <option value="bw">BW</option>
+                  </select>
+                </div>
+                <div className="input-div">
+                  <span>Resolución</span>
+                  <input
+                    className="input-field"
+                    type="number"
+                    min="0"
+                    defaultValue="1942"
+                    style={{ width: "52px" }}
+                  />
+                  <span id="pix-span">x</span>
+                  <input
+                    className="input-field"
+                    type="number"
+                    min="0"
+                    defaultValue="1942"
+                    style={{ left: "29px", width: "52px" }}
+                  />
+                </div>
+                <div className="input-div">
+                  <span>Frecuencia de Captura</span>
+                  <input
+                    className="input-field"
+                    placeholder=""
+                    type="number"
+                    min="1"
+                    ref={numRef}
+                    style={{ width: "138.4px" }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "small",
+                      color: "#555",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    fps
+                  </span>
+                </div>
+                <div className="input-div">
+                  <span>Nº de Imagenes</span>
+                  <input
+                    className="input-field"
+                    placeholder=""
+                    type="number"
+                    min="1"
+                    ref={numRef}
+                    style={{ width: "138.4px" }}
+                  />
+                </div>
+              </div>
+              <button className="nueva-button" onClick={changeExpand}>
+                <img
+                  src={expand}
+                  alt=""
+                  style={{
+                    filter: "invert(50%)",
+                    transform:
+                      expandDiv === "block" ? "rotate(180deg)" : "none",
+                  }}
+                />
+              </button>
+            </div>
           </div>
 
           <div className="container-div" style={{ minHeight: "100px" }}>

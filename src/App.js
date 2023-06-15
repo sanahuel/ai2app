@@ -1,5 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
 import NuevoEnsayo from "./pages/NuevoEnsayo";
 import Login from "./pages/Login";
@@ -10,6 +11,11 @@ import LifespanR from "./pages/lifespanr";
 import Visualizar from "./pages/Visualizar";
 import Results from "./pages/Results";
 import Nav from "./components/navbar";
+import Config from "./pages/Config";
+import NewDevice from "./pages/config/NewDevice";
+import NewPlanner from "./pages/config/NewPlanner";
+import NewPlate from "./pages/config/NewPlate";
+
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
 import { useLocation } from "react-router-dom";
@@ -21,12 +27,17 @@ function App() {
   let [semaphore, setSemaphore] = useState(false);
 
   const releaseLock = () => {
+    let token = localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens"))
+      : null;
+
     if (semaphore === true) {
       console.log("releasing..... semaphore", semaphore);
       fetch("http://127.0.0.1:8000/new/", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token.access}`,
         },
         body: JSON.stringify({
           release: "release",
@@ -91,6 +102,14 @@ function App() {
               />
               <Route path="/visualizar" element={<Visualizar />} />
               <Route path="/visualizar/:id" element={<Results />} />
+
+              <Route path="config/" element={<Config />} />
+              <Route path="config/device/new" element={<NewDevice />} />
+              <Route path="config/device/:id" />
+              <Route path="config/planner/new" element={<NewPlanner />} />
+              <Route path="config/planner/:id" />
+              <Route path="config/plates/new" element={<NewPlate />} />
+              <Route path="config/plates/:id" />
             </Route>
           </Routes>
         </div>

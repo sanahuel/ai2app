@@ -14,17 +14,18 @@ export const AuthProvider = ({ children }) => {
       ? jwt_decode(localStorage.getItem("authTokens"))
       : null
   );
+
   let [authTokens, setAuthTokens] = useState(() =>
     localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null
   );
+
   let [loading, setLoading] = useState(true);
 
   let navigate = useNavigate();
 
   let loginCall = async (e) => {
-    console.log("sssss");
     e.preventDefault();
 
     let response = await fetch("http://127.0.0.1:8000/token/", {
@@ -99,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       if (authTokens) {
         updateToken();
       }
-    }, 1000 * 60 * 4);
+    }, 1000 * 60 * 0.2);
     return () => clearInterval(interval);
   }, [loading, authTokens]);
 

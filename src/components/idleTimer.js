@@ -58,14 +58,14 @@ export const IdleTimer = ({ semaphore }) => {
     }
     timeout = setTimeout(() => {
       trigger();
-    }, 1000 * 60 * 0.25); // Segundos para Timeout
+    }, 1000 * 60 * 5); // Segundos para Timeout
     timeoutDialog = setTimeout(() => {
       setDialog(true);
-    }, 1000 * 60 * 0.1);
+    }, 1000 * 60 * 5);
 
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - lastActivityTime;
-    if (elapsedTime > 1000 * 60 * 0.1) {
+    if (elapsedTime > 1000 * 60 * 6) {
       //sendRequest();
       lastActivityTime = currentTime;
     }

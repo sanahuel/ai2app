@@ -1,0 +1,20 @@
+.crear-dispositivo {
+  box-shadow: 1px 1px 7px rgb(228, 228, 228);
+  margin-top: -5px;
+  margin-left: 25px;
+  height: 35px;
+  width: 35px;
+  border-style: none;
+  border-radius: 50%;
+  background-color: rgb(49, 148, 247);
+  color: rgb(0, 0, 0); /*cambiar */
+}
+
+.crear-dispositivo img {
+  height: 22px;
+  filter: invert(100%);
+}
+
+.crear-dispositivo:hover {
+  background-color: rgb(44, 142, 240);
+}

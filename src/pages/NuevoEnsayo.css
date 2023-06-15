@@ -270,6 +270,14 @@ button:hover {
   color: #555;
 }
 
+#pix-span {
+  font: small;
+  position: relative;
+  left: 6px;
+  color: #555;
+  width: 20px;
+}
+
 #init-span {
   font-size: small;
   position: relative;
@@ -292,4 +300,8 @@ button:hover {
 .loading-img {
   width: 50px;
   filter: invert(30%);
+}
+
+.color-span:hover {
+  cursor: pointer;
 }
