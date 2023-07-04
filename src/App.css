@@ -12,12 +12,12 @@
 
   /* FullCalendar */
   --fc-border-color: rgb(231, 231, 231);
-  --fc-button-bg-color: rgb(38, 135, 232);
-  --fc-button-hover-bg-color: rgb(22, 127, 231);
+  --fc-button-bg-color: rgb(49, 148, 247);
+  --fc-button-hover-bg-color: rgb(59, 150, 242);
   --fc-button-border-color: rgb(231, 231, 231);
   --fc-button-hover-border-color: rgb(231, 231, 231);
   --fc-today-bg-color: rgb(249, 249, 249);
-  --fc-button-active-bg-color: rgb(22, 127, 231);
+  --fc-button-active-bg-color: rgb(42, 138, 235);
   --fc-button-active-border-color: rgb(231, 231, 231);
 }
 

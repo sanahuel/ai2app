@@ -6,8 +6,8 @@ import "./lifespan1.css";
 import del from "../icons/clear.svg";
 import Dialog from "../components/dialog";
 import file from "../icons/file.svg";
+import { useParams } from "react-router-dom";
 
-import { formatDate } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -16,12 +16,35 @@ import esLocale from "@fullcalendar/core/locales/es";
 
 const Lifespan1 = () => {
   let navigate = useNavigate();
+  const { disp, id } = useParams();
 
-  const [ensayos, setEnsayos] = useState([]);
+  const [ensayo, setEnsayo] = useState({
+    nombre: "",
+    proyecto: "",
+    aplicacion: "  ",
+    ncapturas: "",
+    condiciones: [],
+    placas: [],
+  });
   const [put, setPut] = useState([]);
   let [events, setEvents] = useState([]);
   let [dragEvent, setDragEvent] = useState({});
   let [ids, setIds] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+      fetch(`http://${disp}:8000/control/` + id, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          setEnsayo(data);
+          setEvents(data.capturas);
+        });
+    }
+    fetchData();
+  }, []);
 
   useEffect(() => {
     // PARA CREAR EVENTOS - TEMPORAL - BORRAR
@@ -36,7 +59,7 @@ const Lifespan1 = () => {
       temporalIds++;
     }
     setIds(temporalIds);
-    setEvents([...temporalEvents]);
+    // setEvents([...temporalEvents]);
   }, []);
 
   useEffect(() => {
@@ -172,7 +195,7 @@ const Lifespan1 = () => {
           <span>Ensayo</span>
           <input
             type="text"
-            value=" Lifespan #1"
+            value={ensayo.nombre || ""}
             className="input-field"
             readOnly
           ></input>
@@ -181,7 +204,7 @@ const Lifespan1 = () => {
           <span>Proyecto</span>
           <input
             type="text"
-            value=" xxxxx"
+            value={ensayo.proyecto || ""}
             className="input-field"
             readOnly
           ></input>
@@ -190,7 +213,10 @@ const Lifespan1 = () => {
           <span>Aplicación</span>
           <input
             type="text"
-            value=" Lifespan"
+            value={
+              ensayo.aplicacion[0].toUpperCase() +
+                ensayo.aplicacion.slice(1).toLowerCase() || ""
+            }
             className="input-field"
             readOnly
           ></input>
@@ -199,7 +225,7 @@ const Lifespan1 = () => {
           <span>Nº de Placas</span>
           <input
             type="text"
-            value=" 25"
+            value={ensayo.nplacas || ""}
             className="input-field"
             style={{ width: "104px" }}
             readOnly
@@ -209,7 +235,7 @@ const Lifespan1 = () => {
           <span>Capturas Programadas</span>
           <input
             type="text"
-            value=" 30"
+            value={ensayo.ncapturas || ""}
             className="input-field"
             style={{ width: "104px" }}
             readOnly
@@ -224,12 +250,9 @@ const Lifespan1 = () => {
           <span>Condiciones</span>
         </div>
         <div className="border-div" style={{ marginBottom: "5px" }}></div>
-        {condiciones.map((condicion, index) => (
+        {ensayo.condiciones.map((condicion, index) => (
           <div key={index} className="condicion-row-div">
-            <span>{condicion}</span>
-            <span className="descripcion-condicion">
-              "descripcion de la condición {condicion}"
-            </span>
+            <span style={{ fontStyle: "italic" }}>Condición {condicion}</span>
             <button
               onClick={() =>
                 handleDelete(
@@ -252,38 +275,41 @@ const Lifespan1 = () => {
           <span>Placas</span>
         </div>
         <div className="border-div"></div>
-        {placas.map((placa, index) => (
-          <div className="placa-row">
-            <div className="placa" style={{ left: "20%" }}>
-              <span>{placa[0]}</span>
-              <button
-                onClick={() =>
-                  handleDelete(
-                    index,
-                    "Eliminar una placa no es reversible",
-                    "Placas"
-                  )
-                }
+        <div style={{ marginTop: "8px" }}>
+          {ensayo.placas.map((placa, index) => (
+            <div
+              style={{
+                display: "inline-block",
+                width: "48.6%",
+                marginRight: "1.2%",
+                marginBottom: "1.2%",
+              }}
+            >
+              <div
+                className="placa"
+                key={index}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <img src={del} alt="" />
-              </button>
+                <span style={{ fontStyle: "italic" }}>Placa {placa}</span>
+                <button
+                  onClick={() =>
+                    handleDelete(
+                      index,
+                      "Eliminar una placa no es reversible",
+                      "Placas"
+                    )
+                  }
+                >
+                  <img src={del} alt="" />
+                </button>
+              </div>
             </div>
-            <div className="placa" style={{ left: "65%" }}>
-              <span>{placa[1]}</span>
-              <button
-                onClick={() =>
-                  handleDelete(
-                    index,
-                    "Eliminar una placa no es reversible",
-                    "Placas"
-                  )
-                }
-              >
-                <img src={del} alt="" />
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* CALENDARIO */}

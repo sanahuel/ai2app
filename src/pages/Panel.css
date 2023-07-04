@@ -79,3 +79,27 @@
   display: flex;
   flex-direction: row;
 }
+
+.dispositivos-short-row {
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+}
+
+.dispositivo-short-container {
+  user-select: none;
+
+  background-color: white;
+  width: 120px;
+  height: 40px;
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  border-style: none;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 1px 1px 7px rgb(228, 228, 228);
+  cursor: pointer;
+}

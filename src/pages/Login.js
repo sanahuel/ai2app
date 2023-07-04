@@ -8,7 +8,9 @@ const Login = () => {
   return (
     <div className="login-page">
       <div className="login-div">
-        <span>Login</span>
+        <div className="login-span">
+          <span>Login</span>
+        </div>
         <form onSubmit={loginCall}>
           <div className="input-div">
             <input
@@ -23,6 +25,7 @@ const Login = () => {
               name="password"
               type={"password"}
               className="login-input"
+              autoComplete="false"
             />
           </div>
           <div className="button-div">

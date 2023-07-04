@@ -1,11 +1,93 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "./Config.css";
 import del from "../icons/clear.svg";
 import pen from "../icons/pen.svg";
 
 const Config = () => {
+  let [disp, setDisp] = useState([]);
+  let [planif, setPlanif] = useState([]);
+  let [placas, setPlacas] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchDisp() {
+      fetch("http://127.0.0.1:8000/config/disp", {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setDisp(data["dispositivos"]);
+        });
+    }
+    async function fetchPlanif() {
+      fetch("http://127.0.0.1:8000/config/planif", {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setPlanif(data["planificador"]);
+        });
+    }
+    async function fetchPlacas() {
+      fetch("http://127.0.0.1:8000/config/placas", {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setPlacas(data["placas"]);
+        });
+    }
+
+    fetchDisp();
+    fetchPlanif();
+    fetchPlacas();
+  }, []);
+
+  const deleteDisp = (id) => {
+    async function fetchDelete() {
+      fetch("http://127.0.0.1:8000/config/disp/" + id, {
+        method: "DELETE",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    }
+    fetchDelete();
+    window.location.reload();
+  };
+  const deletePlanif = (id) => {
+    async function fetchDelete() {
+      fetch("http://127.0.0.1:8000/config/planif/" + id, {
+        method: "DELETE",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    }
+    console.log("http://127.0.0.1:8000/config/planif/" + id);
+    fetchDelete();
+    window.location.reload();
+  };
+
+  const deletePlate = (id) => {
+    async function fetchDelete() {
+      fetch("http://127.0.0.1:8000/config/placas/" + id, {
+        method: "DELETE",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+        });
+    }
+    fetchDelete();
+    window.location.reload();
+  };
+
   return (
     <div className="nuevo-ensayo">
       <div className="container-div">
@@ -14,31 +96,28 @@ const Config = () => {
         </div>
         <div className="border-div" style={{ width: "250px" }}></div>
         <div className="container-content">
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Dispositivo 1</span>
-              <span className="ip-span">IP 111.1.1.1</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
+          {disp.map((dispositivo, index) => (
+            <div className="input-div" key={index}>
+              <div className="dispositivo-div">
+                <span>Dispositivo {dispositivo.nDisp}</span>
+                <span className="ip-span">IP {dispositivo.IP}</span>
+                <button
+                  className="button-editar-dispositivo"
+                  onClick={() =>
+                    navigate(`/config/device/${dispositivo.nDisp}`)
+                  }
+                >
+                  <img src={pen} alt="edit" />
+                </button>
+                <button
+                  className="button-eliminar-dispositivo"
+                  onClick={() => deleteDisp(index)}
+                >
+                  <img src={del} alt="delete" />
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Dispositivo 2</span>
-              <span className="ip-span">IP 111.1.1.1</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
-            </div>
-          </div>
+          ))}
 
           <Link to={"/config/device/new"}>
             <button className="nueva-button">
@@ -54,39 +133,26 @@ const Config = () => {
         </div>
         <div className="border-div" style={{ width: "250px" }}></div>
         <div className="container-content">
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Lifespan 21 días #1</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
+          {planif.map((planificador, index) => (
+            <div className="input-div" key={index}>
+              <div className="dispositivo-div">
+                <span>{planificador.nombre}</span>
+                <button
+                  className="button-editar-dispositivo"
+                  onClick={() => navigate(`/config/planner/${planificador.id}`)}
+                >
+                  <img src={pen} alt="edit" />
+                </button>
+                <button
+                  className="button-eliminar-dispositivo"
+                  onClick={() => deletePlanif(planificador.id)}
+                >
+                  <img src={del} alt="delete" />
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Healthspan placas 35mm</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
-            </div>
-          </div>
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Lifespan 21 días #2</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
-            </div>
-          </div>
+          ))}
+
           <Link to={"/config/planner/new"}>
             <button className="nueva-button">
               <span style={{ color: "#666" }}>+</span>
@@ -101,41 +167,25 @@ const Config = () => {
         </div>
         <div className="border-div" style={{ width: "420px" }}></div>
         <div className="container-content">
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Multipocillo 12 placas</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
+          {placas.map((placa, index) => (
+            <div className="input-div" key={index}>
+              <div className="dispositivo-div">
+                <span>{placa.nombre}</span>
+                <button
+                  className="button-editar-dispositivo"
+                  onClick={() => navigate(`/config/plates/${placa.id}`)}
+                >
+                  <img src={pen} alt="edit" />
+                </button>
+                <button
+                  className="button-eliminar-dispositivo"
+                  onClick={() => deletePlate(placa.id)}
+                >
+                  <img src={del} alt="delete" />
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Placas 35mm</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
-            </div>
-          </div>
-
-          <div className="input-div">
-            <div className="dispositivo-div">
-              <span>Multipocillo 24 placas</span>
-              <button className="button-eliminar-dispositivo">
-                <img src={pen} alt="edit" />
-              </button>
-              <button className="button-editar-dispositivo">
-                <img src={del} alt="delete" />
-              </button>
-            </div>
-          </div>
+          ))}
 
           <Link to={"/config/plates/new"}>
             <button className="nueva-button">

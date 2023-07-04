@@ -1,22 +1,42 @@
-import { React, useRef } from "react";
+import { React, useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import add from "../../icons/add.svg";
 import "./NewDevice.css";
 
-const NewDevice = () => {
-  const num = useRef();
-  const ip = useRef();
-  const dis = useRef();
+const EditDevice = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  let navigate = useNavigate();
+  const [num, setNum] = useState();
+  const [ip, setIp] = useState();
+  const [dis, setDis] = useState("DEFAULT");
 
-  const postDevice = () => {
-    if (num.current.value === "") {
+  useEffect(() => {
+    async function fetchData() {
+      fetch("http://127.0.0.1:8000/config/disp/" + id, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            setNum(data.nDisp);
+            setIp(data.IP);
+            setDis(data.Dis);
+          }
+        });
+    }
+    fetchData();
+  }, []);
+
+  const updateDevice = () => {
+    if (num === "") {
       alert("El dispositivo debe tener número");
       return;
     }
-
-    if (ip.current.value === "") {
+    if (ip === "") {
       alert("El dispositivo debe tener IP");
       return;
     }
@@ -24,13 +44,13 @@ const NewDevice = () => {
     let token = localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null;
-    async function fetchData() {
-      fetch("http://127.0.0.1:8000/config/disp", {
-        method: "POST",
+    async function fetchUpdate() {
+      fetch("http://127.0.0.1:8000/config/disp/" + id, {
+        method: "PUT",
         body: JSON.stringify({
-          nDisp: num.current.value,
-          IP: ip.current.value,
-          Dis: dis.current.value,
+          nDisp: num,
+          IP: ip,
+          Dis: dis,
         }),
       })
         .then((response) => response.json())
@@ -39,10 +59,12 @@ const NewDevice = () => {
             navigate("/config");
           } else if (data.error === "nDisp") {
             alert("Número de dispositivo ya asignado");
+          } else {
+            alert("Error communicating with server");
           }
         });
     }
-    fetchData();
+    fetchUpdate();
   };
 
   return (
@@ -59,9 +81,9 @@ const NewDevice = () => {
               className="input-field"
               type="number"
               min="0"
-              defaultValue=""
+              defaultValue={num}
               style={{ width: "97.6px" }}
-              ref={num}
+              onChange={(e) => setNum(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -69,9 +91,9 @@ const NewDevice = () => {
             <input
               className="input-field"
               min="0"
-              defaultValue=""
+              defaultValue={ip}
               style={{ width: "138.4px" }}
-              ref={ip}
+              onChange={(e) => setIp(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -79,8 +101,8 @@ const NewDevice = () => {
             <select
               name="select"
               className="input-field"
-              defaultValue="DEFAULT"
-              ref={dis}
+              value={dis}
+              onChange={(e) => setDis(e.target.value)}
             >
               <option value="DEFAULT" disabled>
                 {" "}
@@ -92,11 +114,11 @@ const NewDevice = () => {
           </div>
         </div>
       </div>
-      <button className="crear-dispositivo" onClick={() => postDevice()}>
+      <button className="crear-dispositivo" onClick={() => updateDevice()}>
         <img src={add} alt="" style={{ position: "relative", top: "1px" }} />
       </button>
     </div>
   );
 };
 
-export default NewDevice;
+export default EditDevice;

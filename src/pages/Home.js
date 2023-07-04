@@ -1,6 +1,5 @@
-import React from "react";
+import { React, useContext, useEffect, useState } from "react";
 
-import { formatDate } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -8,163 +7,130 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 
 import "./Home.css";
+import IpContext from "../context/IpContext";
 
 const Home = () => {
+  const ipData = useContext(IpContext);
+  const [info, setInfo] = useState([]);
+  const [selectedDispositivos, setSelectedDispositivos] = useState([]);
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    ipData.map((data) => {
+      fetch(`http://${data.IP}:8000/dispositivo/`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((response_data) => {
+          const temp_info = [
+            data.nDisp,
+            data.IP,
+            response_data.pallets_disponibles,
+            response_data.pallets_ocupados,
+            response_data.nExp,
+          ];
+          setInfo([...info, temp_info]);
+          if (ipData.length === 1) {
+            const copy = Array(ipData.length).fill(0);
+            copy[0] = 1;
+            setSelectedDispositivos(copy);
+            fetchTareas(0);
+          } else {
+            setSelectedDispositivos(Array(ipData.length).fill(0));
+          }
+        });
+    });
+  }, ipData);
+
+  async function fetchTareas(id) {
+    fetch(`http://${ipData[id].IP}:8000/dispositivo/tareas`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((response_data) => {
+        let temp_id = 0;
+        const formatedEvents = response_data["tareas"].map((subarray) => {
+          temp_id++;
+          return {
+            title: subarray[2],
+            start: subarray[0],
+            color: subarray[1],
+            id: temp_id,
+          };
+        });
+        setEvents(formatedEvents);
+      });
+  }
   return (
     <div className="nuevo-ensayo">
-      <div className="dispositivos-row">
-        <div className="dispositivo-container">
-          <div className="container-header">
-            <span>Dispositivo 1</span>
-          </div>
-          <div
-            className="border-div"
-            style={{ width: "150px", marginBottom: "7px" }}
-          ></div>
-          <div className="info-div">
-            <span>Ensayos</span>
-            <input
-              className="input-field"
-              placeholder="4"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets disponibles</span>
-            <input
-              className="input-field"
-              placeholder="12"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets ocupados</span>
-            <input
-              className="input-field"
-              placeholder="48"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-        </div>
-        <div className="dispositivo-container">
-          <div className="container-header">
-            <span>Dispositivo 2</span>
-          </div>
-          <div
-            className="border-div"
-            style={{ width: "150px", marginBottom: "7px" }}
-          ></div>
-          <div className="info-div">
-            <span>Ensayos</span>
-            <input
-              className="input-field"
-              placeholder="1"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets disponibles</span>
-            <input
-              className="input-field"
-              placeholder="42"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets ocupados</span>
-            <input
-              className="input-field"
-              placeholder="18"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-        </div>
-        <div className="dispositivo-container">
-          <div className="container-header">
-            <span>Dispositivo 3</span>
-          </div>
-          <div
-            className="border-div"
-            style={{ width: "150px", marginBottom: "7px" }}
-          ></div>
-          <div className="info-div">
-            <span>Ensayos</span>
-            <input
-              className="input-field"
-              placeholder="6"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets disponibles</span>
-            <input
-              className="input-field"
-              placeholder="10"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets ocupados</span>
-            <input
-              className="input-field"
-              placeholder="50"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-        </div>
-        <div className="dispositivo-container">
-          <div className="container-header">
-            <span>Dispositivo 4</span>
-          </div>
-          <div
-            className="border-div"
-            style={{ width: "150px", marginBottom: "7px" }}
-          ></div>
-          <div className="info-div">
-            <span>Ensayos</span>
-            <input
-              className="input-field"
-              placeholder="8"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets disponibles</span>
-            <input
-              className="input-field"
-              placeholder="22"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-          <div className="info-div">
-            <span>Pallets ocupados</span>
-            <input
-              className="input-field"
-              placeholder="78"
-              readOnly
-              style={{ width: "55px" }}
-            ></input>
-          </div>
-        </div>
+      <div
+        className="dispositivos-row"
+        // style={{ minHeight: "120px" }}
+      >
+        {info.map((dispositivo, index) => {
+          return (
+            <div
+              className="dispositivo-container"
+              key={index}
+              onClick={() => {
+                fetchTareas(index);
+                const copy = Array(ipData.length).fill(0);
+                copy[index] = 1;
+                setSelectedDispositivos(copy);
+              }}
+              onDoubleClick={() => {
+                window.open(`http://${dispositivo[1]}:3001/`, "_blank");
+              }}
+            >
+              <div className="container-header">
+                <span>Dispositivo {dispositivo[0]}</span>
+              </div>
+              <div
+                className="border-div"
+                style={{ width: "150px", marginBottom: "7px" }}
+              ></div>
+              <div className="info-div">
+                <span>Experimentos</span>
+                <input
+                  className="input-field"
+                  placeholder={dispositivo[4]}
+                  readOnly
+                  style={{ width: "55px" }}
+                ></input>
+              </div>
+              <div className="info-div">
+                <span>Racks Disponibles</span>
+                <input
+                  className="input-field"
+                  placeholder={dispositivo[2]}
+                  readOnly
+                  style={{ width: "55px" }}
+                ></input>
+              </div>
+              <div className="info-div">
+                <span>Racks Ocupados</span>
+                <input
+                  className="input-field"
+                  placeholder={dispositivo[3]}
+                  readOnly
+                  style={{ width: "55px" }}
+                ></input>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div
         className="container-div"
-        style={{ minHeight: "100px", marginLeft: "10px", marginRight: "10px" }}
+        style={{ marginLeft: "10px", marginRight: "10px" }}
       >
         <div className="container-header">
-          <span>Calendario</span>
+          <span>
+            Calendario{" "}
+            {Math.max(...selectedDispositivos) > 0 &&
+              `Dispositivo ${ipData[selectedDispositivos.indexOf(1)].nDisp}`}
+          </span>
         </div>
         <div className="border-div"></div>
         <div className="Calendar">
@@ -178,7 +144,7 @@ const Home = () => {
             initialView="timeGridWeek"
             eventMinHeight="5"
             height="auto"
-            minHeight="1900px !important"
+            // minHeight="1900px !important"
             editable={true}
             eventOverlap={false}
             eventDurationEditable={false}
@@ -188,7 +154,7 @@ const Home = () => {
             allDaySlot={false}
             firstDay={1}
             locale={esLocale}
-            events={{}}
+            events={events}
           />
         </div>
       </div>

@@ -1,27 +1,79 @@
 import { React, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Gradient from "javascript-color-gradient";
 import add from "../../icons/add.svg";
 import "./NewPlate.css";
 import refresh from "../../icons/refresh.svg";
 
-const NewPlate = () => {
+const EditPlate = () => {
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+
+  const [nombre, setNombre] = useState("");
+  const [numCond, setNumCond] = useState(0);
   const [filas, setFilas] = useState(0);
   const [columnas, setColumnas] = useState(0);
-  const [numCond, setNumCond] = useState(0);
+  const [condArray, setCondArray] = useState([]);
   const [width, setWidth] = useState("50px");
   const [height, setHeight] = useState("50px");
   const [isDragging, setIsDragging] = useState(false);
   const [isSelected, setIsSelected] = useState([]);
   const [colorGradient, setColorGradient] = useState([]);
-  const [condArray, setCondArray] = useState([]);
+  const [idPlate, setIdPlate] = useState(0);
 
   const condRef = useRef();
-  const nombre = useRef();
-
-  const navigate = useNavigate();
 
   const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  useEffect(() => {
+    function parseMatrix(data) {
+      const parsedMatrix = [];
+
+      // Find the maximum option value
+      const maxOption = Math.max(...Object.keys(data.condiciones).map(Number));
+
+      // Initialize the matrix with zeros
+      for (let i = 0; i <= data.columnas; i++) {
+        parsedMatrix.push(Array(data.filas).fill(0));
+      }
+
+      // Fill the matrix with the positions from the .atrix
+      Object.entries(data.condiciones).forEach(([option, positions]) => {
+        const optionValue = parseInt(option, 10);
+        positions.forEach((position) => {
+          const [i, j] = position.split(",").map(Number);
+          parsedMatrix[i][j] = optionValue;
+        });
+      });
+
+      setCondArray(parsedMatrix);
+    }
+    async function fetchData() {
+      fetch(`http://127.0.0.1:8000/config/placas/` + id, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data.numCondiciones);
+          console.log(data.filas);
+          console.log(data.columnas);
+          setIdPlate(data.id);
+          setNombre(data.nombre);
+          setNumCond(data.numCondiciones);
+          setFilas(data.filas);
+          setColumnas(data.columnas);
+          parseMatrix(data);
+          setColorGradient(
+            new Gradient()
+              .setColorGradient("#027df7", "#dcecfc")
+              .setMidpoint(parseInt(data.numCondiciones) + 1)
+              .getColors()
+          );
+        });
+    }
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (filas * columnas < 3) {
@@ -74,7 +126,26 @@ const NewPlate = () => {
     setCondArray(matrix);
   };
 
-  const parseMatrix = () => {
+  const putPlate = () => {
+    if (nombre === "") {
+      alert("La  configuración debe tener nombre");
+      return;
+    }
+
+    let maxElement = condArray[0][0];
+
+    for (let i = 0; i < condArray.length; i++) {
+      for (let j = 0; j < condArray[i].length; j++) {
+        if (condArray[i][j] > maxElement) {
+          maxElement = condArray[i][j];
+        }
+      }
+    }
+    if (maxElement == 0) {
+      alert("La placa no debe tener condiciones");
+      return;
+    }
+
     const result = {};
 
     condArray.forEach((row, i) => {
@@ -89,55 +160,31 @@ const NewPlate = () => {
       });
     });
 
-    return result;
-  };
-
-  const postPlate = () => {
-    async function fetchPost(parsedCondArray) {
-      fetch("http://127.0.0.1:8000/config/placas", {
-        method: "POST",
+    async function fetchData() {
+      fetch(`http://127.0.0.1:8000/config/placas/` + id, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nombre: nombre.current.value,
-          numCondiciones: String(Object.keys(parsedCondArray).length),
+          nombre: nombre,
+          numCondiciones: String(Object.keys(result).length),
           filas: filas,
           columnas: columnas,
-          condiciones: parsedCondArray,
+          condiciones: result,
+          id: idPlate,
         }),
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.message == 1) {
+          if (data.error) {
+            alert(data.error);
+          } else {
             navigate("/config");
-          } else if (data.error === "nombre") {
-            alert("Nombre de configuración ya asignado");
           }
         });
     }
-
-    if (nombre.current.value === "") {
-      alert("La  configuración debe tener nombre");
-      return;
-    }
-
-    let parsedCondArray = parseMatrix();
-
-    let maxElement = condArray[0][0];
-    for (let i = 0; i < condArray.length; i++) {
-      for (let j = 0; j < condArray[i].length; j++) {
-        if (condArray[i][j] > maxElement) {
-          maxElement = condArray[i][j];
-        }
-      }
-    }
-    if (maxElement == 0) {
-      alert("La placa no debe tener condiciones");
-      return;
-    }
-
-    fetchPost(parsedCondArray);
+    fetchData();
   };
 
   return (
@@ -157,7 +204,9 @@ const NewPlate = () => {
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck="false"
-              ref={nombre}
+              value={nombre}
+              ref={condRef}
+              onChange={(e) => setNombre(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -172,8 +221,8 @@ const NewPlate = () => {
               spellCheck="false"
               min={1}
               max={filas * columnas}
-              ref={condRef}
               style={{ width: "104px" }}
+              value={numCond}
               onChange={(e) => {
                 setNumCond(e.target.value);
                 setIsSelected(Array(parseFloat(e.target.value)).fill(0));
@@ -198,6 +247,7 @@ const NewPlate = () => {
               spellCheck="false"
               min={1}
               style={{ width: "104px" }}
+              value={filas}
               onChange={(e) => {
                 setFilas(e.target.value);
                 setCondArray(
@@ -236,6 +286,7 @@ const NewPlate = () => {
               spellCheck="false"
               min={1}
               style={{ width: "104px" }}
+              value={columnas}
               onChange={(e) => {
                 setColumnas(e.target.value);
                 setCondArray(
@@ -268,7 +319,7 @@ const NewPlate = () => {
         <div className="border-div" style={{ width: "170px" }}></div>
         <div style={{ display: "flex" }}>
           <div className="select-cond-row" style={{ flex: 0.95 }}>
-            {Array.from({ length: numCond }, (_, i) => (
+            {Array.from({ length: parseInt(numCond) }, (_, i) => (
               <div
                 key={`cond-${i}`}
                 className="cond-element"
@@ -326,7 +377,10 @@ const NewPlate = () => {
               {columnas > 1 &&
                 Array.from({ length: columnas }, (_, i) => {
                   return (
-                    <span key={i + 1} style={{ width: width }}>
+                    <span
+                      key={i + 1}
+                      style={{ width: width, userSelect: "none" }}
+                    >
                       {i + 1}
                     </span>
                   );
@@ -355,8 +409,10 @@ const NewPlate = () => {
                     <span style={{ userSelect: "none" }}>{ABC[i]}</span>
                   </div>
                 )}
-                {Array.from({ length: columnas }, (_, j) => {
+                {/* AQUI --- */}
+                {Array.from({ length: parseInt(columnas) }, (_, j) => {
                   const key = `columna-${j}`;
+                  console.log(typeof condArray[i][j]);
                   return (
                     <div
                       key={key}
@@ -377,8 +433,8 @@ const NewPlate = () => {
                           alignItems: "center",
                           justifyContent: "center",
                           backgroundColor:
-                            parseFloat(condArray[i][j]) > 0
-                              ? colorGradient[parseFloat(condArray[i][j]) - 1]
+                            condArray[i][j] > 0
+                              ? colorGradient[condArray[i][j] - 1]
                               : "rgb(223, 223, 223)",
                         }}
                         onMouseEnter={() => {
@@ -419,7 +475,7 @@ const NewPlate = () => {
       <button
         className="crear-dispositivo"
         onClick={() => {
-          postPlate();
+          putPlate();
         }}
       >
         <img src={add} alt="" style={{ position: "relative", top: "1px" }} />
@@ -428,4 +484,4 @@ const NewPlate = () => {
   );
 };
 
-export default NewPlate;
+export default EditPlate;

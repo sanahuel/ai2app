@@ -1,35 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import IpContext from "../context/IpContext";
 
 const blacklist = ["/nuevo"];
 
 export const IdleTimer = ({ semaphore }) => {
+  const ipData = useContext(IpContext);
+
   let [prev, setPrev] = useState(null);
   let [dialog, setDialog] = useState(false);
   const navigate = useNavigate();
 
   const sendRequest = () => {
+    let token = localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens"))
+      : null;
+
     if (router.pathname === "/nuevo") {
-      fetch("http://127.0.0.1:8000/new/", {
+      fetch(`http://${ipData[0].IP}:8000/new/`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token.access}`,
         },
         body: "update",
       });
-      console.log("sending.........");
     }
   };
   const releaseLock = () => {
+    let token = localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens"))
+      : null;
+
     if (semaphore) {
-      fetch("http://127.0.0.1:8000/new/", {
+      fetch(`http://${ipData[0].IP}:8000/new/`, {
         method: "PUT",
         headers: {
+          Authorization: `Bearer ${token.access}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           release: "release",
-          //code: num,
         }),
       });
     }
@@ -49,7 +59,6 @@ export const IdleTimer = ({ semaphore }) => {
 
   const restartAutoReset = () => {
     setDialog(false);
-    console.log("act...");
     if (timeout) {
       clearTimeout(timeout);
     }
@@ -58,10 +67,10 @@ export const IdleTimer = ({ semaphore }) => {
     }
     timeout = setTimeout(() => {
       trigger();
-    }, 1000 * 60 * 5); // Segundos para Timeout
+    }, 1000 * 60 * 10); // Segundos para Timeout
     timeoutDialog = setTimeout(() => {
       setDialog(true);
-    }, 1000 * 60 * 5);
+    }, 1000 * 60 * 9);
 
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - lastActivityTime;

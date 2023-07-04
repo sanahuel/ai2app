@@ -1,29 +1,33 @@
-import { React, useState, useEffect, useRef } from "react";
+import { React, useRef, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import add from "../../icons/add.svg";
 import del from "../../icons/clear.svg";
 import { BlockPicker } from "react-color";
 
-const NewPlanner = () => {
-  let [selectedColor, setSelectedColor] = useState("#69b1fa");
+const EditPlanner = () => {
+  const { id } = useParams();
+
+  let [selectedColor, setSelectedColor] = useState("white");
   let [colorPicker, setColorPicker] = useState("none");
   const [condiciones, setCondiciones] = useState([]);
-  const [configCondiciones, setConfigCondiciones] = useState([]);
-  const [configCondicion, setConfigCondicion] = useState([]);
 
-  const nombre = useRef();
-  const aplicacion = useRef();
-  const holguraPositiva = useRef();
-  const holguraNegativa = useRef();
-  const capturasTotales = useRef();
-  const hFreq = useRef();
-  const minFreq = useRef();
-  const tipoImg = useRef();
-  const resWidth = useRef();
-  const resHeight = useRef();
-  const freqCaptura = useRef();
-  const imgsPorCaptura = useRef();
-  const placasPorCond = useRef();
+  const [nombre, setNombre] = useState();
+  const [aplicacion, setAplicacion] = useState();
+  const [holguraPositiva, setHolguraPositiva] = useState();
+  const [holguraNegativa, setHolguraNegativa] = useState();
+  const [capturasTotales, setCapturasTotales] = useState();
+  const [hFreq, setHFreq] = useState();
+  const [minFreq, setMinFreq] = useState();
+  const [tipoImg, setTipoImg] = useState();
+  const [resWidth, setResWidth] = useState();
+  const [resHeight, setResHeight] = useState();
+  const [freqCaptura, setFreqCaptura] = useState();
+  const [imgsPorCaptura, setImgsPorCaptura] = useState();
+  const [configCondiciones, setConfigCondiciones] = useState([]);
+  const [configCondicion, setConfigCondicion] = useState("DEFAULT");
+  const [placasPorCond, setPlacasPorCond] = useState();
+
   let colorRef = useRef();
 
   let navigate = useNavigate();
@@ -43,6 +47,30 @@ const NewPlanner = () => {
   });
 
   useEffect(() => {
+    async function fetchData() {
+      fetch(`http://127.0.0.1:8000/config/planif/` + id, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setNombre(data.nombre);
+          setAplicacion(data.aplicacion);
+          setHolguraPositiva(data.holguraPositiva);
+          setHolguraNegativa(data.holguraNegativa);
+          setCapturasTotales(data.capturasTotales);
+          setHFreq(data.hFreq);
+          setMinFreq(data.minFreq);
+          setTipoImg(data.tipoImg);
+          setResWidth(data.resWidth);
+          setResHeight(data.resHeight);
+          setFreqCaptura(data.freqCaptura);
+          setImgsPorCaptura(data.imgsPorCaptura);
+          setSelectedColor(data.color);
+          setCondiciones(data.condiciones);
+          setPlacasPorCond(data.placasPorCond);
+          setConfigCondicion(data.configCondicion);
+        });
+    }
     async function fetchCondiciones() {
       fetch("http://127.0.0.1:8000/config/placas", {
         method: "GET",
@@ -52,45 +80,47 @@ const NewPlanner = () => {
           setConfigCondiciones(data["placas"]);
         });
     }
+    fetchData();
     fetchCondiciones();
   }, []);
 
-  const postPlan = () => {
-    if (nombre.current.value === "") {
+  const postPlanif = () => {
+    if (nombre === "") {
       alert("La configuración debe tener un nombre");
       return;
     }
     async function fetchPost() {
-      fetch("http://127.0.0.1:8000/config/planif", {
-        method: "POST",
+      fetch("http://127.0.0.1:8000/config/planif/" + id, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nombre: nombre.current.value,
-          aplicacion: aplicacion.current.value,
+          nombre: nombre,
+          aplicacion: aplicacion,
+          holguraPositiva: holguraPositiva,
+          holguraNegativa: holguraNegativa,
+          capturasTotales: capturasTotales,
+          hFreq: hFreq,
+          minFreq: minFreq,
+          tipoImg: tipoImg,
+          resWidth: resWidth,
+          resHeight: resHeight,
+          freqCaptura: freqCaptura,
+          imgsPorCaptura: imgsPorCaptura,
           color: selectedColor,
           condiciones: condiciones,
-          holguraPositiva: holguraPositiva.current.value,
-          holguraNegativa: holguraNegativa.current.value,
-          capturasTotales: capturasTotales.current.value,
-          hFreq: hFreq.current.value,
-          minFreq: minFreq.current.value,
-          tipoImg: tipoImg.current.value,
-          resWidth: resWidth.current.value,
-          resHeight: resHeight.current.value,
-          freqCaptura: freqCaptura.current.value,
-          imgsPorCaptura: imgsPorCaptura.current.value,
-          placasPorCond: placasPorCond.current.value,
+          id: id,
+          placasPorCond: placasPorCond,
           configCondicion: configCondicion,
         }),
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.message == 1) {
+          if (data.error) {
+            alert(data.error);
+          } else {
             navigate("/config");
-          } else if (data.error === "nombre") {
-            alert("Nombre de configuración ya asignado");
           }
         });
     }
@@ -149,7 +179,8 @@ const NewPlanner = () => {
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck="false"
-              ref={nombre}
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -158,7 +189,8 @@ const NewPlanner = () => {
               name="select"
               className="input-field"
               defaultValue="DEFAULT"
-              ref={aplicacion}
+              value={aplicacion}
+              onChange={(e) => setAplicacion(e.target.value)}
             >
               <option value="DEFAULT" disabled>
                 {" "}
@@ -222,8 +254,8 @@ const NewPlanner = () => {
             <select
               name="select"
               className="input-field"
-              defaultValue="DEFAULT"
               style={{ width: "145px" }}
+              value={configCondicion}
               onChange={(e) => changeConfigCondicion(e.target.value)}
             >
               <option value="DEFAULT" disabled>
@@ -249,7 +281,8 @@ const NewPlanner = () => {
               autoCapitalize="off"
               spellCheck="false"
               style={{ width: "104px" }}
-              ref={placasPorCond}
+              value={placasPorCond}
+              onChange={(e) => setPlacasPorCond(e.target.value)}
             ></input>
           </div>
           {condiciones.map((condicion, index) => (
@@ -274,6 +307,7 @@ const NewPlanner = () => {
                     autoCapitalize="off"
                     spellCheck="false"
                     style={{ width: "104px" }}
+                    value={condicion.name}
                     onChange={(e) =>
                       changeNombreCondicion(e.target.value, index)
                     }
@@ -322,7 +356,8 @@ const NewPlanner = () => {
               max="59"
               defaultValue="0"
               style={{ position: "relative", left: "-13px", width: "42px" }}
-              ref={holguraNegativa}
+              value={holguraNegativa}
+              onChange={(e) => setHolguraNegativa(e.target.value)}
             />
             <span
               id="min-span"
@@ -350,7 +385,8 @@ const NewPlanner = () => {
               max="59"
               defaultValue="0"
               style={{ position: "relative", left: "-13px", width: "42px" }}
-              ref={holguraPositiva}
+              value={holguraPositiva}
+              onChange={(e) => setHolguraPositiva(e.target.value)}
             />
             <span id="min-span" style={{ position: "relative", left: "-5px" }}>
               min.
@@ -365,7 +401,8 @@ const NewPlanner = () => {
               type="number"
               min="1"
               style={{ width: "138.4px" }}
-              ref={capturasTotales}
+              value={capturasTotales}
+              onChange={(e) => setCapturasTotales(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -376,7 +413,8 @@ const NewPlanner = () => {
               min="0"
               defaultValue="1"
               style={{ width: "42px" }}
-              ref={hFreq}
+              value={hFreq}
+              onChange={(e) => setHFreq(e.target.value)}
             />
             <span id="h-span">h.</span>
             <input
@@ -386,7 +424,8 @@ const NewPlanner = () => {
               max="59"
               defaultValue="0"
               style={{ left: "289px", width: "42px" }}
-              ref={minFreq}
+              value={minFreq}
+              onChange={(e) => setMinFreq(e.target.value)}
             />
             <span id="min-span">min.</span>
           </div>
@@ -401,7 +440,12 @@ const NewPlanner = () => {
         <div className="container-content">
           <div className="input-div">
             <span>Tipo de Imagen </span>
-            <select name="select" className="input-field" ref={tipoImg}>
+            <select
+              name="select"
+              className="input-field"
+              value={tipoImg}
+              onChange={(e) => setTipoImg(e.target.value)}
+            >
               <option value="rgb">RGB</option>
               <option value="bw">BW</option>
             </select>
@@ -414,7 +458,8 @@ const NewPlanner = () => {
               min="0"
               defaultValue="1942"
               style={{ width: "52px" }}
-              ref={resWidth}
+              value={resWidth}
+              onChange={(e) => setResWidth(e.target.value)}
             />
             <span id="pix-span">x</span>
             <input
@@ -423,7 +468,8 @@ const NewPlanner = () => {
               min="0"
               defaultValue="1942"
               style={{ left: "29px", width: "52px" }}
-              ref={resHeight}
+              value={resHeight}
+              onChange={(e) => setResHeight(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -434,7 +480,8 @@ const NewPlanner = () => {
               type="number"
               min="1"
               style={{ width: "138.4px" }}
-              ref={freqCaptura}
+              value={freqCaptura}
+              onChange={(e) => setFreqCaptura(e.target.value)}
             />
             <span
               style={{
@@ -454,16 +501,17 @@ const NewPlanner = () => {
               type="number"
               min="1"
               style={{ width: "138.4px" }}
-              ref={imgsPorCaptura}
+              value={imgsPorCaptura}
+              onChange={(e) => setImgsPorCaptura(e.target.value)}
             />
           </div>
         </div>
       </div>
-      <button className="crear-dispositivo" onClick={() => postPlan()}>
+      <button className="crear-dispositivo" onClick={() => postPlanif()}>
         <img src={add} alt="" style={{ position: "relative", top: "1px" }} />
       </button>
     </div>
   );
 };
 
-export default NewPlanner;
+export default EditPlanner;

@@ -1,110 +1,98 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import "./Panel.css";
 import "./Visualizar.css";
+import IpContext from "../context/IpContext";
 
 const Visualizar = () => {
-  const [ensayos, setEnsayos] = useState([]);
+  const ipData = useContext(IpContext);
+
+  const [ensayos, setEnsayos] = useState({});
+  const [display, setDisplay] = useState([]);
 
   useEffect(() => {
-    let formatData = (data) => {
-      return data.map((str) => {
-        return {
-          title: " ",
-          start: str,
-          allDay: false,
-          color: "#ddd",
-        };
-      });
-    };
-    async function fetchData() {
-      const response = await fetch("/results/");
-      const data = await response.json();
-      console.log(data);
-      //setEnsayos(formatData(data.capturas));
+    async function fetchData(ipData) {
+      fetch(`http://${ipData.IP}:8000/results/`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          for (let i = 0; i < data["experimentos"].length; i++) {
+            data["experimentos"][i].ip = ipData.IP;
+          }
+
+          const copy = ensayos;
+          copy[ipData.nDisp] = data["experimentos"];
+          setEnsayos(copy);
+          setDisplay([...display, ...data["experimentos"]]);
+        });
     }
-    fetchData();
-    // console.log(capturas);
-  }, []);
+    for (let i = 0; i < ipData.length; i++) {
+      fetchData(ipData[i]);
+    }
+  });
 
   return (
     <div className="nuevo-ensayo">
-      <div className="panel-row-div">
-        <Link
-          to={"/visualizar/lifespan-r"} // '/visualizar/' + id  !!!
-          style={{ textDecoration: "none", flex: 0.9, marginRight: "20px" }}
-          className={"link"}
-        >
-          <div className="visualizar-container-div">
-            <div className="container-header" style={{ display: "flex" }}>
-              <span>Lifespan #0</span>
+      <div className="dispositivos-short-row">
+        {ipData.map((data, index) => {
+          return (
+            <div
+              className="dispositivo-short-container"
+              key={index}
+              onClick={() => {
+                setDisplay(ensayos[data.nDisp]);
+              }}
+              onDoubleClick={() => {
+                window.open(`http://${data.IP}:3001/`, "_blank");
+              }}
+            >
+              Dispositivo {data.nDisp}
             </div>
-            <div className="border-div"></div>
-            <div className="control-row-div">
-              <span style={{ color: "rgb(112, 112, 112)" }}>Proyecto</span>
-            </div>
-            <div className="control-row-div">
-              <span style={{ color: "rgb(112, 112, 112)" }}>Aplicación</span>
-            </div>
-            <div className="skill-box">
-              <div className="skill-bar">
-                <span className="skill"></span>
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        <Link
-          to={"/visualizar/healthspan-r"}
-          style={{ textDecoration: "none", flex: 1, marginRight: "20px" }}
-          className={"link"}
-        >
-          <div className="visualizar-container-div">
-            <div className="container-header">
-              <span>Healthspan #0</span>
-            </div>
-            <div className="border-div"></div>
-            <div className="control-row-div">
-              <span style={{ color: "rgb(112, 112, 112)" }}>Proyecto</span>
-            </div>
-            <div className="control-row-div">
-              <span style={{ color: "rgb(112, 112, 112)" }}>Aplicación</span>
-            </div>
-            <div className="skill-box">
-              <div className="skill-bar">
-                <span className="skill"></span>
-              </div>
-            </div>
-          </div>
-        </Link>
+          );
+        })}
       </div>
 
-      <div className="panel-row-div" style={{ cursor: "pointer" }}>
-        <Link
-          to={"/visualizar/healthspan-r"}
-          style={{ textDecoration: "none", flex: 0.9, marginRight: "20px" }}
-          className={"link"}
-        >
-          <div className="visualizar-container-div">
-            <div className="container-header">
-              <span>Healthspan #1</span>
-            </div>
-            <div className="border-div"></div>
-            <div className="control-row-div">
-              <span style={{ color: "rgb(112, 112, 112)" }}>Proyecto</span>
-            </div>
-            <div className="control-row-div">
-              <span style={{ color: "rgb(112, 112, 112)" }}>Aplicación</span>
-            </div>
-            <div className="skill-box">
-              <div className="skill-bar">
-                <span className="skill"></span>
+      <div>
+        {display.map((data) => {
+          return (
+            <Link
+              key={data.id}
+              to={`/visualizar/${data.ip}/${data.id}`}
+              style={{
+                display: "inline-block",
+                width: "48.6%",
+                marginRight: "1.2%",
+                textDecoration: "none",
+              }}
+              className={"link"}
+            >
+              <div className="control-container-div">
+                <div className="container-header" style={{ display: "flex" }}>
+                  <span>{data.nombre}</span>
+                </div>
+                <div className="border-div"></div>
+                <div className="control-row-div">
+                  <span style={{ color: "rgb(112, 112, 112)" }}>
+                    {data.aplicacion[0].toUpperCase() +
+                      data.aplicacion.slice(1).toLowerCase()}
+                  </span>
+                </div>
+                <div className="control-row-div">
+                  <span style={{ color: "rgb(112, 112, 112)" }}>
+                    Proyecto {data.proyecto}
+                  </span>
+                </div>
+                <div className="skill-box">
+                  <div className="skill-bar">
+                    <span className="skill"></span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </Link>
-        <div style={{ flex: 1, marginRight: "20px" }}></div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

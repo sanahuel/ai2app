@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       if (authTokens) {
         updateToken();
       }
-    }, 1000 * 60 * 0.2);
+    }, 1000 * 60 * 20); //tiempo para token/refresh
     return () => clearInterval(interval);
   }, [loading, authTokens]);
 

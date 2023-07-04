@@ -9,9 +9,9 @@
   border-radius: 12px;
   width: 700px;
   height: 400px;
-  padding-left: 50px;
+  padding-left: 40px;
   padding-right: 50px;
-  padding-top: 25px;
+  padding-top: 8px;
   padding-bottom: 25px;
   margin-top: 15px;
   margin-bottom: 20px;
@@ -67,4 +67,16 @@
   border-radius: 50%;
   margin-left: 3px;
   margin-top: 2px;
+}
+
+.plate-header span {
+  font-style: italic;
+  text-align: center;
+  color: rgb(211, 211, 211);
+}
+.plate-row-header {
+  font-style: italic;
+  color: rgb(211, 211, 211);
+  position: relative;
+  left: -5px;
 }

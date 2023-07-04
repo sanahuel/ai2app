@@ -12,8 +12,7 @@ import {
 } from "chart.js";
 
 import "./lifespanr.css";
-import file from "../icons/file.svg";
-import { borderBottom } from "@mui/system";
+import file from "../../icons/file.svg";
 
 ChartJS.register(
   CategoryScale,
@@ -25,30 +24,8 @@ ChartJS.register(
   Legend
 );
 
-const LifespanR = () => {
-  const [ensayos, setEnsayos] = useState([]);
-
-  useEffect(() => {
-    let formatData = (data) => {
-      return data.map((str) => {
-        return {
-          title: " ",
-          start: str,
-          allDay: false,
-          color: "#ddd",
-        };
-      });
-    };
-    async function fetchData() {
-      const response = await fetch("/results/20");
-      const data = await response.json();
-      console.log(data);
-      //setEnsayos(formatData(data.capturas));
-    }
-    fetchData();
-    // console.log(capturas);
-  }, []);
-
+const Healthspan = (resultData) => {
+  console.log("heatlhspannnnn");
   const vivosA = [
     120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
     0, 0, 0, 0,
@@ -171,39 +148,41 @@ const LifespanR = () => {
     let fraccB = calculateCond("B");
     let fraccC = calculateCond("C");
     let fraccD = calculateCond("D");
-  });
+    console.log("....");
+  }, [open]);
 
   let data = {
     labels: dias,
     datasets: [
+      // más tonos #187741 #155239 #A8EEC1 #E3FCEC
       {
         label: "Cond. A",
-        data: fraccA,
-        borderColor: "#0608B4",
-        backgroundColor: "#0608B4",
+        data: fraccB,
+        borderColor: "#249D57",
+        backgroundColor: "#249D57",
       },
       {
         label: "Cond. B",
-        data: fraccB,
-        borderColor: "#0077b6",
-        backgroundColor: "#0077b6",
+        data: fraccA,
+        borderColor: "#38C172",
+        backgroundColor: "#38C172",
       },
       {
         label: "Cond. C",
         data: fraccC,
-        borderColor: "#00b4d8",
-        backgroundColor: "#00b4d8",
+        borderColor: "#74D99F",
+        backgroundColor: "#74D99F",
       },
       {
         label: "Cond. D",
         data: fraccD,
-        borderColor: "#90e0ef",
-        backgroundColor: "#90e0ef",
+        borderColor: "#B9F6CA",
+        backgroundColor: "#B9F6CA",
       },
     ],
   };
 
-  const options = {
+  let options = {
     responsive: true,
     plugins: {
       legend: {
@@ -219,7 +198,7 @@ const LifespanR = () => {
       y: {
         title: {
           display: true,
-          text: "Fracción Vivos %",
+          text: "Cantidad de Movimiento",
         },
       },
       x: {
@@ -246,9 +225,9 @@ const LifespanR = () => {
           <span>Ensayo</span>
           <input
             type="text"
-            value=" Lifespan #0"
+            value=" Healthspan #0"
             className="input-field"
-            readOnly
+            readonly
           ></input>
         </div>
         <div className="control-row-div">
@@ -257,16 +236,16 @@ const LifespanR = () => {
             type="text"
             value=" xxxxx"
             className="input-field"
-            readOnly
+            readonly
           ></input>
         </div>
         <div className="control-row-div">
           <span>Aplicación</span>
           <input
             type="text"
-            value=" Lifespan"
+            value=" Healthspan"
             className="input-field"
-            readOnly
+            readonly
           ></input>
         </div>
         <div className="control-row-div">
@@ -276,7 +255,7 @@ const LifespanR = () => {
             value=" 25"
             className="input-field"
             style={{ width: "104px" }}
-            readOnly
+            readonly
           ></input>
         </div>
         <div className="control-row-div">
@@ -286,7 +265,7 @@ const LifespanR = () => {
             value=" 30"
             className="input-field"
             style={{ width: "104px" }}
-            readOnly
+            readonly
           ></input>
         </div>
         <div className="control-row-div" style={{ paddingBottom: "10px" }}>
@@ -296,54 +275,20 @@ const LifespanR = () => {
             value=" 01/02/2023"
             className="input-field"
             style={{ width: "104px" }}
-            readOnly
+            readonly
           ></input>
         </div>
       </div>
 
+      {/* GRAFICA */}
+
       <div>
         <div className="container-div" style={{ padding: "20px" }}>
-          {/* GRAFICA */}
           <Line options={options} data={data} />
         </div>
       </div>
+
       {/* TABLA */}
-      {/* <div
-        className="container-div"
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-        ref={placasRef}
-      >
-        {Object.entries(condiciones).map(([key, placa]) => (
-          <div style={{ textAlign: "center", padding: "15px", width: "200px" }}>
-            <div style={{ fontWeight: "500", marginBottom: "5px" }}>
-              Condición {key}
-            </div>
-            {Object.entries(placa).map(([key, value]) => (
-              <div
-                draggable
-                className={`placa-div ${open[key] ? "active" : "inactive"}`}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                }}
-                onDragEnter={(e) => {
-                  e.preventDefault();
-                }}
-                onDragEnd={(e) => dragDrop(e)}
-                onClick={() => {
-                  handlePlaca(key);
-                }}
-                style={{ marginBottom: "7px" }}
-              >
-                Placa {key}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div> */}
 
       <div ref={placasRef} style={{ maxWidth: "100%", overflowX: "hidden" }}>
         {Object.entries(condiciones).map(([key, placa]) => (
@@ -439,7 +384,7 @@ const LifespanR = () => {
               position: "relative",
               top: "1px",
             }}
-          />{" "}
+          />
         </button>
         <span className="hidden-span" id="crear-span">
           Descargar .xlsx
@@ -449,4 +394,4 @@ const LifespanR = () => {
   );
 };
 
-export default LifespanR;
+export default Healthspan;

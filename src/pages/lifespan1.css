@@ -92,8 +92,6 @@
 }
 
 .placa {
-  position: absolute;
-  width: fit-content;
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -145,10 +143,10 @@
   margin: 10px;
   /* margin-left: 25px;
   margin-bottom: 20px; */
-  height: 37px;
+  height: 38px;
   width: 77px;
   border-style: none;
-  border-radius: 14px;
+  border-radius: 19px;
   border-color: rgb(255, 81, 81);
   background-color: rgb(255, 255, 255);
   color: rgb(254, 83, 83); /*cambiar */

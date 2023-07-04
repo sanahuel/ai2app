@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 import panel from "../icons/display.svg";
-import visual from "../icons/stats.svg";
+import visual from "../icons/stats.svg"; //timeline?
 import nuevo from "../icons/biotech.png";
 import logout from "../icons/logout.svg";
 import ai2 from "../icons/ai2.png";

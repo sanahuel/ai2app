@@ -17,7 +17,7 @@
 
 .login-div span {
   position: relative;
-  font-weight: 500;
+  font-weight: 600;
   font-size: larger;
   margin-bottom: 15px;
 }
@@ -39,7 +39,7 @@
   border-style: none;
   height: 40px;
   width: 135px;
-  border-radius: 3px;
+  border-radius: 20px;
   font-weight: 400;
 }
 

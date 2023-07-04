@@ -7,19 +7,23 @@ import Login from "./pages/Login";
 import Sidebar from "./components/sidebar";
 import Panel from "./pages/Panel";
 import Lifespan from "./pages/lifespan1";
-import LifespanR from "./pages/lifespanr";
 import Visualizar from "./pages/Visualizar";
 import Results from "./pages/Results";
 import Nav from "./components/navbar";
+
 import Config from "./pages/Config";
 import NewDevice from "./pages/config/NewDevice";
 import NewPlanner from "./pages/config/NewPlanner";
 import NewPlate from "./pages/config/NewPlate";
+import EditDevice from "./pages/config/EditDevice";
+import EditPlanner from "./pages/config/EditPlanner";
+import EditPlate from "./pages/config/EditPlate";
 
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
+import { IpProvider } from "./context/IpContext";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 function App() {
   const router = useLocation();
@@ -32,8 +36,7 @@ function App() {
       : null;
 
     if (semaphore === true) {
-      console.log("releasing..... semaphore", semaphore);
-      fetch("http://127.0.0.1:8000/new/", {
+      fetch(`http://localhost:8000/new/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,40 +83,41 @@ function App() {
 
   return (
     <>
-      <AuthProvider>
-        <Sidebar />
-        <Nav />
-        <div className="App">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route element={<PrivateRoutes />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/control" element={<Panel />} />
-              <Route path="/control/lifespan-1" element={<Lifespan />} />
-              <Route path="/visualizar/lifespan-r" element={<LifespanR />} />
-              <Route
-                path="/nuevo"
-                element={
-                  <NuevoEnsayo
-                    semaphore={semaphore}
-                    updateSemaphore={updateSemaphore}
-                  />
-                }
-              />
-              <Route path="/visualizar" element={<Visualizar />} />
-              <Route path="/visualizar/:id" element={<Results />} />
+      <IpProvider>
+        <AuthProvider>
+          <Sidebar />
+          <Nav />
+          <div className="App">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route element={<PrivateRoutes />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/control" element={<Panel />} />
+                <Route path="/control/:disp/:id" element={<Lifespan />} />
+                <Route
+                  path="/nuevo"
+                  element={
+                    <NuevoEnsayo
+                      semaphore={semaphore}
+                      updateSemaphore={updateSemaphore}
+                    />
+                  }
+                />
+                <Route path="/visualizar" element={<Visualizar />} />
+                <Route path="/visualizar/:disp/:id" element={<Results />} />
 
-              <Route path="config/" element={<Config />} />
-              <Route path="config/device/new" element={<NewDevice />} />
-              <Route path="config/device/:id" />
-              <Route path="config/planner/new" element={<NewPlanner />} />
-              <Route path="config/planner/:id" />
-              <Route path="config/plates/new" element={<NewPlate />} />
-              <Route path="config/plates/:id" />
-            </Route>
-          </Routes>
-        </div>
-      </AuthProvider>
+                <Route path="config/" element={<Config />} />
+                <Route path="config/device/new" element={<NewDevice />} />
+                <Route path="config/device/:id" element={<EditDevice />} />
+                <Route path="config/planner/new" element={<NewPlanner />} />
+                <Route path="config/planner/:id" element={<EditPlanner />} />
+                <Route path="config/plates/new" element={<NewPlate />} />
+                <Route path="config/plates/:id" element={<EditPlate />} />
+              </Route>
+            </Routes>
+          </div>
+        </AuthProvider>
+      </IpProvider>
     </>
   );
 }
