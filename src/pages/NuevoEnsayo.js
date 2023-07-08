@@ -43,6 +43,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const resHeightRef = useRef(null);
   const resWidthRef = useRef(null);
   const placasPorCondicionRef = useRef(null);
+  const gusanosPorCondicionRef = useRef(null);
 
   let dispositivos = ["1", "2", "3"];
 
@@ -69,7 +70,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
   useEffect(() => {
     async function fetchConfig() {
-      fetch("http://127.0.0.1:8000/config/planif", {
+      fetch(`http://${window.location.hostname}:8000/config/planif`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -79,7 +80,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     }
 
     async function fetchCondiciones() {
-      fetch("http://127.0.0.1:8000/config/placas", {
+      fetch(`http://${window.location.hostname}:8000/config/placas`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -180,7 +181,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       // Start the interval when repeat is true
       intervalId = setInterval(() => {
         // Perform the fetch request here
-        fetch("http://127.0.0.1:8000/new/", {
+        fetch(`http://${window.location.hostname}:8000/new/`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authTokens}`,
@@ -308,7 +309,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           0
         );
         if (espacioLibre >= espacioNecesarioValue) {
-          console.log("dentro.....");
           // PALLETS
           let pallets = orderPallets(espacioNecesarioValue);
           console.log("palets", pallets);
@@ -361,7 +361,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               holguraNegativa: event[2],
             });
           });
-          console.log("antes fetch....");
 
           // FETCH
           const disp = ipData.find((obj) => obj.nDisp === selectedOption);
@@ -380,6 +379,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 aplicacion: aplicacionRef.current.value,
                 color: selectedColor,
                 userId: decodedToken.user_id,
+                gusanosPorCondicion: gusanosPorCondicionRef.current.value,
               },
               condiciones: {
                 nCondiciones: nCondiciones,
@@ -416,9 +416,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             .catch((error) => {
               alert("Error: " + error.message);
             });
+        } else {
+          alert("No hay espacio suficiente en el dispositivo");
         }
       } else {
-        alert("No hay espacio suficiente en el dispositivo");
+        alert("Debe haber capturas programadas");
       }
     } else {
       alert("Todos los campos deben estar completos");
@@ -1841,6 +1843,24 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   spellCheck="false"
                   style={{ width: "104px" }}
                   ref={placasPorCondicionRef}
+                ></input>
+              </div>
+              <div
+                className="input-div"
+                style={{ marginLeft: "40px", paddingTop: "1px" }}
+              >
+                <span>Gusanos por condición</span>
+                <input
+                  className="input-field"
+                  type="number"
+                  min="1"
+                  placeholder=""
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  style={{ width: "104px" }}
+                  ref={gusanosPorCondicionRef}
                 ></input>
               </div>
               {condiciones.map((condicion, index) => (

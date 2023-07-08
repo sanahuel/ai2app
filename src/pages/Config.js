@@ -14,7 +14,7 @@ const Config = () => {
 
   useEffect(() => {
     async function fetchDisp() {
-      fetch("http://127.0.0.1:8000/config/disp", {
+      fetch(`http://${window.location.hostname}:8000/config/disp`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -23,7 +23,7 @@ const Config = () => {
         });
     }
     async function fetchPlanif() {
-      fetch("http://127.0.0.1:8000/config/planif", {
+      fetch(`http://${window.location.hostname}:8000/config/planif`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -32,7 +32,7 @@ const Config = () => {
         });
     }
     async function fetchPlacas() {
-      fetch("http://127.0.0.1:8000/config/placas", {
+      fetch(`http://${window.location.hostname}:8000/config/placas`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -48,44 +48,45 @@ const Config = () => {
 
   const deleteDisp = (id) => {
     async function fetchDelete() {
-      fetch("http://127.0.0.1:8000/config/disp/" + id, {
+      fetch(`http://${window.location.hostname}:8000/config/disp/` + id, {
         method: "DELETE",
       })
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
+          window.location.reload();
         });
     }
+    console.log(`http://${window.location.hostname}:8000/config/disp/` + id);
     fetchDelete();
-    window.location.reload();
   };
   const deletePlanif = (id) => {
     async function fetchDelete() {
-      fetch("http://127.0.0.1:8000/config/planif/" + id, {
+      fetch(`http://${window.location.hostname}:8000/config/planif/` + id, {
         method: "DELETE",
       })
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
+          window.location.reload();
         });
     }
-    console.log("http://127.0.0.1:8000/config/planif/" + id);
+    console.log(`http://${window.location.hostname}:8000/config/planif/` + id);
     fetchDelete();
-    window.location.reload();
   };
 
   const deletePlate = (id) => {
     async function fetchDelete() {
-      fetch("http://127.0.0.1:8000/config/placas/" + id, {
+      fetch(`http://${window.location.hostname}:8000/config/placas/` + id, {
         method: "DELETE",
       })
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
+          window.location.reload();
         });
     }
     fetchDelete();
-    window.location.reload();
   };
 
   return (

@@ -36,7 +36,7 @@ function App() {
       : null;
 
     if (semaphore === true) {
-      fetch(`http://localhost:8000/new/`, {
+      fetch(`http://${window.location.hostname}:8000/new/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

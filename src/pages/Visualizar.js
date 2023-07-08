@@ -31,7 +31,7 @@ const Visualizar = () => {
     for (let i = 0; i < ipData.length; i++) {
       fetchData(ipData[i]);
     }
-  });
+  }, []);
 
   return (
     <div className="nuevo-ensayo">

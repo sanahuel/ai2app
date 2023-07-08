@@ -48,7 +48,7 @@ const EditPlanner = () => {
 
   useEffect(() => {
     async function fetchData() {
-      fetch(`http://127.0.0.1:8000/config/planif/` + id, {
+      fetch(`http://${window.location.hostname}:8000/config/planif/` + id, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -72,7 +72,7 @@ const EditPlanner = () => {
         });
     }
     async function fetchCondiciones() {
-      fetch("http://127.0.0.1:8000/config/placas", {
+      fetch(`http://${window.location.hostname}:8000/config/placas`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -90,7 +90,7 @@ const EditPlanner = () => {
       return;
     }
     async function fetchPost() {
-      fetch("http://127.0.0.1:8000/config/planif/" + id, {
+      fetch(`http://${window.location.hostname}:8000/config/planif/` + id, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -124,6 +124,7 @@ const EditPlanner = () => {
           }
         });
     }
+    console.log(`http://${window.location.hostname}:8000/config/planif/` + id);
     fetchPost();
   };
 

@@ -145,7 +145,7 @@ const Home = () => {
             eventMinHeight="5"
             height="auto"
             // minHeight="1900px !important"
-            editable={true}
+            editable={false}
             eventOverlap={false}
             eventDurationEditable={false}
             selectable={false}

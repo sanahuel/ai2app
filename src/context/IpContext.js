@@ -8,12 +8,14 @@ export const IpProvider = ({ children }) => {
   const [ipData, setIpData] = useState({});
 
   useEffect(() => {
+    console.log(window.location.hostname);
     async function fetchData() {
-      fetch(`http://127.0.0.1:8000/config/disp`, {
+      fetch(`http://${window.location.hostname}:8000/config/disp`, {
         method: "GET",
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log(data);
           setIpData(data["dispositivos"]);
         });
     }

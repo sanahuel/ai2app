@@ -50,7 +50,7 @@ const EditPlate = () => {
       setCondArray(parsedMatrix);
     }
     async function fetchData() {
-      fetch(`http://127.0.0.1:8000/config/placas/` + id, {
+      fetch(`http://${window.location.hostname}:8000/config/placas/` + id, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -161,7 +161,7 @@ const EditPlate = () => {
     });
 
     async function fetchData() {
-      fetch(`http://127.0.0.1:8000/config/placas/` + id, {
+      fetch(`http://${window.location.hostname}:8000/config/placas/` + id, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

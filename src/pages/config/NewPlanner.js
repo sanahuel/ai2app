@@ -44,7 +44,7 @@ const NewPlanner = () => {
 
   useEffect(() => {
     async function fetchCondiciones() {
-      fetch("http://127.0.0.1:8000/config/placas", {
+      fetch(`http://${window.location.hostname}:8000/config/placas`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -61,7 +61,7 @@ const NewPlanner = () => {
       return;
     }
     async function fetchPost() {
-      fetch("http://127.0.0.1:8000/config/planif", {
+      fetch(`http://${window.location.hostname}:8000/config/planif`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

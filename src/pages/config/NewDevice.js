@@ -25,7 +25,7 @@ const NewDevice = () => {
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null;
     async function fetchData() {
-      fetch("http://127.0.0.1:8000/config/disp", {
+      fetch(`http://${window.location.hostname}:8000/config/disp`, {
         method: "POST",
         body: JSON.stringify({
           nDisp: num.current.value,

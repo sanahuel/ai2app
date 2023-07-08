@@ -14,7 +14,7 @@ const EditDevice = () => {
 
   useEffect(() => {
     async function fetchData() {
-      fetch("http://127.0.0.1:8000/config/disp/" + id, {
+      fetch(`http://${window.location.hostname}:8000/config/disp/` + id, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -45,7 +45,7 @@ const EditDevice = () => {
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null;
     async function fetchUpdate() {
-      fetch("http://127.0.0.1:8000/config/disp/" + id, {
+      fetch(`http://${window.location.hostname}:8000/config/disp/` + id, {
         method: "PUT",
         body: JSON.stringify({
           nDisp: num,

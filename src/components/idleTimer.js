@@ -17,7 +17,7 @@ export const IdleTimer = ({ semaphore }) => {
       : null;
 
     if (router.pathname === "/nuevo") {
-      fetch(`http://${ipData[0].IP}:8000/new/`, {
+      fetch(`http://${window.location.hostname}:8000/new/`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token.access}`,
@@ -32,7 +32,7 @@ export const IdleTimer = ({ semaphore }) => {
       : null;
 
     if (semaphore) {
-      fetch(`http://${ipData[0].IP}:8000/new/`, {
+      fetch(`http://${window.location.hostname}:8000/new/`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token.access}`,
