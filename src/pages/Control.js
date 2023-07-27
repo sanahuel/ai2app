@@ -2,10 +2,9 @@ import React from "react";
 import { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Panel.css";
-import "./lifespan1.css";
+import "./Control.css";
 import del from "../icons/clear.svg";
 import Dialog from "../components/dialog";
-import file from "../icons/file.svg";
 import { useParams } from "react-router-dom";
 
 import FullCalendar from "@fullcalendar/react";
@@ -14,7 +13,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 
-const Lifespan1 = () => {
+const Control = () => {
   let navigate = useNavigate();
   const { disp, id } = useParams();
 
@@ -30,6 +29,8 @@ const Lifespan1 = () => {
   let [events, setEvents] = useState([]);
   let [dragEvent, setDragEvent] = useState({});
   let [ids, setIds] = useState(0);
+  const [isLoading, setIsLoading] = useState(false)
+
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +39,6 @@ const Lifespan1 = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           setEnsayo(data);
           setEvents(data.capturas);
         });
@@ -62,26 +62,26 @@ const Lifespan1 = () => {
     // setEvents([...temporalEvents]);
   }, []);
 
-  useEffect(() => {
-    let formatData = (data) => {
-      return data.map((str) => {
-        return {
-          title: " ",
-          start: str,
-          allDay: false,
-          color: "#ddd",
-        };
-      });
-    };
-    async function fetchData() {
-      const response = await fetch("/control/18");
-      const data = await response.json();
-      console.log(data);
-      //setEnsayos(formatData(data.capturas));
-    }
-    fetchData();
-    // console.log(capturas);
-  }, []);
+  // useEffect(() => {
+  //   let formatData = (data) => {
+  //     return data.map((str) => {
+  //       return {
+  //         title: " ",
+  //         start: str,
+  //         allDay: false,
+  //         color: "#ddd",
+  //       };
+  //     });
+  //   };
+  //   async function fetchData() {
+  //     const response = await fetch("/control/18");
+  //     const data = await response.json();
+  //     console.log(data);
+  //     //setEnsayos(formatData(data.capturas));
+  //   }
+  //   fetchData();
+  //   // console.log(capturas);
+  // }, []);
 
   const condiciones = ["A", "B", "C"];
   const placas = [
@@ -115,7 +115,7 @@ const Lifespan1 = () => {
     if (put[0] == "Ensayo") {
       if (choose) {
         setDialog("", false, "");
-        // deleteEnsayo();
+        deleteEnsayo();
       } else {
         setDialog("", false, "");
       }
@@ -138,7 +138,8 @@ const Lifespan1 = () => {
   };
 
   const deleteEnsayo = async () => {
-    fetch("/control/1", {
+    setIsLoading(true)
+    fetch(`http://${disp}:8000/control/` + id, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -157,8 +158,26 @@ const Lifespan1 = () => {
   };
 
   let dragCalendarEvent = () => {
+    console.log(dragEvent)
     let temporalEvents = events.filter((e) => e.id != dragEvent.id);
     setEvents([...temporalEvents, dragEvent]);
+
+    fetch(`http://${disp}:8000/control/` + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        table: 'Tareas_Drag',
+        from: dragEvent.from,
+        to: dragEvent.to
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => 
+      window.location.reload()
+      )
+      .catch((error) => console.log(error));
   };
 
   let cancelDragCalendarEvent = () => {
@@ -168,7 +187,7 @@ const Lifespan1 = () => {
   };
 
   const putEnsayo = async () => {
-    fetch("/control/18", {
+    fetch(`http://${disp}:8000/control/` + id, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -179,7 +198,9 @@ const Lifespan1 = () => {
       }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => 
+      window.location.reload()
+      )
       .catch((error) => console.log(error));
   };
 
@@ -252,18 +273,18 @@ const Lifespan1 = () => {
         <div className="border-div" style={{ marginBottom: "5px" }}></div>
         {ensayo.condiciones.map((condicion, index) => (
           <div key={index} className="condicion-row-div">
-            <span style={{ fontStyle: "italic" }}>Condición {condicion}</span>
-            <button
+            <span style={{ fontStyle: "italic", color: condicion[1]===false?'#777':'black'  }}>Condición {condicion[0]}</span>
+            {condicion[1] && <button
               onClick={() =>
                 handleDelete(
-                  index,
+                  condicion[0],
                   "Eliminar una condición no es reversible",
                   "Condiciones"
                 )
               }
             >
               <img src={del} alt="" />
-            </button>
+            </button>}
           </div>
         ))}
       </div>
@@ -284,6 +305,7 @@ const Lifespan1 = () => {
                 marginRight: "1.2%",
                 marginBottom: "1.2%",
               }}
+              key={index}
             >
               <div
                 className="placa"
@@ -294,18 +316,18 @@ const Lifespan1 = () => {
                   justifyContent: "center",
                 }}
               >
-                <span style={{ fontStyle: "italic" }}>Placa {placa}</span>
-                <button
+                <span style={{ fontStyle: "italic", color: placa[1]===true?'#777':'black' }}>Placa {index+1} - {placa[2]}</span>
+                {placa[1] != true && <button
                   onClick={() =>
                     handleDelete(
-                      index,
+                      placa[0],
                       "Eliminar una placa no es reversible",
                       "Placas"
                     )
                   }
                 >
                   <img src={del} alt="" />
-                </button>
+                </button>}
               </div>
             </div>
           ))}
@@ -341,19 +363,22 @@ const Lifespan1 = () => {
             firstDay={1}
             locale={esLocale}
             events={events}
-            eventClick={() => {
-              setDialog({
-                message: "Eliminar una captura no es reversible",
-                isLoading: true,
-                index: 0,
-              });
+            eventClick={(eventClickInfo) => {
+              if(eventClickInfo.event.startEditable != false){
+              handleDelete(
+                eventClickInfo.event.start,
+                "Eliminar una placa captura no es reversible",
+                "Tareas_Cancel"
+              )}
             }}
             eventDrop={(eventDropInfo) => {
               if (eventDropInfo.event.start.getTime() >= new Date().getTime()) {
                 setDragEvent({
                   title: eventDropInfo.event.title,
-                  start: eventDropInfo.event.start,
+                  from: new Date(events.filter((e) => e.id == eventDropInfo.event.id)[0].start),
+                  to: eventDropInfo.event.start,
                   id: eventDropInfo.event.id,
+                  color: ensayo.color,
                 });
                 setPut(["Drag"]);
                 setDialog({
@@ -385,8 +410,16 @@ const Lifespan1 = () => {
       {dialog.isLoading && (
         <Dialog onDialog={areUSureDelete} message={dialog.message} />
       )}
+
+      {/* SPINNER */}
+      {isLoading && (
+        <div className="outter-spinner-div">
+        <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+
+      )}
     </div>
   );
 };
 
-export default Lifespan1;
+export default Control;

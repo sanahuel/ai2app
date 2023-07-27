@@ -6,7 +6,7 @@ import NuevoEnsayo from "./pages/NuevoEnsayo";
 import Login from "./pages/Login";
 import Sidebar from "./components/sidebar";
 import Panel from "./pages/Panel";
-import Lifespan from "./pages/lifespan1";
+import Control from "./pages/Control";
 import Visualizar from "./pages/Visualizar";
 import Results from "./pages/Results";
 import Nav from "./components/navbar";
@@ -24,6 +24,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { IpProvider } from "./context/IpContext";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
+
+import { withOneTabEnforcer } from "react-one-tab-enforcer"
 
 function App() {
   const router = useLocation();
@@ -93,7 +95,7 @@ function App() {
               <Route element={<PrivateRoutes />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/control" element={<Panel />} />
-                <Route path="/control/:disp/:id" element={<Lifespan />} />
+                <Route path="/control/:disp/:id" element={<Control />} />
                 <Route
                   path="/nuevo"
                   element={
@@ -121,5 +123,12 @@ function App() {
     </>
   );
 }
+const DifferentWarningComponent = () => <div
+style={{position:"absolute",left:0, top:0,height:"100%", width: "100%",display: "flex", justifyContent: "center", alignContent: "center"}}
+>
+          <span style={{ fontWeight: "bold", color: "#444", marginTop:"100px" }}>
+            Solo se puede utilizar una pestaña
+          </span>
+        </div>
 
-export default App;
+export default withOneTabEnforcer({OnlyOneTabComponent: DifferentWarningComponent})(App)

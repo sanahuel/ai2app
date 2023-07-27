@@ -1,4 +1,3 @@
-import { SupervisedUserCircle } from "@material-ui/icons";
 import React from "react";
 import { createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
@@ -47,6 +46,7 @@ export const AuthProvider = ({ children }) => {
       setAuthTokens(data);
       setUser(jwt_decode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
+      sessionStorage.setItem('authToken', JSON.stringify(data));
       navigate("/");
     } else {
       alert("Something went wrong!");

@@ -79,7 +79,7 @@ const Home = () => {
                 setSelectedDispositivos(copy);
               }}
               onDoubleClick={() => {
-                window.open(`http://${dispositivo[1]}:3001/`, "_blank");
+                window.open(`http://${dispositivo[1]}:3001/ai2app/`, "_blank");
               }}
             >
               <div className="container-header">

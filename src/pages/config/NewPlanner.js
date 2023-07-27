@@ -24,6 +24,7 @@ const NewPlanner = () => {
   const freqCaptura = useRef();
   const imgsPorCaptura = useRef();
   const placasPorCond = useRef();
+  const gusanosPorCond = useRef();
   let colorRef = useRef();
 
   let navigate = useNavigate();
@@ -83,6 +84,7 @@ const NewPlanner = () => {
           imgsPorCaptura: imgsPorCaptura.current.value,
           placasPorCond: placasPorCond.current.value,
           configCondicion: configCondicion,
+          gusanosPorCond: gusanosPorCond.current.value,
         }),
       })
         .then((response) => response.json())
@@ -252,6 +254,24 @@ const NewPlanner = () => {
               ref={placasPorCond}
             ></input>
           </div>
+          <div
+                className="input-div"
+                style={{ marginLeft: "40px", paddingTop: "1px" }}
+              >
+                <span>Gusanos por condición</span>
+                <input
+                  className="input-field"
+                  type="number"
+                  min="1"
+                  placeholder=""
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  style={{ width: "104px" }}
+                  ref={gusanosPorCond}
+                ></input>
+              </div>
           {condiciones.map((condicion, index) => (
             <div key={condicion}>
               <div className="condicion-div">
@@ -413,7 +433,7 @@ const NewPlanner = () => {
               type="number"
               min="0"
               defaultValue="1942"
-              style={{ width: "52px" }}
+              style={{ width: "62px" }}
               ref={resWidth}
             />
             <span id="pix-span">x</span>
@@ -422,7 +442,7 @@ const NewPlanner = () => {
               type="number"
               min="0"
               defaultValue="1942"
-              style={{ left: "29px", width: "52px" }}
+              style={{ left: "29px", width: "62px" }}
               ref={resHeight}
             />
           </div>

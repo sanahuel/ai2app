@@ -59,6 +59,10 @@ ul a.active {
   color: rgb(10, 113, 215);
 }
 
+ul a.link.active {
+  color: rgb(10, 113, 215);
+}
+
 ul a.active img {
   filter: invert(40%) sepia(66%) saturate(5627%) hue-rotate(197deg)
     brightness(90%) contrast(92%);

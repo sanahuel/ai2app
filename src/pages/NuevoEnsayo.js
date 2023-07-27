@@ -50,7 +50,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [fetchedData, setFetchedData] = useState({});
   const [capturas, setCapturas] = useState({});
   const [condiciones, setCondiciones] = useState([]);
-  const [configCondicion, setConfigCondicion] = useState("DEFAULT");
+  const [configCondicion, setConfigCondicion] = useState({value: "DEFAULT"});
   const [events, setEvents] = useState([]);
   let [ids, setIds] = useState(0);
   let [selectedOption, setSelectedOption] = useState(ipData[0].nDisp);
@@ -62,6 +62,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [configEnsayo, setConfigEnsayo] = useState([]);
   const [configCondiciones, setConfigCondiciones] = useState([]);
   const [changesBBDD, setChangesBBDD] = useState({});
+  const [isLoading, setIsLoading] = useState(false)
 
   let changes = {};
 
@@ -207,6 +208,26 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       clearInterval(intervalId);
     };
   }, [repeat]);
+
+  // Format Dates
+  function formatDateWithTimezone(date) {
+    const timezoneOffsetMinutes = date.getTimezoneOffset();
+    const timezoneOffsetHours = Math.abs(Math.floor(timezoneOffsetMinutes / 60));
+    const timezoneOffsetSign = timezoneOffsetMinutes < 0 ? '+' : '-';
+  
+    const pad = (number) => (number < 10 ? '0' : '') + number;
+  
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+  
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  
+    return `${formattedDate}`;
+  }
 
   let orderPallets = (espacioNecesario) => {
     let order = [];
@@ -356,7 +377,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           const fetchEvents = [];
           rawEvents.forEach((event) => {
             fetchEvents.push({
-              event: event[0].toISOString(),
+              event: formatDateWithTimezone(event[0]),
               holguraPositiva: event[1],
               holguraNegativa: event[2],
             });
@@ -365,7 +386,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           // FETCH
           const disp = ipData.find((obj) => obj.nDisp === selectedOption);
           const decodedToken = jwt_decode(authTokens.access);
-
+          setIsLoading(true)
           fetch(`http://${disp.IP}:8000/new/`, {
             method: "POST",
             headers: {
@@ -414,6 +435,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               navigate("/");
             })
             .catch((error) => {
+              setIsLoading(false)
               alert("Error: " + error.message);
             });
         } else {
@@ -1629,6 +1651,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     setConfigCondicion(JSON.parse(config).configCondicion);
     placasPorCondicionRef.current.value = JSON.parse(config).placasPorCond;
     setCondiciones(JSON.parse(config).condiciones);
+    gusanosPorCondicionRef.current.value = JSON.parse(config).gusanosPorCond
   };
 
   let changeConfigCondicion = (config) => {
@@ -1814,10 +1837,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   name="select"
                   className="input-field"
                   style={{ width: "145px" }}
-                  value={configCondicion}
+                  value={JSON.stringify(configCondicion)}
                   onChange={(e) => changeConfigCondicion(e.target.value)}
                 >
-                  <option value="DEFAULT" disabled>
+                  <option value={JSON.stringify({value: "DEFAULT"})} disabled>
                     {" "}
                   </option>
                   {configCondiciones.map((config, index) => (
@@ -2051,7 +2074,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     type="number"
                     min="0"
                     defaultValue="1942"
-                    style={{ width: "52px" }}
+                    style={{ width: "62px" }}
                     ref={resWidthRef}
                   />
                   <span id="pix-span">x</span>
@@ -2060,7 +2083,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     type="number"
                     min="0"
                     defaultValue="1942"
-                    style={{ left: "29px", width: "52px" }}
+                    style={{ left: "29px", width: "62px" }}
                     ref={resHeightRef}
                   />
                 </div>
@@ -2193,6 +2216,13 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           </span>
         </div>
       )}
+      {isLoading && (
+        <div className="outter-spinner-div">
+        <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+
+      )}
+      <button onClick={() => console.log(formatDateWithTimezone(rawEvents[0][0]))}>xxx</button>
     </div>
   );
 };

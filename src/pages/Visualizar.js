@@ -45,7 +45,7 @@ const Visualizar = () => {
                 setDisplay(ensayos[data.nDisp]);
               }}
               onDoubleClick={() => {
-                window.open(`http://${data.IP}:3001/`, "_blank");
+                window.open(`http://${data.IP}:3001/ai2app`, "_blank");
               }}
             >
               Dispositivo {data.nDisp}
@@ -80,7 +80,7 @@ const Visualizar = () => {
                   </span>
                 </div>
                 <div className="control-row-div">
-                  <span style={{ color: "rgb(112, 112, 112)" }}>
+                  <span style={{ color: "rgb(112, 112, 112)", whiteSpace: "nowrap"  }}>
                     Proyecto {data.proyecto}
                   </span>
                 </div>

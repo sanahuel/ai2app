@@ -20,6 +20,10 @@
   margin-right: 30px;
 }
 
+.dispositivo-container span{
+  user-select: none;
+}
+
 .info-div {
   margin-left: 15px;
   margin-top: 7px;

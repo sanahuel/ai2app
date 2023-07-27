@@ -27,6 +27,7 @@ const EditPlanner = () => {
   const [configCondiciones, setConfigCondiciones] = useState([]);
   const [configCondicion, setConfigCondicion] = useState("DEFAULT");
   const [placasPorCond, setPlacasPorCond] = useState();
+  const [gusanosPorCond,setGusanosPorCond] = useState()
 
   let colorRef = useRef();
 
@@ -69,6 +70,7 @@ const EditPlanner = () => {
           setCondiciones(data.condiciones);
           setPlacasPorCond(data.placasPorCond);
           setConfigCondicion(data.configCondicion);
+          setGusanosPorCond(data.gusanosPorCond)
         });
     }
     async function fetchCondiciones() {
@@ -113,6 +115,7 @@ const EditPlanner = () => {
           id: id,
           placasPorCond: placasPorCond,
           configCondicion: configCondicion,
+          gusanosPorCond: gusanosPorCond,
         }),
       })
         .then((response) => response.json())
@@ -286,6 +289,25 @@ const EditPlanner = () => {
               onChange={(e) => setPlacasPorCond(e.target.value)}
             ></input>
           </div>
+          <div
+                className="input-div"
+                style={{ marginLeft: "40px", paddingTop: "1px" }}
+              >
+                <span>Gusanos por condición</span>
+                <input
+                  className="input-field"
+                  type="number"
+                  min="1"
+                  placeholder=""
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  style={{ width: "104px" }}
+                  value={gusanosPorCond}
+                  onChange={(e) => setGusanosPorCond(e.target.value)}
+                ></input>
+              </div>
           {condiciones.map((condicion, index) => (
             <div key={condicion}>
               <div className="condicion-div">
@@ -458,7 +480,7 @@ const EditPlanner = () => {
               type="number"
               min="0"
               defaultValue="1942"
-              style={{ width: "52px" }}
+              style={{ width: "62px" }}
               value={resWidth}
               onChange={(e) => setResWidth(e.target.value)}
             />
@@ -468,7 +490,7 @@ const EditPlanner = () => {
               type="number"
               min="0"
               defaultValue="1942"
-              style={{ left: "29px", width: "52px" }}
+              style={{ left: "29px", width: "62px" }}
               value={resHeight}
               onChange={(e) => setResHeight(e.target.value)}
             />
