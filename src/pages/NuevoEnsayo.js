@@ -48,7 +48,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   let dispositivos = ["1", "2", "3"];
 
   const [fetchedData, setFetchedData] = useState({});
-  const [capturas, setCapturas] = useState({});
+  const [capturas, setCapturas] = useState([]);
   const [condiciones, setCondiciones] = useState([]);
   const [configCondicion, setConfigCondicion] = useState({value: "DEFAULT"});
   const [events, setEvents] = useState([]);
@@ -284,6 +284,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           }
         );
 
+
         let espacioNecesario = Array(
           condiciones.length / Object.keys(configCondicion.condiciones).length
         ).fill(0);
@@ -296,6 +297,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           }
         });
 
+        // ESPACIO
         condiciones.forEach((cond, index) => {
           if (cond.name !== "") {
             const espacio =
@@ -307,7 +309,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       index / Object.keys(configCondicion.condiciones).length
                     )
               ].length;
-
             if (
               espacio >
               espacioNecesario[
@@ -320,19 +321,20 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 Math.trunc(
                   index / Object.keys(configCondicion.condiciones).length
                 )
-              ] = espacio;
+              ] = Math.ceil(espacio);
             }
           }
         });
+
 
         const espacioNecesarioValue = espacioNecesario.reduce(
           (accumulator, currentValue) => accumulator + currentValue,
           0
         );
+        
         if (espacioLibre >= espacioNecesarioValue) {
           // PALLETS
           let pallets = orderPallets(espacioNecesarioValue);
-          console.log("palets", pallets);
           //PLACAS
           let placas = {};
           for (let i = 0; i < condiciones.length; i++) {
@@ -359,7 +361,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                         )
                   ].length;
                 placasCond.push({
-                  pallet: p,
+                  pallet: p + Math.trunc(i/Object.keys(configCondicion.condiciones).length)*Math.trunc(espacioNecesarioValue*(Object.keys(configCondicion.condiciones).length/condiciones.length)),
                   posicion: Object.values(configCondicion.condiciones)[
                     i -
                       Object.keys(configCondicion.condiciones).length *
@@ -382,6 +384,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               holguraNegativa: event[2],
             });
           });
+
 
           // FETCH
           const disp = ipData.find((obj) => obj.nDisp === selectedOption);
@@ -541,6 +544,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // +Info -> Calendario.md
   let newCheckEvents = (inicio, dispositivo) => {
     // oldEvents = [[fechayHora, holguraPositiva, holguraNegativa], [fechayHora, holguraPositiva, holguraNegativa], ...]
+    
     let oldEvents = capturas.map((captura) => {
       return [new Date(captura.start), 5, 5];
     });
@@ -2222,7 +2226,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         </div>
 
       )}
-      <button onClick={() => console.log(formatDateWithTimezone(rawEvents[0][0]))}>xxx</button>
     </div>
   );
 };

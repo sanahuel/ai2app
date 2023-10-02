@@ -142,7 +142,7 @@ const EditPlate = () => {
       }
     }
     if (maxElement == 0) {
-      alert("La placa no debe tener condiciones");
+      alert("La placa debe tener condiciones");
       return;
     }
 
@@ -160,6 +160,10 @@ const EditPlate = () => {
       });
     });
 
+    const keys = Object.keys(result);
+    const integerKeys = keys.filter(key => Number.isInteger(+key));
+    const maxIntegerKey = Math.max(...integerKeys.map(Number));
+
     async function fetchData() {
       fetch(`http://${window.location.hostname}:8000/config/placas/` + id, {
         method: "PUT",
@@ -168,7 +172,7 @@ const EditPlate = () => {
         },
         body: JSON.stringify({
           nombre: nombre,
-          numCondiciones: String(Object.keys(result).length),
+          numCondiciones: String(maxIntegerKey),
           filas: filas,
           columnas: columnas,
           condiciones: result,
@@ -207,32 +211,6 @@ const EditPlate = () => {
               value={nombre}
               ref={condRef}
               onChange={(e) => setNombre(e.target.value)}
-            />
-          </div>
-          <div className="input-div">
-            <span>Nº de Condiciones</span>
-            <input
-              className="input-field"
-              type="number"
-              placeholder=""
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              min={1}
-              max={filas * columnas}
-              style={{ width: "104px" }}
-              value={numCond}
-              onChange={(e) => {
-                setNumCond(e.target.value);
-                setIsSelected(Array(parseFloat(e.target.value)).fill(0));
-                setColorGradient(
-                  new Gradient()
-                    .setColorGradient("#027df7", "#dcecfc")
-                    .setMidpoint(parseFloat(e.target.value) + 1)
-                    .getColors()
-                );
-              }}
             />
           </div>
           <div className="input-div">
@@ -307,6 +285,32 @@ const EditPlate = () => {
                       .getColors()
                   );
                 }
+              }}
+            />
+          </div>
+          <div className="input-div">
+            <span>Nº de Condiciones</span>
+            <input
+              className="input-field"
+              type="number"
+              placeholder=""
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              min={1}
+              max={filas * columnas}
+              style={{ width: "104px" }}
+              value={numCond}
+              onChange={(e) => {
+                setNumCond(e.target.value);
+                setIsSelected(Array(parseFloat(e.target.value)).fill(0));
+                setColorGradient(
+                  new Gradient()
+                    .setColorGradient("#027df7", "#dcecfc")
+                    .setMidpoint(parseFloat(e.target.value) + 1)
+                    .getColors()
+                );
               }}
             />
           </div>

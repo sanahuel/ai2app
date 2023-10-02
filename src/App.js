@@ -29,8 +29,8 @@ import { withOneTabEnforcer } from "react-one-tab-enforcer"
 
 function App() {
   const router = useLocation();
-  let [prev, setPrev] = useState(null);
-  let [semaphore, setSemaphore] = useState(false);
+  const [prev, setPrev] = useState(localStorage.getItem('prev') || null);
+  let [semaphore, setSemaphore] = useState(localStorage.getItem('semaphoreFlag') || false);
 
   const releaseLock = () => {
     let token = localStorage.getItem("authTokens")
@@ -50,23 +50,38 @@ function App() {
       });
 
       setSemaphore(false);
+      localStorage.setItem('semaphoreFlag', false)
     }
     setSemaphore(false);
+    localStorage.setItem('semaphoreFlag', false);
   };
 
   // liberar semáforo si sale de la página
   useEffect(() => {
-    if (prev == "/nuevo" && semaphore === true) {
+    const semaphoreFlag = localStorage.getItem('semaphoreFlag')
+    
+
+    if (prev === "/nuevo" && semaphoreFlag === 'true') {
       releaseLock();
+      localStorage.setItem('semaphoreFlag', false)
     }
+
     setPrev(router.pathname);
+
+    // Store the updated `prev` value in localStorage
+    localStorage.setItem('prev', router.pathname);
   }, [router.pathname]);
+
+
 
   //liberar semáforo si cierra o refresca la página
   useEffect(() => {
     const handleBeforeUnload = (event) => {
-      if (semaphore === true) {
+      event.preventDefault()
+      if (semaphore == true) {
         releaseLock();
+        localStorage.setItem('semaphoreFlag', false)
+
       }
     };
 
@@ -81,6 +96,11 @@ function App() {
 
   const updateSemaphore = (data) => {
     setSemaphore(data);
+    if (data == true){
+      localStorage.setItem('semaphoreFlag', true)
+    } else {
+      localStorage.setItem('semaphoreFlag', false)
+    }
   };
 
   return (
@@ -123,6 +143,8 @@ function App() {
     </>
   );
 }
+
+// Componente para mostrar en otras pestañas
 const DifferentWarningComponent = () => <div
 style={{position:"absolute",left:0, top:0,height:"100%", width: "100%",display: "flex", justifyContent: "center", alignContent: "center"}}
 >

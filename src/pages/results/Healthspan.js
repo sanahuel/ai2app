@@ -1,188 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Grafica } from "./Grafica";
+import { Barras } from "./Barras";
 
 import "./lifespanr.css";
 import file from "../../icons/file.svg";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
 const Healthspan = (resultData) => {
-  console.log("heatlhspannnnn");
-  const vivosA = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
-    0, 0, 0, 0,
-  ];
-  const vivosB = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
-    0, 0, 0, 0,
-  ];
-  const vivosC = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
-    8, 3, 1, 1, 0,
-  ];
-  const vivosD = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
-    0, 0, 0, 0,
-  ];
 
-  const Placa1 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa2 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa3 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
-    0, 0, 0, 0,
-  ];
-
-  const Placa4 = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
-    0, 0, 0, 0,
-  ];
-  const Placa5 = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
-    0, 0, 0, 0,
-  ];
-  const Placa6 = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
-    0, 0, 0, 0,
-  ];
-
-  const Placa7 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
-    8, 3, 1, 1, 0,
-  ];
-  const Placa8 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
-    8, 3, 1, 1, 0,
-  ];
-  const Placa9 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
-    8, 3, 1, 1, 0,
-  ];
-
-  const Placa10 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa11 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa12 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
-    0, 0, 0, 0,
-  ];
-
-  const A = { 1: Placa1, 2: Placa2, 3: Placa3 };
-  const B = { 4: Placa4, 5: Placa5, 6: Placa6 };
-  const C = { 7: Placa7, 8: Placa8, 9: Placa9 };
-  const D = { 10: Placa10, 11: Placa11, 12: Placa12 };
-
-  const condiciones = { A: A, B: B, C: C, D: D };
-
-  const fraccA = vivosA.map((i) => (i / 120) * 100);
-  const fraccB = vivosB.map((i) => (i / 120) * 100);
-  const fraccC = vivosC.map((i) => (i / 120) * 100);
-  const fraccD = vivosD.map((i) => (i / 120) * 100);
-
-  const dias = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-  ];
-
-  const [open, setOpen] = useState({
-    1: true,
-    2: true,
-    3: true,
-    4: true,
-    5: true,
-    6: true,
-    7: true,
-    8: true,
-    9: true,
-    10: true,
-    11: true,
-    12: true,
-  });
-
-  let placasRef = useRef();
-
-  let calculateCond = (cond) => {
-    // array vacio de igual long. que las placas
-    let keys = Object.keys(condiciones[cond]);
-    let vivos = Array(condiciones[cond][keys[0]].length).fill(0);
-    for (let key in condiciones[cond]) {
-      for (let i = 0; i < Object.keys(condiciones[cond][key]).length; i++) {
-        vivos[i] += condiciones[cond][key][i];
-      }
-    }
-    let n = vivos[0]; //cambiar (de donde leer num max de celegans??) el primer dia puede haber muerto alguno ya
-    vivos.map((i) => (i / n) * 100);
-    // console.log(vivos);
-    return vivos;
-  };
-
-  useEffect(() => {
-    let fraccA = calculateCond("A");
-    let fraccB = calculateCond("B");
-    let fraccC = calculateCond("C");
-    let fraccD = calculateCond("D");
-    console.log("....");
-  }, [open]);
-
-  let data = {
-    labels: dias,
-    datasets: [
-      // más tonos #187741 #155239 #A8EEC1 #E3FCEC
-      {
-        label: "Cond. A",
-        data: fraccB,
-        borderColor: "#249D57",
-        backgroundColor: "#249D57",
-      },
-      {
-        label: "Cond. B",
-        data: fraccA,
-        borderColor: "#38C172",
-        backgroundColor: "#38C172",
-      },
-      {
-        label: "Cond. C",
-        data: fraccC,
-        borderColor: "#74D99F",
-        backgroundColor: "#74D99F",
-      },
-      {
-        label: "Cond. D",
-        data: fraccD,
-        borderColor: "#B9F6CA",
-        backgroundColor: "#B9F6CA",
-      },
-    ],
-  };
-
-  let options = {
+  // OPTIONS
+  let CantidadMovOptions = {
     responsive: true,
     plugins: {
       legend: {
@@ -191,7 +17,7 @@ const Healthspan = (resultData) => {
       },
       title: {
         display: false,
-        text: "Lifespan R",
+        text: " ",
       },
     },
     scales: {
@@ -210,8 +36,112 @@ const Healthspan = (resultData) => {
     },
   };
 
-  let handlePlaca = (key) => {
-    setOpen({ ...open, [key]: !open[key] });
+  let Indicador2Options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+        position: 'bottom',
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: "Indicador 2",
+        },
+      },
+    },
+  };
+
+  // FETCH CONDICIONES  --harcoded.....
+
+  const Placa1 = [
+    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 131, 90, 69, 44, 21, 7, 44,
+    0, 0, 0, 0,
+  ];
+  const Placa2 = [
+    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
+    0, 0, 0, 0,
+  ];
+  const Placa3 = [
+    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
+    0, 0, 0, 0,
+  ];
+
+  const Placa4 = [
+    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
+    0, 0, 0, 0,
+  ];
+  const Placa5 = [
+    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
+    0, 11, 0, 0,
+  ];
+  const Placa6 = [
+    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
+    0, 0, 0, 0,
+  ];
+
+  const Placa7 = [
+    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
+    8, 3, 1, 1, 0,
+  ];
+  const Placa8 = [
+    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
+    8, 3, 1, 12, 0,
+  ];
+  const Placa9 = [
+    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 111, 64, 33, 17,
+    8, 3, 1, 1, 0,
+  ];
+
+  const Placa10 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
+    0, 0, 0, 0,
+  ];
+  const Placa11 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
+    0, 0, 0, 0,
+  ];
+  const Placa12 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
+    0, 0, 0, 21,
+  ];
+  const Placa13 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
+    0, 0, 0, 21,
+  ];
+  const Placa14 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
+    0, 0, 0, 21,
+  ];
+  const Placa15 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
+    0, 0, 0, 21,
+  ];
+  const Placa16 = [
+    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
+    0, 0, 0, 21,
+  ];
+
+  const A = { 1: Placa1, 2: Placa2, 3: Placa3, 13:Placa13, 14:Placa14, 15:Placa15, 16:Placa16 };
+  const B = { 4: Placa4, 5: Placa5, 6: Placa6 };
+  const C = { 7: Placa7, 8: Placa8, 9: Placa9 };
+  const D = { 10: Placa10, 11: Placa11, 12: Placa12 };
+
+  const condiciones = { 
+    CantidadMov: {A: A, B: B, C: C, D: D},
+    Indicador2: {
+      A: {1: 60, 2: 64, 3: 71, 13: 55, 14: 56, 15: 45, 16: 65, 17: 33, 18: 66, 19: 97, 20: 55, 21: 65, 22: 64},
+      B: {4: 34, 5: 31, 6: 28},
+      C: {7: 71, 8: 34, 9: 50},
+      D: {10: 11, 11: 13, 12: 17},
+      E: {13: 21, 14: 44, 15: 16},
+      F: {16: 43, 17: 53, 58: 77}
+    } 
   };
 
   return (
@@ -280,100 +210,12 @@ const Healthspan = (resultData) => {
         </div>
       </div>
 
-      {/* GRAFICA */}
+      {/* GRAFICAS */}
 
-      <div>
-        <div className="container-div" style={{ padding: "20px" }}>
-          <Line options={options} data={data} />
-        </div>
-      </div>
+      <Grafica name={"Cantidad de Movimiento"} options={CantidadMovOptions} condiciones={condiciones.CantidadMov}/>
 
-      {/* TABLA */}
-
-      <div ref={placasRef} style={{ maxWidth: "100%", overflowX: "hidden" }}>
-        {Object.entries(condiciones).map(([key, placa]) => (
-          <div className="container-div" style={{ paddingBottom: "10px" }}>
-            <div
-              className="container-header"
-              style={{ paddingBottom: "10px", fontWeight: "500px" }}
-            >
-              <span>Condición {key}</span>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: "500",
-                  marginBottom: "5px",
-                  width: "75px",
-                  textAlign: "center",
-                }}
-              >
-                <div style={{ paddingBottom: "1px", textAlign: "center" }}>
-                  Día
-                </div>
-                <div
-                  className="border-div"
-                  style={{ width: "90%", marginBottom: "7px" }}
-                ></div>
-                {[...Array(21).keys()].map((day) => (
-                  <>
-                    <div className="condicion-cell">{day + 1}</div>
-                    <div
-                      className="border-div"
-                      style={{
-                        width: "140%",
-                        left: "-17%",
-                        marginBottom: "5px",
-                      }}
-                    ></div>
-                  </>
-                ))}
-              </div>
-              {Object.entries(placa).map(([key, values]) => (
-                <div
-                  className={`placa-div ${open[key] ? "active" : "inactive"}`}
-                  onClick={() => {
-                    handlePlaca(key);
-                  }}
-                  style={{ fontWeight: "500", width: "75px" }}
-                >
-                  <div style={{ paddingBottom: "1px", textAlign: "center" }}>
-                    Placa {key}
-                  </div>
-                  <div
-                    className="border-div"
-                    style={{ width: "110%", left: "-8%", marginBottom: "7px" }}
-                  ></div>
-
-                  <div>
-                    {values.map((value) => (
-                      <>
-                        <div className="condicion-cell">{value}</div>
-                        <div
-                          className="border-div"
-                          style={{
-                            left: "-190%",
-                            width: "450%",
-                            marginBottom: "5px",
-                          }}
-                        ></div>
-                      </>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
+      <Barras name={"Indicador 2"} options={Indicador2Options} condiciones={condiciones.Indicador2}/>
+     
       {/* EXPORT */}
       <div className="crear-div">
         <button className="crear-button">

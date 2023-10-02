@@ -161,32 +161,6 @@ const NewPlate = () => {
             />
           </div>
           <div className="input-div">
-            <span>Nº de Condiciones</span>
-            <input
-              className="input-field"
-              type="number"
-              placeholder=""
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck="false"
-              min={1}
-              max={filas * columnas}
-              ref={condRef}
-              style={{ width: "104px" }}
-              onChange={(e) => {
-                setNumCond(e.target.value);
-                setIsSelected(Array(parseFloat(e.target.value)).fill(0));
-                setColorGradient(
-                  new Gradient()
-                    .setColorGradient("#027df7", "#dcecfc")
-                    .setMidpoint(parseFloat(e.target.value) + 1)
-                    .getColors()
-                );
-              }}
-            />
-          </div>
-          <div className="input-div">
             <span>Nº de Filas</span>
             <input
               className="input-field"
@@ -259,6 +233,33 @@ const NewPlate = () => {
               }}
             />
           </div>
+          <div className="input-div">
+            <span>Nº de Condiciones</span>
+            <input
+              className="input-field"
+              type="number"
+              placeholder=""
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              min={1}
+              max={filas * columnas}
+              ref={condRef}
+              style={{ width: "104px" }}
+              onChange={(e) => {
+                setNumCond(e.target.value);
+                setIsSelected(Array(parseFloat(e.target.value)).fill(0));
+                setColorGradient(
+                  new Gradient()
+                    .setColorGradient("#027df7", "#dcecfc")
+                    .setMidpoint(parseFloat(e.target.value) + 1)
+                    .getColors()
+                );
+              }}
+            />
+          </div>
+
         </div>
       </div>
       <div className="container-div" style={{ minHeight: "100px" }}>

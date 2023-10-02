@@ -50,6 +50,15 @@
   border-radius: 3px;
   border-width: 1px;
   color: rgb(52, 52, 52); /*cambiar */
+  background-color: white;
+}
+
+/* Style the up and down buttons in Firefox */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  /* Apply styles to the buttons for WebKit-based browsers */
+  background-color: white;
+  /* Add other button styles as needed */
 }
 
 .input-time {
