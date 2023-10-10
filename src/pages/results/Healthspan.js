@@ -37,6 +37,7 @@ const Healthspan = (resultData) => {
   };
 
   let Indicador2Options = {
+    type: "barWithErrorBars",
     responsive: true,
     plugins: {
       legend: {
@@ -60,20 +61,20 @@ const Healthspan = (resultData) => {
   // FETCH CONDICIONES  --harcoded.....
 
   const Placa1 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 131, 90, 69, 44, 21, 7, 44,
+    120, 120, 120, 119, 119, 119, 117, 117, 112, 112, 131, 95, 69, 21, 21, 7, 44,
     0, 0, 0, 0,
   ];
   const Placa2 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
+    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 97, 69, 44, 21, 7, 1,
     0, 0, 0, 0,
   ];
   const Placa3 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 90, 69, 44, 21, 7, 1,
+    120, 120, 120, 120, 120, 120, 119, 119, 109, 107, 104, 77, 56, 44, 21, 7, 1,
     0, 0, 0, 0,
   ];
 
   const Placa4 = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
+    120, 120, 120, 119, 119, 119, 119, 117, 115, 110, 99, 86, 60, 15, 9, 3, 0,
     0, 0, 0, 0,
   ];
   const Placa5 = [
@@ -211,6 +212,10 @@ const Healthspan = (resultData) => {
       </div>
 
       {/* GRAFICAS */}
+
+      {/* LOGICA PARA GRAFICAR:
+        1 PUNTO DE CAPTURA -> DIAGRAMA DE BARRAS
+        >1 PUNTO DE CAPTURA -> GRÁFICA TEMPORAL */}
 
       <Grafica name={"Cantidad de Movimiento"} options={CantidadMovOptions} condiciones={condiciones.CantidadMov}/>
 

@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Line } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Filler,
+    Legend,
+  } from 'chart.js';
+  
 
 import "./lifespanr.css";
 import expand from "../../icons/expand.svg";
@@ -21,6 +24,7 @@ ChartJS.register(
     LinearScale,
     PointElement,
     LineElement,
+    Filler,
     Title,
     Tooltip,
     Legend
@@ -30,36 +34,47 @@ ChartJS.register(
 export const Grafica = ({ name, options, condiciones }) => {
     let placasRef = useRef();
 
-    // PRUEBA COLOR
-    let hex = "#0077b6"
+    // CALC MEAN Y STD DEV
+    const calcData = (condicion) => {
+        const numPositions = Object.values(condicion)[0].length; // Assuming all keys have the same length.
+        const means = Array(numPositions).fill(0);
+        const squaredDifferences = Array(numPositions).fill(0);
+      
+        const conditionKeys = Object.keys(condicion);
+        const validKeys = conditionKeys.filter(key => open[key] === true);
+      
+        for (let i = 0; i < validKeys.length; i++) {
+          const key = validKeys[i];
+      
+          for (let j = 0; j < numPositions; j++) {
+            means[j] += condicion[key][j];
+          }
+        }
 
-    hex = hex.replace(/^#/, '');
+        const n = validKeys.length;
+        for (let i = 0; i < numPositions; i++) {
+          means[i] /= n;
+        }
+      
+        for (let i = 0; i < validKeys.length; i++) {
+          const key = validKeys[i];
+          const values = condicion[key];
+      
+          for (let j = 0; j < numPositions; j++) {
+            const diff = condicion[key][j] - means[j];
+            squaredDifferences[j] += diff * diff;
+          }
+        }
+        const meansMinusStdDeviations = means.map((mean, index) => mean - Math.sqrt(squaredDifferences[index] / (n - 1)));
+        const meansPlusStdDeviations = means.map((mean, index) => mean + Math.sqrt(squaredDifferences[index] / (n - 1)));
+      
+        return [means, meansMinusStdDeviations, meansPlusStdDeviations];
+      };      
+      
+            
+    // SET UP DATA   
+      const [condData, setCondData] = useState({})
 
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-
-    const darkness = 20 / 100;
-
-    const newR = Math.max(0, Math.floor(r - r * darkness));
-    const newG = Math.max(0, Math.floor(g - g * darkness));
-    const newB = Math.max(0, Math.floor(b - b * darkness));
-
-    const newHex =
-        '#' +
-        (newR < 16 ? '0' : '') + newR.toString(16) +
-        (newG < 16 ? '0' : '') + newG.toString(16) +
-        (newB < 16 ? '0' : '') + newB.toString(16);
-    
-    const gradientArray = new Gradient()
-    .setColorGradient(newHex, "#FFFFFF")
-    .setMidpoint(10)
-    .getColors();
-
-    console.log(gradientArray);
-
-
-    // SET UP DATA    
       const [fraccA, setFraccA] = useState([]);
       const [fraccB, setFraccB] = useState([]);
       const [fraccC, setFraccC] = useState([]);
@@ -118,7 +133,13 @@ export const Grafica = ({ name, options, condiciones }) => {
       setFraccB(calculateCond("B"));
       setFraccC(calculateCond("C"));
       setFraccD(calculateCond("D"));
-    }, [open]);
+
+      const newData = {};
+      for (const key in condiciones) {
+        newData[key] = calcData(condiciones[key]);
+      }
+      setCondData(newData);
+      }, [open]);
 
     //SLIDE PLACAS
     const [slidePlacas, setSlidePlacas] = useState(Object.keys(condiciones).reduce((acc, key) => {
@@ -147,44 +168,123 @@ export const Grafica = ({ name, options, condiciones }) => {
         {
           label: "Cond. A",
           data: fraccA,
-        //   borderColor: "#249D57",
-        //   backgroundColor: "#249D57",
-          borderColor: gradientArray[0], 
-          backgroundColor: gradientArray[0],
+          borderColor: "#249D57",
+          backgroundColor: "#249D57",
+        //   borderColor: gradientArray[0], 
+        //   backgroundColor: gradientArray[0],
         },
         {
           label: "Cond. B",
           data: fraccB,
-        //   borderColor: "#38C172",
-        //   backgroundColor: "#38C172",
-        borderColor: gradientArray[1], 
-        backgroundColor: gradientArray[1],
+          borderColor: "#38C172",
+          backgroundColor: "#38C172",
+        // borderColor: gradientArray[1], 
+        // backgroundColor: gradientArray[1],
         },
         {
           label: "Cond. C",
           data: fraccC,
-        //   borderColor: "#74D99F",
-        //   backgroundColor: "#74D99F",
-            borderColor: gradientArray[4], 
-            backgroundColor: gradientArray[4],
+          borderColor: "#74D99F",
+          backgroundColor: "#74D99F",
+        // borderColor: gradientArray[4], 
+        // backgroundColor: gradientArray[4],
         },
         {
           label: "Cond. D",
           data: fraccD,
-        //   borderColor: "#B9F6CA",
-        //   backgroundColor: "#B9F6CA",
-            borderColor: gradientArray[7], 
-            backgroundColor: gradientArray[7],
+          borderColor: "#B9F6CA",
+          backgroundColor: "#B9F6CA",
+        // borderColor: gradientArray[7], 
+        // backgroundColor: gradientArray[7],
         },
       ],
     };
-  
+
+    let fillCounter = 0
+    let colorPallet = ['16, 122, 64', '24, 90, 189', '179, 36, 54', '196, 63, 29']
+    
+    const opt = {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom",
+            display: true,
+            labels: {
+                filter: item => !item.text.includes('Band')
+            }
+          },
+          title: {
+            display: false,
+            text: " ",
+          },
+        },
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: "Cantidad de Movimiento",
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Días",
+            },
+          },
+        },
+        }
+    const dataLine = {
+        labels: dias,
+        datasets: Object.keys(condData).flatMap(key => {
+            const datasets = [
+              {
+                label: 'Cond.' + key,
+                borderColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]})`,
+                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]})`,
+                fill: false,
+                pointRadius: 2,
+                tension: 0.1,
+                data: condData[key][0],
+                yAxisID: 'y',
+                xAxisID: 'x'
+              },
+              {
+                label: "BandTop" + key,
+                borderColor: "transparent",
+                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]}, 0.4)`,
+                pointRadius: 0,
+                fill: fillCounter,
+                data: condData[key][2],
+                yAxisID: 'y',
+                xAxisID: 'x'
+              },
+              {
+                label: "BandBottom" + key,
+                type: "line",
+                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]}, 0.4)`,
+                borderColor: "transparent",
+                pointRadius: 0,
+                fill: fillCounter,
+                tension: 0,
+                data: condData[key][1],
+                yAxisID: 'y',
+                xAxisID: 'x'
+              }
+            ];
+        
+            fillCounter += 3; // Increment fillCounter for the next iteration.
+        
+            return datasets;
+          })                
+    }
+
+    console.log(dataLine.datasets)
 
     return(
         <>
 
         {/* GRAFICA */}
-        <div>
+        {/* <div>
             <div className="container-div">
                 <div className="container-header">
                     <span>{name}</span>
@@ -194,7 +294,24 @@ export const Grafica = ({ name, options, condiciones }) => {
                     <Line options={options} data={data} />
                 </div>
             </div>
+        </div> */}
+
+        <div>
+            <div className="container-div">
+                <div className="container-header">
+                    <span>{name}</span>
+                </div>
+                <div className="border-div"></div>
+                <div style={{ padding: "20px" }}>
+                    <Line
+                    redraw={false}
+                    options={opt}
+                    data={dataLine}
+                />
+                </div>
+            </div>
         </div>
+
 
         {/* TABLA */}
         <div ref={placasRef} style={{ maxWidth: "100%", overflowX: "hidden" }}>

@@ -117,7 +117,7 @@ function App() {
                 <Route path="/control" element={<Panel />} />
                 <Route path="/control/:disp/:id" element={<Control />} />
                 <Route
-                  path="/nuevo"
+                  path="/new"
                   element={
                     <NuevoEnsayo
                       semaphore={semaphore}
@@ -125,8 +125,8 @@ function App() {
                     />
                   }
                 />
-                <Route path="/visualizar" element={<Visualizar />} />
-                <Route path="/visualizar/:disp/:id" element={<Results />} />
+                <Route path="/visualize" element={<Visualizar />} />
+                <Route path="/visualize/:disp/:id" element={<Results />} />
 
                 <Route path="config/" element={<Config />} />
                 <Route path="config/device/new" element={<NewDevice />} />

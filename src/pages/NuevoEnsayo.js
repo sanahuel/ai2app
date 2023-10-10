@@ -138,6 +138,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           start: captura[0],
           allDay: false,
           color: "#ddd",
+          editable: false,
         };
       });
     };

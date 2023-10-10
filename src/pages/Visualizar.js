@@ -59,7 +59,7 @@ const Visualizar = () => {
           return (
             <Link
               key={data.id}
-              to={`/visualizar/${data.ip}/${data.id}`}
+              to={`/visualize/${data.ip}/${data.id}`}
               style={{
                 display: "inline-block",
                 width: "48.6%",

@@ -1,43 +1,65 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bar } from "react-chartjs-2";
+import { Chart } from "react-chartjs-2";
+import 'chartjs-chart-error-bars'; // Import the error bars plugin
 
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-  } from 'chart.js';
+    Tooltip
+    } from 'chart.js';
+
+  import {
+    BarWithErrorBarsController,
+    BarWithErrorBar
+} from "chartjs-chart-error-bars";
+  
   
 
 import "./lifespanr.css";
 import expand from "../../icons/expand.svg";
 
 ChartJS.register(
+    BarWithErrorBarsController,
+    BarWithErrorBar,
     CategoryScale,
     LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
+    Tooltip
   );
 
 export const Barras = ({ name, options, condiciones }) => {
-    let placasRef = useRef();
+    const placasRef = useRef({})
+      
+    // CALC MEDIA Y STD DEV
+    const calcData = (condicion) => {
+        let mean = 0;
+        let stdDeviation = 0;
+        let n = 0;
+        const conditionKeys = Object.keys(condicion);
+        const values = [];
+      
+        for (let i = 0; i < conditionKeys.length; i++) {
+          const key = conditionKeys[i];
+          const value = condicion[key];
+          if(open[key]===true){
+          values.push(value); // Collect values for the given condition.
+          mean += value;
+          n += 1;
+          }
+        }
+      
+        if (n > 0) {
+          mean = mean / n;
+          // Calculate the standard deviation using the collected values.
+          const squaredDifferences = values.map(value => Math.pow(value - mean, 2));
+          const variance = squaredDifferences.reduce((acc, value) => acc + value, 0) / n;
+          stdDeviation = Math.sqrt(variance);
+        }
+      
+        return [mean, stdDeviation];
+      };
+      
     
-    // SET UP DATA    
-      const [fraccA, setFraccA] = useState(0);
-      const [fraccB, setFraccB] = useState(0);
-      const [fraccC, setFraccC] = useState(0);
-      const [fraccD, setFraccD] = useState(0);
-      const [fraccE, setFraccE] = useState(0);
-      const [fraccF, setFraccF] = useState(0);
-
-    
-      const condNames = Object.keys(condiciones).map(key => "Cond. " + key);  
-
     // OPEN PLACAS
     // en función del idPlacas del objeto condiciones
     const tempPlacas = Object.keys(condiciones).reduce((acc, key) => {
@@ -80,43 +102,54 @@ export const Barras = ({ name, options, condiciones }) => {
     }
     };
 
+    // SET UP DATA    
+    const [condData, setCondData] = useState({});
+    // const [fraccB, setFraccB] = useState(0);
+    // const [fraccC, setFraccC] = useState(0);
+    // const [fraccD, setFraccD] = useState(0);
+    // const [fraccE, setFraccE] = useState(0);
+    // const [fraccF, setFraccF] = useState(0);
+
+    
+    const condNames = Object.keys(condiciones).map(key => "Cond. " + key);    
+
+
     // RECALC COND
-    let calculateCond = (cond) => {
-      // array vacio de igual long. que las placas
-      let keys = Object.keys(condiciones[cond]);
-      let val = 0;
-      let n = 0;
-      for (let key in condiciones[cond]) {
-        if(open[key]===true){
-            val += condiciones[cond][key];
-            n += 1;
-        }
-      }
-      val = val/n;
-      return val;
-    };
+    // let calculateCond = (cond) => {
+    //   let val = 0;
+    //   let n = 0;
+    //   for (let key in condiciones[cond]) {
+    //     if(open[key]===true){
+    //         val += condiciones[cond][key];
+    //         n += 1;
+    //     }
+    //   }
+    //   val = val/n;
+    //   return val;
+    // };
   
     useEffect(() => {
-      setFraccA(calculateCond("A"))
-      setFraccB(calculateCond("B"));
-      setFraccC(calculateCond("C"));
-      setFraccD(calculateCond("D"));
-      setFraccE(calculateCond("E"));
-      setFraccF(calculateCond("F"));
-
+    const newData = {};
+    for (const key in condiciones) {
+      newData[key] = calcData(condiciones[key]);
+    }
+    setCondData(newData);
     }, [open]);
 
     // DATA
     let data = {
       labels: condNames,
       datasets: [
-        // más tonos #187741 #155239 #A8EEC1 #E3FCEC
         {
           label: "",
-          data: [fraccA, fraccB, fraccC, fraccD, fraccE, fraccF],
+          data: Object.entries(condData).map(([key, value]) => ({
+            y: value[0],
+            yMin: value[0] - value[1],
+            yMax: value[0] + value[1],
+          })),
           borderColor: "#249D57",
           backgroundColor: "#249D57",
-        },
+        }
       ],
     };
 
@@ -133,7 +166,7 @@ export const Barras = ({ name, options, condiciones }) => {
                 </div>
                 <div className="border-div"></div>
                 <div style={{ padding: "20px" }}>
-                    <Bar options={options} data={data} />
+                    <Chart  type={"barWithErrorBars"} options={options} data={data}/>
                 </div>
             </div>
         </div>

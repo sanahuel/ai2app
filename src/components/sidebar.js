@@ -21,7 +21,7 @@ const Sidebar = () => {
 
       <ul className="sidebar-buttons">
         <NavLink
-          to={"/nuevo"}
+          to={"/new"}
           style={{ textDecoration: "none" }}
           className={"link"}
         >
@@ -41,7 +41,7 @@ const Sidebar = () => {
           </li>
         </NavLink>
         <NavLink
-          to={"/visualizar"}
+          to={"/visualize"}
           style={{ textDecoration: "none" }}
           className={"link"}
         >
