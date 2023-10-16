@@ -57,16 +57,6 @@ const Sidebar = () => {
         <span>Log Out</span>
       </div>
 
-      {/* <img
-        src={ai2}
-        alt=""
-        style={{
-          width: "100px",
-          position: "relative",
-          top: "-450px",
-          left: "35px",
-        }}
-      /> */}
     </div>
   );
 };

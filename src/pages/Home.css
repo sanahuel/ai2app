@@ -24,6 +24,11 @@
   user-select: none;
 }
 
+.dispositivo-container input{
+  cursor: pointer;
+  user-select: none;
+}
+
 .info-div {
   margin-left: 15px;
   margin-top: 7px;

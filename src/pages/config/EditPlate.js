@@ -48,6 +48,7 @@ const EditPlate = () => {
       });
 
       setCondArray(parsedMatrix);
+      console.log(parsedMatrix)
     }
     async function fetchData() {
       fetch(`http://${window.location.hostname}:8000/config/placas/` + id, {

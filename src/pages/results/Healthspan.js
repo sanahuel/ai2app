@@ -1,11 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
+import { useParams } from "react-router-dom";
 import { Grafica } from "./Grafica";
 import { Barras } from "./Barras";
+import * as XLSX from 'xlsx';
 
 import "./lifespanr.css";
 import file from "../../icons/file.svg";
 
 const Healthspan = (resultData) => {
+  const { id } = useParams();
 
   // OPTIONS
   let CantidadMovOptions = {
@@ -145,6 +148,37 @@ const Healthspan = (resultData) => {
     } 
   };
 
+  const dataToXLSX = (data) => {
+    const reformattedData = [];
+
+    for (const [cond, plates] of Object.entries(data)) {
+      for (const [plate, values] of Object.entries(plates)) {
+        const formattedPlate = {
+          Plate: parseInt(plate),
+          Cond: cond,
+        };
+  
+        for (let i = 0; i < values.length; i++) {
+          formattedPlate[`Capt. ${i + 1}`] = values[i];
+        }
+  
+        reformattedData.push(formattedPlate);
+      }
+    }
+  
+    return reformattedData;
+  }
+
+  const exportXLSX = () => {
+    const cantidadMov = dataToXLSX(condiciones['CantidadMov'])
+    // otros indicadores. . . 
+
+    const worksheet = XLSX.utils.json_to_sheet(cantidadMov);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Movement");
+    XLSX.writeFile(workbook, `Healthspan_id${id}.xlsx`, { compression: true });
+  }
+
   return (
     <div className="nuevo-ensayo">
       <div className="container-div">
@@ -231,6 +265,7 @@ const Healthspan = (resultData) => {
               position: "relative",
               top: "1px",
             }}
+            onClick={() => exportXLSX()}
           />
         </button>
         <span className="hidden-span" id="crear-span">

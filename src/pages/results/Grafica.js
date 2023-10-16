@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Line } from "react-chartjs-2";
-import { Chart } from "react-chartjs-2";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -16,8 +15,6 @@ import {
 
 import "./lifespanr.css";
 import expand from "../../icons/expand.svg";
-
-import Gradient from "javascript-color-gradient";
 
 ChartJS.register(
     CategoryScale,
@@ -201,7 +198,8 @@ export const Grafica = ({ name, options, condiciones }) => {
     };
 
     let fillCounter = 0
-    let colorPallet = ['16, 122, 64', '24, 90, 189', '179, 36, 54', '196, 63, 29']
+    // let colorPallet = ['16, 122, 64', '24, 90, 189', '179, 36, 54', '196, 63, 29']
+    const colorPallet = ['0, 119, 182', '191, 52, 61', '25, 107, 36', '233, 113, 50', '191, 73, 178', '78, 167, 46', '15, 158, 213']
     
     const opt = {
         responsive: true,
@@ -239,8 +237,8 @@ export const Grafica = ({ name, options, condiciones }) => {
             const datasets = [
               {
                 label: 'Cond.' + key,
-                borderColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]})`,
-                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]})`,
+                borderColor: `rgb(${colorPallet[Math.floor(fillCounter/3)*Math.floor(colorPallet.length/4)]})`,
+                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)*Math.floor(colorPallet.length/4)]})`,
                 fill: false,
                 pointRadius: 2,
                 tension: 0.1,
@@ -251,7 +249,7 @@ export const Grafica = ({ name, options, condiciones }) => {
               {
                 label: "BandTop" + key,
                 borderColor: "transparent",
-                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]}, 0.4)`,
+                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3*Math.floor(colorPallet.length/4))]}, 0.4)`,
                 pointRadius: 0,
                 fill: fillCounter,
                 data: condData[key][2],
@@ -261,7 +259,7 @@ export const Grafica = ({ name, options, condiciones }) => {
               {
                 label: "BandBottom" + key,
                 type: "line",
-                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)]}, 0.4)`,
+                backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)*Math.floor(colorPallet.length/4)]}, 0.4)`,
                 borderColor: "transparent",
                 pointRadius: 0,
                 fill: fillCounter,
