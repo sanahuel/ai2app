@@ -186,7 +186,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         fetch(`http://${window.location.hostname}:8000/new/`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${authTokens}`,
+            Authorization: `Bearer ${authTokens.access}`,
           },
         })
           .then((response) => response.json())
@@ -410,6 +410,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 nCondiciones: nCondiciones,
                 condiciones: condiciones,
                 placas: placas,
+                tipoPlaca: `${configCondicion.filas}x${configCondicion.columnas}`,
               },
               captura: {
                 fechaInicio:
@@ -1692,11 +1693,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     copy.splice(index, configCondicion.numCondiciones);
     setCondiciones(copy);
   };
-
+  console.log('NEW semaphore: ', semaphore)
   return (
     <div className="nuevo-ensayo">
       {semaphore && <IdleTimer semaphore={semaphore} />}
-      {semaphore && (
+
+      {semaphore===true && (
         <>
           <div className="container-div">
             <div className="container-header">
@@ -1843,7 +1845,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   className="input-field"
                   style={{ width: "145px" }}
                   value={JSON.stringify(configCondicion)}
-                  onChange={(e) => changeConfigCondicion(e.target.value)}
+                  onChange={(e) => {changeConfigCondicion(e.target.value)}}
                 >
                   <option value={JSON.stringify({value: "DEFAULT"})} disabled>
                     {" "}
@@ -2212,7 +2214,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           </div>
         </>
       )}
-      {!semaphore && repeat && (
+      {repeat && (
         <div className="loading-div">
           <img src={loading} alt="" className="loading-img" />
           <br />

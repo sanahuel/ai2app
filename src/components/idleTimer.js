@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import IpContext from "../context/IpContext";
 
-const blacklist = ["/nuevo"];
+const blacklist = ["/new"];
 
 export const IdleTimer = ({ semaphore }) => {
   const ipData = useContext(IpContext);
@@ -16,7 +16,7 @@ export const IdleTimer = ({ semaphore }) => {
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null;
 
-    if (router.pathname === "/nuevo") {
+    if (router.pathname === "/new") {
       fetch(`http://${window.location.hostname}:8000/new/`, {
         method: "PUT",
         headers: {
@@ -58,6 +58,7 @@ export const IdleTimer = ({ semaphore }) => {
   };
 
   const restartAutoReset = () => {
+    console.log('RESTART')
     setDialog(false);
     if (timeout) {
       clearTimeout(timeout);
@@ -67,14 +68,15 @@ export const IdleTimer = ({ semaphore }) => {
     }
     timeout = setTimeout(() => {
       trigger();
-    }, 1000 * 60 * 10); // Segundos para Timeout
+    }, 1000 * 60 * 2); // Segundos para Timeout
     timeoutDialog = setTimeout(() => {
+      console.log('1 MIN.')
       setDialog(true);
-    }, 1000 * 60 * 9);
+    }, 1000 * 60 * 1);
 
     const currentTime = new Date().getTime();
     const elapsedTime = currentTime - lastActivityTime;
-    if (elapsedTime > 1000 * 60 * 6) {
+    if (elapsedTime > 1000 * 60 * 1) {
       //sendRequest();
       lastActivityTime = currentTime;
     }
@@ -93,13 +95,13 @@ export const IdleTimer = ({ semaphore }) => {
       }
     }
 
-    if (preventReset && prev === "/nuevo") {
+    if (preventReset && prev === "/new") {
       releaseLock();
       setPrev(router.pathname);
       return;
     }
 
-    if (preventReset && prev !== "/nuevo") {
+    if (preventReset && prev !== "/new") {
       setPrev(router.pathname);
       return;
     }
@@ -124,6 +126,8 @@ export const IdleTimer = ({ semaphore }) => {
     };
   }, [router.pathname]);
   // window.addEventListener("beforeunload", releaseLock);
+
+  console.log('IDLE TIMER')
   return (
     <>
       {dialog && (

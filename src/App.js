@@ -31,8 +31,9 @@ function App() {
   const router = useLocation();
   const [prev, setPrev] = useState(localStorage.getItem('prev') || null);
   let [semaphore, setSemaphore] = useState(localStorage.getItem('semaphoreFlag') || false);
-
+  
   const releaseLock = () => {
+    console.log('--RELEASE--')
     let token = localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null;
@@ -58,10 +59,10 @@ function App() {
 
   // liberar semáforo si sale de la página
   useEffect(() => {
+    console.log("semaphore; ", semaphore)
     const semaphoreFlag = localStorage.getItem('semaphoreFlag')
     
-
-    if (prev === "/nuevo" && semaphoreFlag === 'true') {
+    if (prev === "/new" && semaphoreFlag === 'true') {
       releaseLock();
       localStorage.setItem('semaphoreFlag', false)
     }
@@ -76,7 +77,11 @@ function App() {
 
   //liberar semáforo si cierra o refresca la página
   useEffect(() => {
+    console.log("1) USE EFFECT")
+    console.log("semaphore: ", semaphore)
+
     const handleBeforeUnload = (event) => {
+      console.log("2) HANDLE")
       event.preventDefault()
       if (semaphore == true) {
         releaseLock();
@@ -86,6 +91,7 @@ function App() {
     };
 
     if (semaphore === true) {
+      console.log("EVENT LISTENER SET UP")
       window.addEventListener("beforeunload", handleBeforeUnload);
     }
 

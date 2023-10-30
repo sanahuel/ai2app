@@ -147,7 +147,8 @@ ul a.active span {
   position: relative;
   width: 175px;
   height: 54px;
-  background-color: rgb(49, 148, 247); /*rgb(22, 127, 231)*/
+  /* background-color: rgb(49, 148, 247); rgb(22, 127, 231) */
+  background-color: rgb(49, 148, 247)  ;
   border-radius: 27px;
   left: -25px;
   margin-top: 30px;
