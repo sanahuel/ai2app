@@ -11,6 +11,8 @@ import {
     Filler,
     Legend,
   } from 'chart.js';
+  import { mean, std } from 'mathjs';
+
   
 
 import "./lifespanr.css";
@@ -32,51 +34,39 @@ export const Grafica = ({ name, options, condiciones }) => {
     let placasRef = useRef();
 
     // CALC MEAN Y STD DEV
-    const calcData = (condicion) => {
+
+      const newCalcData = (condicion) => {
         const numPositions = Object.values(condicion)[0].length; // Assuming all keys have the same length.
         const means = Array(numPositions).fill(0);
-        const squaredDifferences = Array(numPositions).fill(0);
+        const stdDev = Array(numPositions).fill(0);
       
         const conditionKeys = Object.keys(condicion);
         const validKeys = conditionKeys.filter(key => open[key] === true);
+
+        
       
-        for (let i = 0; i < validKeys.length; i++) {
-          const key = validKeys[i];
-      
-          for (let j = 0; j < numPositions; j++) {
-            means[j] += condicion[key][j];
+        for (let j = 0; j < numPositions; j++) {
+          const valuesCalcMean = []
+
+          for (let i = 0; i < validKeys.length; i++) {
+            if (condicion[validKeys[i]][j] != null){
+              valuesCalcMean.push(condicion[validKeys[i]][j])
+            }
           }
+          means[j] = mean(valuesCalcMean);
+          stdDev[j] = std(valuesCalcMean)
         }
 
-        const n = validKeys.length;
-        for (let i = 0; i < numPositions; i++) {
-          means[i] /= n;
-        }
-      
-        for (let i = 0; i < validKeys.length; i++) {
-          const key = validKeys[i];
-          const values = condicion[key];
-      
-          for (let j = 0; j < numPositions; j++) {
-            const diff = condicion[key][j] - means[j];
-            squaredDifferences[j] += diff * diff;
-          }
-        }
-        const meansMinusStdDeviations = means.map((mean, index) => mean - Math.sqrt(squaredDifferences[index] / (n - 1)));
-        const meansPlusStdDeviations = means.map((mean, index) => mean + Math.sqrt(squaredDifferences[index] / (n - 1)));
+        const meansMinusStdDeviations = means.map((mean, index) => mean - stdDev[index]);
+        const meansPlusStdDeviations = means.map((mean, index) => mean + stdDev[index]);
       
         return [means, meansMinusStdDeviations, meansPlusStdDeviations];
-      };      
+      }
       
             
     // SET UP DATA   
       const [condData, setCondData] = useState({})
 
-      const [fraccA, setFraccA] = useState([]);
-      const [fraccB, setFraccB] = useState([]);
-      const [fraccC, setFraccC] = useState([]);
-      const [fraccD, setFraccD] = useState([]);
-    
       const firstEntry = condiciones[Object.keys(condiciones)[0]];
       const secondDimensionLength = firstEntry[Object.keys(firstEntry)[0]].length; 
       const [dias, setDias] = [Array.from({ length: secondDimensionLength }, (_, index) => index + 1)];
@@ -109,36 +99,17 @@ export const Grafica = ({ name, options, condiciones }) => {
     setOpenCond({...openCond, [key]: !openCond[key]});
     }
 
-    // RECALC COND
-    let calculateCond = (cond) => {
-      // array vacio de igual long. que las placas
-      let keys = Object.keys(condiciones[cond]);
-      let vivos = Array(condiciones[cond][keys[0]].length).fill(0);
-      for (let key in condiciones[cond]) {
-        if(open[key]===true){
-        for (let i = 0; i < Object.keys(condiciones[cond][key]).length; i++) {
-            vivos[i] += condiciones[cond][key][i];
-        }}
-      }
-      let n = vivos[0]; //cambiar (de donde leer num max de celegans??) el primer dia puede haber muerto alguno ya
-      vivos = vivos.map((i) => (i / n) * 100);
-      return vivos;
-    };
-  
+    // RECALC COND  
     useEffect(() => {
-      setFraccA(calculateCond("A"))
-      setFraccB(calculateCond("B"));
-      setFraccC(calculateCond("C"));
-      setFraccD(calculateCond("D"));
-
       const newData = {};
       for (const key in condiciones) {
-        newData[key] = calcData(condiciones[key]);
+        newData[key] = newCalcData(condiciones[key]);
       }
       setCondData(newData);
       }, [open]);
 
-    //SLIDE PLACAS
+
+    //SLIDE PLACAS (página de la tabla)
     const [slidePlacas, setSlidePlacas] = useState(Object.keys(condiciones).reduce((acc, key) => {
         acc[key] = 0;
         return acc;
@@ -158,44 +129,6 @@ export const Grafica = ({ name, options, condiciones }) => {
 
 
     // DATA
-    let data = {
-      labels: dias,
-      datasets: [
-        // más tonos #187741 #155239 #A8EEC1 #E3FCEC
-        {
-          label: "Cond. A",
-          data: fraccA,
-          borderColor: "#249D57",
-          backgroundColor: "#249D57",
-        //   borderColor: gradientArray[0], 
-        //   backgroundColor: gradientArray[0],
-        },
-        {
-          label: "Cond. B",
-          data: fraccB,
-          borderColor: "#38C172",
-          backgroundColor: "#38C172",
-        // borderColor: gradientArray[1], 
-        // backgroundColor: gradientArray[1],
-        },
-        {
-          label: "Cond. C",
-          data: fraccC,
-          borderColor: "#74D99F",
-          backgroundColor: "#74D99F",
-        // borderColor: gradientArray[4], 
-        // backgroundColor: gradientArray[4],
-        },
-        {
-          label: "Cond. D",
-          data: fraccD,
-          borderColor: "#B9F6CA",
-          backgroundColor: "#B9F6CA",
-        // borderColor: gradientArray[7], 
-        // backgroundColor: gradientArray[7],
-        },
-      ],
-    };
 
     let fillCounter = 0
     // let colorPallet = ['16, 122, 64', '24, 90, 189', '179, 36, 54', '196, 63, 29']
@@ -226,7 +159,7 @@ export const Grafica = ({ name, options, condiciones }) => {
           x: {
             title: {
               display: true,
-              text: "Días",
+              text: "Capturas",
             },
           },
         },
@@ -236,7 +169,7 @@ export const Grafica = ({ name, options, condiciones }) => {
         datasets: Object.keys(condData).flatMap(key => {
             const datasets = [
               {
-                label: 'Cond.' + key,
+                label: key,
                 borderColor: `rgb(${colorPallet[Math.floor(fillCounter/3)*Math.floor(colorPallet.length/4)]})`,
                 backgroundColor: `rgb(${colorPallet[Math.floor(fillCounter/3)*Math.floor(colorPallet.length/4)]})`,
                 fill: false,
@@ -276,24 +209,9 @@ export const Grafica = ({ name, options, condiciones }) => {
           })                
     }
 
-    console.log(dataLine.datasets)
-
     return(
         <>
-
         {/* GRAFICA */}
-        {/* <div>
-            <div className="container-div">
-                <div className="container-header">
-                    <span>{name}</span>
-                </div>
-                <div className="border-div"></div>
-                <div style={{ padding: "20px" }}>
-                    <Line options={options} data={data} />
-                </div>
-            </div>
-        </div> */}
-
         <div>
             <div className="container-div">
                 <div className="container-header">
@@ -367,15 +285,15 @@ export const Grafica = ({ name, options, condiciones }) => {
                     }}
                     >
                     <div style={{ paddingBottom: "1px", textAlign: "center" }}>
-                        Día
+                        Captura
                     </div>
                     <div
                         className="border-div"
                         style={{ width: "90%", marginBottom: "7px" }}
                     ></div>
-                    {[...Array(21).keys()].map((day) => (
+                    {dias.map((day) => (
                         <>
-                        <div className="condicion-cell">{day + 1}</div>
+                        <div className="condicion-cell">{day}</div>
                         <div
                             className="border-div"
                             style={{
@@ -397,7 +315,7 @@ export const Grafica = ({ name, options, condiciones }) => {
                         }}
                         style={{ fontWeight: "500", width: "75px" }}
                     >
-                        <div style={{ paddingBottom: "1px", textAlign: "center" }}>
+                        <div style={{ paddingBottom: "1px", textAlign: "center",whiteSpace: "nowrap" }}>
                         Placa {key}
                         </div>
                         <div

@@ -6,6 +6,9 @@ import "./Control.css";
 import del from "../icons/clear.svg";
 import Dialog from "../components/dialog";
 import { useParams } from "react-router-dom";
+import { Grafica } from "./results/Grafica";
+import HealthspanControl from './control/HealthspanControl'
+
 
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -27,6 +30,7 @@ const Control = () => {
   });
   const [put, setPut] = useState([]);
   let [events, setEvents] = useState([]);
+  const [results, setResults] = useState(false);
   let [dragEvent, setDragEvent] = useState({});
   let [ids, setIds] = useState(0);
   const [isLoading, setIsLoading] = useState(false)
@@ -39,11 +43,14 @@ const Control = () => {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log(data)
           setEnsayo(data);
+          setResults(data.show)
           setEvents(data.capturas);
         });
     }
     fetchData();
+    console.log(ensayo)
   }, []);
 
   useEffect(() => {
@@ -62,37 +69,6 @@ const Control = () => {
     // setEvents([...temporalEvents]);
   }, []);
 
-  // useEffect(() => {
-  //   let formatData = (data) => {
-  //     return data.map((str) => {
-  //       return {
-  //         title: " ",
-  //         start: str,
-  //         allDay: false,
-  //         color: "#ddd",
-  //       };
-  //     });
-  //   };
-  //   async function fetchData() {
-  //     const response = await fetch("/control/18");
-  //     const data = await response.json();
-  //     console.log(data);
-  //     //setEnsayos(formatData(data.capturas));
-  //   }
-  //   fetchData();
-  //   // console.log(capturas);
-  // }, []);
-
-  const condiciones = ["A", "B", "C"];
-  const placas = [
-    ["Placa 1", "Placa 2"],
-    ["Placa 3", "Placa 4"],
-    ["Placa 5", "Placa 6"],
-    ["Placa 7", "Placa 8"],
-    ["Placa 9", "Placa 10"],
-    ["Placa 11", "Placa 12"],
-    ["Placa 13", "Placa 14"],
-  ];
 
   const [dialog, setDialog] = useState({
     message: "",
@@ -204,6 +180,35 @@ const Control = () => {
       .catch((error) => console.log(error));
   };
 
+  // OPTIONS
+  let CantidadMovOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+        display: true,
+      },
+      title: {
+        display: false,
+        text: " ",
+      },
+    },
+    scales: {
+      y: {
+        title: {
+          display: true,
+          text: "Cantidad de Movimiento",
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Días",
+        },
+      },
+    },
+  };
+
   return (
     <div className="nuevo-ensayo">
       {/* INFO */}
@@ -263,6 +268,10 @@ const Control = () => {
           ></input>
         </div>
       </div>
+
+      {/* RESULTADOS */}
+      {results && ensayo.aplicacion=='healthspan' && <HealthspanControl resultData={ensayo.resultados} />}
+      {/* {results && ensayo.aplicacion=='lifespan' && <LifespanControl />} */}
 
       {/* CONDICIONES */}
 

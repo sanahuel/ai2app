@@ -37,6 +37,7 @@ const Panel = () => {
 
   return (
     <div className="nuevo-ensayo">
+      {/* DISPOSITIVOS */}
       <div className="dispositivos-short-row">
         {ipData.map((data, index) => {
           return (
@@ -55,6 +56,8 @@ const Panel = () => {
           );
         })}
       </div>
+
+      {/* ENSAYOS */}
       <div>
         {display.map((data) => {
           return (

@@ -61,12 +61,11 @@ const Home = () => {
         setEvents(formatedEvents);
       });
   }
+
   return (
     <div className="nuevo-ensayo">
-      <div
-        className="dispositivos-row"
-        // style={{ minHeight: "120px" }}
-      >
+      {/* DISPOSITIVOS */}
+      <div className="dispositivos-row">
         {info.map((dispositivo, index) => {
           return (
             <div
@@ -121,6 +120,7 @@ const Home = () => {
         })}
       </div>
 
+      {/* CALENDARIO */}
       <div
         className="container-div"
         style={{ marginLeft: "10px", marginRight: "10px" }}

@@ -91,6 +91,7 @@ const Config = () => {
 
   return (
     <div className="nuevo-ensayo">
+      {/* DISPOSITIVOS */}
       <div className="container-div">
         <div className="container-header">
           <span>Configuración de Dispositivos</span>
@@ -128,6 +129,7 @@ const Config = () => {
         </div>
       </div>
 
+      {/* PLANIFICADOR */}
       <div className="container-div">
         <div className="container-header">
           <span>Configuración del Planificador</span>
@@ -162,6 +164,7 @@ const Config = () => {
         </div>
       </div>
 
+      {/* CONDICIONES POR PLACA */}
       <div className="container-div">
         <div className="container-header">
           <span>Configuración de Distribución de Condiciones por Placa</span>

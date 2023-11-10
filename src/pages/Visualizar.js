@@ -35,6 +35,7 @@ const Visualizar = () => {
 
   return (
     <div className="nuevo-ensayo">
+      {/* DISPOSITIVOS */}
       <div className="dispositivos-short-row">
         {ipData.map((data, index) => {
           return (
@@ -54,6 +55,7 @@ const Visualizar = () => {
         })}
       </div>
 
+      {/* ENSAYOS */}
       <div>
         {display.map((data) => {
           return (

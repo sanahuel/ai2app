@@ -106,30 +106,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     };
   });
 
-  // useEffect(() => {
-  //   setDatabaseEvents({
-  //     1: [
-  //       [new Date(2023, 4, 17, 7, 0, 0), 15 * 60000, 15 * 60000],
-  //       [new Date(2023, 4, 17, 8, 0, 0), 15 * 60000, 15 * 60000],
-  //       [new Date(2023, 4, 17, 9, 0, 0), 15 * 60000, 15 * 60000],
-  //       [new Date(2023, 4, 17, 10, 0, 0), 15 * 60000, 15 * 60000],
-  //       [new Date(2023, 4, 17, 11, 0, 0), 15 * 60000, 15 * 60000],
-  //     ],
-  //     2: [
-  //       [new Date(2023, 4, 17, 11, 5, 0), 15 * 60000, 15 * 60000],
-  //       [new Date(2023, 4, 17, 12, 55, 0), 15 * 60000, 5 * 60000],
-  //       [new Date(2023, 4, 18, 11, 5, 0), 15 * 60000, 15 * 60000],
-  //       [new Date(2023, 4, 18, 12, 55, 0), 15 * 60000, 5 * 60000],
-  //       [new Date(2023, 4, 19, 11, 5, 0), 5 * 60000, 5 * 60000],
-  //       [new Date(2023, 4, 19, 12, 55, 0), 5 * 60000, 5 * 60000],
-  //     ],
-  //     3: [
-  //       [new Date(2023, 4, 17, 10, 0, 0), 0 * 6000, 5 * 60000],
-  //       [new Date(2023, 4, 17, 11, 0, 0), 0 * 6000, 5 * 60000],
-  //     ],
-  //   });
-  // }, []);
-
   useEffect(() => {
     let formatCapturas = (data) => {
       return data.map((captura) => {
@@ -261,6 +237,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     return order;
   };
 
+  // ESCRIBIR BBDD
   let createEnsayo = () => {
     if (
       nombreRef.current.value !== "" &&
@@ -452,27 +429,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     } else {
       alert("Todos los campos deben estar completos");
     }
-  };
-
-  let createEvents = (inicio) => {
-    const temporalEvents = [];
-    let temporalIds = ids;
-    for (let i = 0; i < parseInt(numRef.current.value); i++) {
-      temporalEvents.push({
-        title: "",
-        start: new Date(
-          inicio.getTime() +
-            i *
-              (parseInt(hfreqRef.current.value) * 60 +
-                parseInt(minfreqRef.current.value)) *
-              60000
-        ),
-        id: temporalIds,
-      });
-      temporalIds++;
-    }
-    setIds(temporalIds);
-    setEvents([...temporalEvents]);
   };
 
   let createNewEvents = (date) => {
@@ -1512,16 +1468,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         setRawEvents(events_disp[earliestDateTime[0]]);
         setChangesBBDD(changes_disp[earliestDateTime[0]]);
 
-        // const formatedData = databaseEvents[earliestDateTime[0]].map(
-        //   (subarray) => {
-        //     return {
-        //       title: "",
-        //       start: subarray[0].toISOString(),
-        //       color: "#ddd",
-        //       editable: false,
-        //     };
-        //   }
-        // );
         let formatedData = [];
         for (
           let key = 0;
@@ -1573,31 +1519,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       }
     }
   };
-
-  // let eventsFromRrule = (array) => {
-  //   let old = [];
-  //   if (array == "capturas") {
-  //     for (let i = 0; i < capturas.length; i++) {
-  //       if ("rrule" in capturas[i]) {
-  //         for (let j = 0; j < capturas[i].rrule.count; j++) {
-  //           old.push(
-  //             new Date(
-  //               new Date(capturas[i].rrule.dtstart).getTime() +
-  //                 j * capturas[i].rrule.interval * 60000
-  //             )
-  //           );
-  //         }
-  //       } else {
-  //         old.push(capturas[i].start);
-  //       }
-  //     }
-  //   } else {
-  //     for (let i = 0; i < events.length; i++) {
-  //       old.push(events[i].start);
-  //     }
-  //   }
-  //   return old;
-  // };
 
   let createCalendarEvent = (ini) => {
     const j = new Date(ini.getTime());
@@ -1694,10 +1615,13 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     setCondiciones(copy);
   };
   console.log('NEW semaphore: ', semaphore)
+
   return (
     <div className="nuevo-ensayo">
+      {/* TIMER INACTIVIDAD */}
       {semaphore && <IdleTimer semaphore={semaphore} />}
 
+      {/* SI ESTÁ DENTRO */}
       {semaphore===true && (
         <>
           <div className="container-div">
@@ -2214,6 +2138,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           </div>
         </>
       )}
+
+      {/* SI NO ESTÁS */}
       {repeat && (
         <div className="loading-div">
           <img src={loading} alt="" className="loading-img" />
@@ -2223,6 +2149,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           </span>
         </div>
       )}
+      
+      {/* SPINEER */}
       {isLoading && (
         <div className="outter-spinner-div">
         <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>

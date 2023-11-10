@@ -9,6 +9,7 @@ import file from "../../icons/file.svg";
 
 const Healthspan = (resultData) => {
   const { id } = useParams();
+  console.log(resultData['resultData'])
 
   // OPTIONS
   let CantidadMovOptions = {
@@ -61,93 +62,6 @@ const Healthspan = (resultData) => {
     },
   };
 
-  // FETCH CONDICIONES  --harcoded.....
-
-  const Placa1 = [
-    120, 120, 120, 119, 119, 119, 117, 117, 112, 112, 131, 95, 69, 21, 21, 7, 44,
-    0, 0, 0, 0,
-  ];
-  const Placa2 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 117, 112, 104, 97, 69, 44, 21, 7, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa3 = [
-    120, 120, 120, 120, 120, 120, 119, 119, 109, 107, 104, 77, 56, 44, 21, 7, 1,
-    0, 0, 0, 0,
-  ];
-
-  const Placa4 = [
-    120, 120, 120, 119, 119, 119, 119, 117, 115, 110, 99, 86, 60, 15, 9, 3, 0,
-    0, 0, 0, 0,
-  ];
-  const Placa5 = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
-    0, 11, 0, 0,
-  ];
-  const Placa6 = [
-    120, 120, 120, 120, 120, 119, 119, 117, 115, 110, 99, 86, 60, 32, 16, 3, 0,
-    0, 0, 0, 0,
-  ];
-
-  const Placa7 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
-    8, 3, 1, 1, 0,
-  ];
-  const Placa8 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 80, 64, 33, 17,
-    8, 3, 1, 12, 0,
-  ];
-  const Placa9 = [
-    120, 120, 120, 120, 120, 120, 120, 119, 119, 116, 109, 100, 111, 64, 33, 17,
-    8, 3, 1, 1, 0,
-  ];
-
-  const Placa10 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa11 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 20, 6, 1,
-    0, 0, 0, 0,
-  ];
-  const Placa12 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
-    0, 0, 0, 21,
-  ];
-  const Placa13 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
-    0, 0, 0, 21,
-  ];
-  const Placa14 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
-    0, 0, 0, 21,
-  ];
-  const Placa15 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
-    0, 0, 0, 21,
-  ];
-  const Placa16 = [
-    120, 120, 120, 120, 120, 120, 119, 118, 117, 115, 104, 90, 67, 43, 25, 6, 1,
-    0, 0, 0, 21,
-  ];
-
-  const A = { 1: Placa1, 2: Placa2, 3: Placa3, 13:Placa13, 14:Placa14, 15:Placa15, 16:Placa16 };
-  const B = { 4: Placa4, 5: Placa5, 6: Placa6 };
-  const C = { 7: Placa7, 8: Placa8, 9: Placa9 };
-  const D = { 10: Placa10, 11: Placa11, 12: Placa12 };
-
-  const condiciones = { 
-    CantidadMov: {A: A, B: B, C: C, D: D},
-    Indicador2: {
-      A: {1: 60, 2: 64, 3: 71, 13: 55, 14: 56, 15: 45, 16: 65, 17: 33, 18: 66, 19: 97, 20: 55, 21: 65, 22: 64},
-      B: {4: 34, 5: 31, 6: 28},
-      C: {7: 71, 8: 34, 9: 50},
-      D: {10: 11, 11: 13, 12: 17},
-      E: {13: 21, 14: 44, 15: 16},
-      F: {16: 43, 17: 53, 58: 77}
-    } 
-  };
-
   const dataToXLSX = (data) => {
     const reformattedData = [];
 
@@ -170,7 +84,7 @@ const Healthspan = (resultData) => {
   }
 
   const exportXLSX = () => {
-    const cantidadMov = dataToXLSX(condiciones['CantidadMov'])
+    const cantidadMov = dataToXLSX(resultData['resultData']['resultados']['cantidadMov'])
     // otros indicadores. . . 
 
     const worksheet = XLSX.utils.json_to_sheet(cantidadMov);
@@ -190,7 +104,7 @@ const Healthspan = (resultData) => {
           <span>Ensayo</span>
           <input
             type="text"
-            value=" Healthspan #0"
+            value={resultData['resultData']['ensayo']}
             className="input-field"
             readonly
           ></input>
@@ -199,7 +113,7 @@ const Healthspan = (resultData) => {
           <span>Proyecto</span>
           <input
             type="text"
-            value=" xxxxx"
+            value={resultData['resultData']['proyecto']}
             className="input-field"
             readonly
           ></input>
@@ -208,7 +122,7 @@ const Healthspan = (resultData) => {
           <span>Aplicación</span>
           <input
             type="text"
-            value=" Healthspan"
+            value="Healthspan"
             className="input-field"
             readonly
           ></input>
@@ -217,7 +131,7 @@ const Healthspan = (resultData) => {
           <span>Nº de Placas</span>
           <input
             type="text"
-            value=" 25"
+            value={resultData['resultData']['placas'].length}
             className="input-field"
             style={{ width: "104px" }}
             readonly
@@ -227,7 +141,7 @@ const Healthspan = (resultData) => {
           <span>Capturas Totales</span>
           <input
             type="text"
-            value=" 30"
+            value={resultData['resultData']['nCapturas']}
             className="input-field"
             style={{ width: "104px" }}
             readonly
@@ -237,7 +151,7 @@ const Healthspan = (resultData) => {
           <span>Fecha de Inicio </span>
           <input
             type="text"
-            value=" 01/02/2023"
+            value={resultData['resultData']['inicio']}
             className="input-field"
             style={{ width: "104px" }}
             readonly
@@ -249,11 +163,11 @@ const Healthspan = (resultData) => {
 
       {/* LOGICA PARA GRAFICAR:
         1 PUNTO DE CAPTURA -> DIAGRAMA DE BARRAS
-        >1 PUNTO DE CAPTURA -> GRÁFICA TEMPORAL */}
+        1 PUNTO DE CAPTURA -> GRÁFICA TEMPORAL */}
 
-      <Grafica name={"Cantidad de Movimiento"} options={CantidadMovOptions} condiciones={condiciones.CantidadMov}/>
+      <Grafica name={"Cantidad de Movimiento"} options={CantidadMovOptions} condiciones={resultData['resultData']['resultados']['cantidadMov']}/>
 
-      <Barras name={"Indicador 2"} options={Indicador2Options} condiciones={condiciones.Indicador2}/>
+      {/* <Barras name={"Indicador 2"} options={Indicador2Options} condiciones={condiciones.Indicador2}/> */}
      
       {/* EXPORT */}
       <div className="crear-div">
