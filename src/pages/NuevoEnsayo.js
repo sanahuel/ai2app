@@ -154,7 +154,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // Cada X segundos fetch esperando semáforo
   useEffect(() => {
     let intervalId;
-    console.log("repeat", repeat);
     if (repeat) {
       // Start the interval when repeat is true
       intervalId = setInterval(() => {
@@ -538,7 +537,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           newEvents[i][0].getTime() + duracion * 60000,
           oldEvents[j][0].getTime() + duracion * 60000
         );
-
         if (comienzo < fin) {
           // si hay solape
           if (newEvents[i][0].getTime() >= oldEvents[j][0].getTime()) {
@@ -641,7 +639,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 ) ||
                 next
               ) {
-                conf = false;
+                // conf = false;
                 // no se ajustan por igual
                 if (
                   (fin - comienzo) / 2 >=
@@ -1029,7 +1027,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 ) ||
                 next
               ) {
-                conf = false;
+                // no se pueden ajustar por igual
+                // conf = false;
                 if (
                   (fin - comienzo) / 2 >=
                   holguraNegativaRef.current.value * 60000
@@ -1614,7 +1613,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     copy.splice(index, configCondicion.numCondiciones);
     setCondiciones(copy);
   };
-  console.log('NEW semaphore: ', semaphore)
 
   return (
     <div className="nuevo-ensayo">
@@ -2149,7 +2147,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           </span>
         </div>
       )}
-      
+
       {/* SPINEER */}
       {isLoading && (
         <div className="outter-spinner-div">

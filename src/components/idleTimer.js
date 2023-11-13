@@ -58,7 +58,6 @@ export const IdleTimer = ({ semaphore }) => {
   };
 
   const restartAutoReset = () => {
-    console.log('RESTART')
     setDialog(false);
     if (timeout) {
       clearTimeout(timeout);
@@ -70,7 +69,6 @@ export const IdleTimer = ({ semaphore }) => {
       trigger();
     }, 1000 * 60 * 2); // Segundos para Timeout
     timeoutDialog = setTimeout(() => {
-      console.log('1 MIN.')
       setDialog(true);
     }, 1000 * 60 * 1);
 
@@ -127,7 +125,6 @@ export const IdleTimer = ({ semaphore }) => {
   }, [router.pathname]);
   // window.addEventListener("beforeunload", releaseLock);
 
-  console.log('IDLE TIMER')
   return (
     <>
       {dialog && (
