@@ -259,9 +259,9 @@ const EditPlanner = () => {
               name="select"
               className="input-field"
               style={{ width: "145px" }}
-              value={configCondicion}
-              onChange={(e) => changeConfigCondicion(e.target.value)}
-            >
+              value={JSON.stringify(configCondicion)}
+              onChange={(e) => {changeConfigCondicion(e.target.value)}}
+        >
               <option value="DEFAULT" disabled>
                 {" "}
               </option>
