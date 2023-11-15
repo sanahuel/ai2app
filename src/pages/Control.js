@@ -1,12 +1,13 @@
 import React from "react";
 import { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 import "./Panel.css";
 import "./Control.css";
 import del from "../icons/clear.svg";
 import Dialog from "../components/dialog";
 import { useParams } from "react-router-dom";
-import { Grafica } from "./results/Grafica";
+import jwt_decode from "jwt-decode";
 import HealthspanControl from './control/HealthspanControl'
 
 
@@ -19,6 +20,7 @@ import esLocale from "@fullcalendar/core/locales/es";
 const Control = () => {
   let navigate = useNavigate();
   const { disp, id } = useParams();
+  let { authTokens } = useContext(AuthContext);
 
   const [ensayo, setEnsayo] = useState({
     nombre: "",
@@ -33,6 +35,7 @@ const Control = () => {
   const [results, setResults] = useState(false);
   let [dragEvent, setDragEvent] = useState({});
   let [ids, setIds] = useState(0);
+  let [eventIds, setEventIds] = useState(1000)
   const [isLoading, setIsLoading] = useState(false)
 
 
@@ -50,7 +53,6 @@ const Control = () => {
         });
     }
     fetchData();
-    console.log(ensayo)
   }, []);
 
   useEffect(() => {
@@ -76,7 +78,27 @@ const Control = () => {
     index: "",
   });
 
-  // const [events, setEvents] = useState([])
+  // FORMAT DATES
+
+  function formatDateWithTimezone(date) {
+    const timezoneOffsetMinutes = date.getTimezoneOffset();
+    const timezoneOffsetHours = Math.abs(Math.floor(timezoneOffsetMinutes / 60));
+    const timezoneOffsetSign = timezoneOffsetMinutes < 0 ? '+' : '-';
+  
+    const pad = (number) => (number < 10 ? '0' : '') + number;
+  
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+  
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  
+    return `${formattedDate}`;
+  }
+
 
   const handleDelete = (index, message, table) => {
     setPut([table, index]);
@@ -103,7 +125,10 @@ const Control = () => {
         setDialog("", false, "");
         cancelDragCalendarEvent();
       }
-    } else {
+    } else if (put[0] == "New"){
+      setDialog("", false, "");
+      putNewCalendarEvent();
+    }else {
       if (choose) {
         setDialog("", false, "");
         putEnsayo();
@@ -133,35 +158,13 @@ const Control = () => {
       .catch((error) => console.log(error));
   };
 
-  let dragCalendarEvent = () => {
-    console.log(dragEvent)
-    let temporalEvents = events.filter((e) => e.id != dragEvent.id);
-    setEvents([...temporalEvents, dragEvent]);
-
-    fetch(`http://${disp}:8000/control/` + id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        table: 'Tareas_Drag',
-        from: dragEvent.from,
-        to: dragEvent.to
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => 
-      window.location.reload()
-      )
-      .catch((error) => console.log(error));
-  };
-
   let cancelDragCalendarEvent = () => {
     let old = events.filter((e) => e.id == dragEvent.id);
     setEvents(events.filter((e) => e.id != dragEvent.id));
     setEvents([...events, ...old]);
   };
 
+  // PUT FETCHS
   const putEnsayo = async () => {
     fetch(`http://${disp}:8000/control/` + id, {
       method: "PUT",
@@ -178,6 +181,109 @@ const Control = () => {
       window.location.reload()
       )
       .catch((error) => console.log(error));
+  };
+
+  let dragCalendarEvent = () => {
+    console.log(dragEvent)
+    let temporalEvents = events.filter((e) => e.id != dragEvent.id);
+    setEvents([...temporalEvents, dragEvent]);
+
+    fetch(`http://${disp}:8000/control/` + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        table: 'Tareas_Drag',
+        from: formatDateWithTimezone(dragEvent.from),
+        to: formatDateWithTimezone(dragEvent.to)
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => 
+      window.location.reload()
+      )
+      .catch((error) => console.log(error));
+  };
+
+  // NEW EVENT
+
+  let checkCalendarEvents = (inicio) => {
+    // capturas de otros ensayos
+    let capturasEvents = events.map((captura) => {
+      return [new Date(captura.start), 5, 5];
+    });
+    let calendarEvents = [];
+    Object.values(events).forEach((event) => {
+      calendarEvents.push([new Date(event.start), 5, 5]);
+    });
+    let oldEvents = [...capturasEvents, ...calendarEvents];
+
+    // por ahora duración = 30 min
+    let duracion = 60;
+    let conf = false;
+
+    let n = 1; //nuevos
+    let m = oldEvents.length; //antiguos
+
+    do {
+      let i = 0;
+      let j = 0;
+      conf = false;
+      let conflicto = 0;
+
+      //bucle
+      while (j < m) {
+        let comienzo = Math.max(inicio.getTime(), oldEvents[j][0].getTime());
+        let fin = Math.min(
+          inicio.getTime() + duracion * 60000,
+          oldEvents[j][0].getTime() + duracion * 60000
+        );
+        if (comienzo < fin) {
+          conf = true;
+          if (fin - comienzo > conflicto) {
+            conflicto = fin - comienzo;
+          }
+          conflicto = Math.max(fin - comienzo, conflicto);
+        }
+        j++;
+      }
+
+      if (conf) {
+        inicio = new Date(inicio.getTime() + conflicto);
+      }
+    } while (conf === true);
+
+    return inicio;
+  };
+
+  let putNewCalendarEvent = () => {
+    const decodedToken = jwt_decode(authTokens.access);
+
+    async function fetchEvent(time) {
+      fetch(`http://${disp}:8000/control/` + id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          table: 'Tareas_New',
+          time: formatDateWithTimezone(time),
+          userId: decodedToken.user_id,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          window.location.reload();
+        });
+    }
+
+    const j = new Date(dragEvent["time"].getTime());
+    let i = checkCalendarEvents(dragEvent["time"]);
+    if (i.getTime() === j.getTime()) {
+      fetchEvent(j)
+    }
   };
 
   // OPTIONS
@@ -372,10 +478,23 @@ const Control = () => {
             firstDay={1}
             locale={esLocale}
             events={events}
+            dateClick={(dateClickInfo) => {
+              if (dateClickInfo.date.getTime() >= new Date().getTime()) {
+                setPut(["New"])
+                setDialog({
+                  message: "Vas a crear una nueva captura",
+                  isLoading: true,
+                  index: 0,
+                });
+                setDragEvent({
+                  time: dateClickInfo.date
+                });
+              }
+            }}
             eventClick={(eventClickInfo) => {
               if(eventClickInfo.event.startEditable != false){
               handleDelete(
-                eventClickInfo.event.start,
+                formatDateWithTimezone(eventClickInfo.event.start),
                 "Eliminar una placa captura no es reversible",
                 "Tareas_Cancel"
               )}
