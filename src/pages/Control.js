@@ -35,7 +35,6 @@ const Control = () => {
   const [results, setResults] = useState(false);
   let [dragEvent, setDragEvent] = useState({});
   let [ids, setIds] = useState(0);
-  let [eventIds, setEventIds] = useState(1000)
   const [isLoading, setIsLoading] = useState(false)
 
 
@@ -126,8 +125,12 @@ const Control = () => {
         cancelDragCalendarEvent();
       }
     } else if (put[0] == "New"){
-      setDialog("", false, "");
-      putNewCalendarEvent();
+      if (choose){
+        setDialog("", false, "");
+        putNewCalendarEvent();
+      } else {
+        setDialog("", false, "");
+      }
     }else {
       if (choose) {
         setDialog("", false, "");

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Dialog from "../components/dialog";
 
 import "./Config.css";
 import del from "../icons/clear.svg";
@@ -9,6 +10,13 @@ const Config = () => {
   let [disp, setDisp] = useState([]);
   let [planif, setPlanif] = useState([]);
   let [placas, setPlacas] = useState([]);
+  const [dialog, setDialog] = useState({
+    message: "",
+    isLoading: false,
+    index: "",
+  });
+
+
 
   const navigate = useNavigate();
 
@@ -89,6 +97,33 @@ const Config = () => {
     fetchDelete();
   };
 
+  // DIALOG
+  const areUSureDelete = (choose) => {
+    if (dialog.table == "Dispositivo") {
+      if (choose) {
+        setDialog("", false, "");
+        deleteDisp(dialog.index);
+      } else {
+        setDialog("", false, "");
+      }
+    } else if (dialog.table == "Planificador") {
+      if (choose) {
+        setDialog("", false, "");
+        deletePlanif(dialog.index);
+      } else {
+        setDialog("", false, "");
+      }
+    } else if (dialog.table == "Condiciones"){
+      if (choose){
+        setDialog("", false, "");
+        deletePlate(dialog.index);
+      } else {
+        setDialog("", false, "");
+      }
+    }
+  };
+
+
   return (
     <div className="nuevo-ensayo">
       {/* DISPOSITIVOS */}
@@ -113,7 +148,12 @@ const Config = () => {
                 </button>
                 <button
                   className="button-eliminar-dispositivo"
-                  onClick={() => deleteDisp(index)}
+                  onClick={() => setDialog({
+                    table: "Dispositivo",
+                    message: "Eliminar un dispositivo no es reversible",
+                    isLoading: true,
+                    index: index,
+                  })}
                 >
                   <img src={del} alt="delete" />
                 </button>
@@ -148,7 +188,12 @@ const Config = () => {
                 </button>
                 <button
                   className="button-eliminar-dispositivo"
-                  onClick={() => deletePlanif(planificador.id)}
+                  onClick={() => setDialog({
+                    table: "Planificador",
+                    message: "Eliminar una configuración no es reversible",
+                    isLoading: true,
+                    index: planificador.id,
+                  })}
                 >
                   <img src={del} alt="delete" />
                 </button>
@@ -183,7 +228,12 @@ const Config = () => {
                 </button>
                 <button
                   className="button-eliminar-dispositivo"
-                  onClick={() => deletePlate(placa.id)}
+                  onClick={() => setDialog({
+                    table: "Condiciones",
+                    message: "Eliminar una configuración no es reversible",
+                    isLoading: true,
+                    index: placa.id,
+                  })}
                 >
                   <img src={del} alt="delete" />
                 </button>
@@ -198,6 +248,12 @@ const Config = () => {
           </Link>
         </div>
       </div>
+
+      {/* DIALOG */}
+      {dialog.isLoading && (
+        <Dialog onDialog={areUSureDelete} message={dialog.message} />
+      )}
+
     </div>
   );
 };
