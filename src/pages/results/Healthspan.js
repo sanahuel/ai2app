@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Grafica } from "./Grafica";
 import { Barras } from "./Barras";
@@ -6,6 +6,29 @@ import * as XLSX from 'xlsx';
 
 import "./lifespanr.css";
 import file from "../../icons/file.svg";
+
+  // Error boundary component
+  class ErrorBoundary extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error) {
+      // Update state to indicate an error has occurred
+      return { hasError: true };
+    }
+
+    render() {
+      if (this.state.hasError) {
+        // Render fallback UI when there's an error
+        return <div className="error-message" style={{fontWeight:"bold"}}>Ha ocurrido un error</div>;
+      }
+
+      return this.props.children; // Render children components normally
+    }
+  }
+
 
 const Healthspan = (resultData) => {
   const { id } = useParams();
@@ -93,8 +116,11 @@ const Healthspan = (resultData) => {
     XLSX.writeFile(workbook, `Healthspan_id${id}.xlsx`, { compression: true });
   }
 
+
   return (
     <div className="nuevo-ensayo">
+      {/* Si se da error no se queda la página en blanco y se puede seguir exportando a excel */}
+      <ErrorBoundary>
       <div className="container-div">
         <div className="container-header">
           <span>Información</span>
@@ -165,10 +191,15 @@ const Healthspan = (resultData) => {
         1 PUNTO DE CAPTURA -> DIAGRAMA DE BARRAS
         1 PUNTO DE CAPTURA -> GRÁFICA TEMPORAL */}
 
-      <Grafica name={"Cantidad de Movimiento"} options={CantidadMovOptions} condiciones={resultData['resultData']['resultados']['cantidadMov']}/>
+      <Grafica 
+        name={"Cantidad de Movimiento"} 
+        options={CantidadMovOptions} 
+        condiciones={resultData['resultData']['resultados']['cantidadMov']}
+      />
 
       {/* <Barras name={"Indicador 2"} options={Indicador2Options} condiciones={condiciones.Indicador2}/> */}
-     
+      </ErrorBoundary>
+
       {/* EXPORT */}
       <div className="crear-div">
         <button className="crear-button">

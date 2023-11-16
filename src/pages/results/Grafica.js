@@ -34,35 +34,35 @@ export const Grafica = ({ name, options, condiciones }) => {
     let placasRef = useRef();
 
     // CALC MEAN Y STD DEV
-
-      const newCalcData = (condicion) => {
-        const numPositions = Object.values(condicion)[0].length; // Assuming all keys have the same length.
-        const means = Array(numPositions).fill(0);
-        const stdDev = Array(numPositions).fill(0);
-      
-        const conditionKeys = Object.keys(condicion);
-        const validKeys = conditionKeys.filter(key => open[key] === true);
-
-        
-      
-        for (let j = 0; j < numPositions; j++) {
-          const valuesCalcMean = []
-
-          for (let i = 0; i < validKeys.length; i++) {
-            if (condicion[validKeys[i]][j] != null){
-              valuesCalcMean.push(condicion[validKeys[i]][j])
-            }
+    const newCalcData = (condicion) => {
+      const numPositions = Object.values(condicion)[0].length; // Assuming all keys have the same length.
+      const means = Array(numPositions).fill(0);
+      const stdDev = Array(numPositions).fill(0);
+    
+      const conditionKeys = Object.keys(condicion);
+      const validKeys = conditionKeys.filter((key) => open[key] === true);
+    
+      for (let j = 0; j < numPositions; j++) {
+        const valuesCalcMean = [];
+    
+        for (let i = 0; i < validKeys.length; i++) {
+          if (condicion[validKeys[i]][j] != null) {
+            valuesCalcMean.push(condicion[validKeys[i]][j]);
           }
-          means[j] = mean(valuesCalcMean);
-          stdDev[j] = std(valuesCalcMean)
         }
-
-        const meansMinusStdDeviations = means.map((mean, index) => mean - stdDev[index]);
-        const meansPlusStdDeviations = means.map((mean, index) => mean + stdDev[index]);
-      
-        return [means, meansMinusStdDeviations, meansPlusStdDeviations];
+    
+        if (valuesCalcMean.length > 0) {
+          means[j] = mean(valuesCalcMean);
+          stdDev[j] = std(valuesCalcMean);
+        }
       }
-      
+    
+      const meansMinusStdDeviations = means.map((mean, index) => mean - stdDev[index]);
+      const meansPlusStdDeviations = means.map((mean, index) => mean + stdDev[index]);
+    
+      return [means, meansMinusStdDeviations, meansPlusStdDeviations];
+    };
+          
             
     // SET UP DATA   
       const [condData, setCondData] = useState({})

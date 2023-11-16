@@ -6,6 +6,7 @@ import Healthspan from "./results/Healthspan";
 import IpContext from "../context/IpContext";
 
 const Results = () => {
+  console.log('sssssss')
   const { disp, id } = useParams();
   const ipData = useContext(IpContext);
 
