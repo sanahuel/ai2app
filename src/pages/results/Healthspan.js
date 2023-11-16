@@ -22,7 +22,7 @@ import file from "../../icons/file.svg";
     render() {
       if (this.state.hasError) {
         // Render fallback UI when there's an error
-        return <div className="error-message" style={{fontWeight:"bold"}}>Ha ocurrido un error</div>;
+        return <div className="error-message" style={{fontWeight:"bold", color: "#444"}}>Ha ocurrido un error</div>;
       }
 
       return this.props.children; // Render children components normally
