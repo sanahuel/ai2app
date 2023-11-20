@@ -1,17 +1,13 @@
-# Interfaz para automatizar ensayos con _C.elegans_
+# Planificador
 
-<div align="justify"> Interfaz diseñada para controlar los sistemas Multiview y Tower para la automatización completa de ensayos con C.elegans. Esta interfaz consiste en un frontend realizado en React y un backend realizado en Django.
+Interfaz diseñada para gestionar los ensayos realizados en los dispositivos Multiview y The Tower.
 
 ## Esquema General
 
-Mediante la interacción con el frontend el usuario puede definir y controlar nuevos ensayos y visualizar los resultados una vez han finalizado.
-
-El backend se comunica directamente con la base de datos MySQL.
-
-La interacción interfaz - sistemas será indirecta a través de esta base de datos.
+Cada equipo cuenta con una base de datos MySQL, un backend desarrollado en Django y dos frontends desarrollados en React, el planificador y la interfaz de dispositivo.
 
 <p align="center">
-    <img src="./docs/Arquitectura.drawio.svg" alt= “”>
+    <img src="./docs/esquema_general.drawio.svg" alt= “”>
 </p>
 
 ## Base de Datos
@@ -35,29 +31,16 @@ Las tareas son las que permiten la organización de los sistemas, y el campo est
 Cada tarea pasa por los siguientes estados.
 
 <p align="center">
-    <img src="./docs/Estados.drawio.svg" alt= “”>
+    <img src="./docs/estadosTarea.drawio.svg" alt= “”>
 </p>
 
-Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. A partir de este punto, la gestión del estado de las tareas es llevada por los propios sistemas mientras el ensayo transcurra con normalidad.
+Al crear un nuevo ensayo se definen todas las tareas con estado pendiente. Este estado pasará a lanzada cundo comience la ejecución de la captura o a cancelada mediante el input del usuario. Una vez se han procesado todas las imágenes de este punto de captura su estado pasa a borrada.
 
 También existe una gestión de los errores durante el transcurso de los ensayos. Esto permite cancelar durante el ensayo una de sus placas, una condición completa, una de las capturas de imagen o el propio ensayo.
 
 <p align="center">
     <img src="./docs/GestionEstados.drawio.svg" alt= “”>
 </p>
-
-## Acciones del Usuario
-
-El usuario tiene tres formas de interactuar con la aplicación, creando un ensayo nuevo, controlando los ensayos en transcurso y visualizando resultados de los ensayos finalizados.
-
-En todas ellas el usuario tiene cierto grado de control sobre los parámetros del experimento, como placas, pallets o condiciones.
-
-En el siguiente diagrama se puede ver la lógica de cada una de estas gestiones.
-
-<p align="center">
-    <img src="./docs/AccionesUsuario.drawio.svg" alt= “”>
-</p>
- </div>
 
 ## Comunicación Frontend - Backend
 
@@ -69,47 +52,57 @@ La comunicación entre el frontend y el backend se realiza a través de los sigu
 'new/'
 ```
 
-#### GET
+GET
 
 ```js
 {
     capturas: [
         (
-            nombreExperimentos: ,
             fechayHora: ,
-        ),
-        (
             nombreExperimentos: ,
-            fechayHora: ,
         ),
         ...
-    ]
+    ],
+    almacenes: [ 
+        [1,1,1,1,0,0,0,0,0], 
+        [0,0,0,0,0,0,0,0,0]
+    ] //1 = ocupado, 0 = libre
 }
 ```
 
-#### POST
+POST
 
 ```js
 {
-    idUsuarios: ,
-    nombreExperimentos: ,
+    datos: {
+    nombreExperimento: ,
+    nombreProyecto: ,
+    aplicacion: ,
+    color: ,
+    userId: ,
+    gusanosPorCondicion: ,
+    },
+    condiciones: {
+    nCondiciones: ,
+    condiciones: ,
+    placas: ,
+    tipoPlaca: , //filas x columnas
+    },
+    captura: {
     fechaInicio: ,
     ventanaEntreCapturas: ,
     numeroDeCapturas: ,
-    aplicacion: ,
-    nombreProyecto: ,
-    nCondiciones: ,
-    condiciones: {
-        nombreCondiciones: [
-            [idPallet, tipoPlaca],
-            [idPallet, tipoPlaca],
-            [idPallet, tipoPlaca],
-            ...
-        ],
-        nombreCondiciones: [
-            ...
-        ]
-    }
+    pallets: ,
+    placasPorCondicion: ,
+    tareas: ,
+    },
+    parametros: {
+    tipoImg: ,
+    resolucion: ,
+    frecuencia: ,
+    nImgs: ,
+    },
+    changes: , //tareas a modificar
 }
 ```
 
@@ -121,7 +114,7 @@ La comunicación entre el frontend y el backend se realiza a través de los sigu
 
 Información de todos los ensayos que aún están en transcurso.
 
-#### GET
+GET
 
 ```js
 {
@@ -144,7 +137,7 @@ Información de todos los ensayos que aún están en transcurso.
 
 Toda la información de un solo ensayo.
 
-#### GET
+GET
 
 ```js
 {
@@ -171,10 +164,20 @@ Toda la información de un solo ensayo.
         },
         ...
     ],
+    color: ,
+    resultados: {
+        cond: {
+            idPlacas: [], //idPlaca: [resultado1, resultado2, ...]
+            idPlacas: [],
+            ...
+        },
+        ...
+    },
+    show: , //bool que indica si mostrar resultados
 }
 ```
 
-#### PUT
+PUT
 
 ```js
 {
@@ -182,8 +185,6 @@ Toda la información de un solo ensayo.
     id: ,
 }
 ```
-
-#### DELETE
 
 ### Resultados
 
@@ -193,7 +194,7 @@ Toda la información de un solo ensayo.
 
 Información de todos los ensayos acabados.
 
-#### GET
+GET
 
 ```js
 {
@@ -215,34 +216,26 @@ Información de todos los ensayos acabados.
 
 Toda la información de un ensayo acabado.
 
-#### GET
+GET
 
 ```js
 {
-    condiciones: {
-        idCondiciones: [
-            idPlacas,
-            idPlacas,
-            ...
-        ],
-        idCondiciones: [
-            idPlacas,
-            idPlacas,
-            ...
-        ],
+    ensayo: ,
+    proyecto: ,
+    aplicacion: ,
+    nCapturas: ,
+    inicio: ,
+    condiciones: [
+        (nombreCondicion, idCondicion),
         ...
-    },
-    placas: {
-        idPlacas: [
-            vivos, //dia 1
-            vivos, //dia 2
+    ],
+    placas: ,
+    resultados: {
+        idCondiciones: {
+            idPlacas: [], //idPlaca: [resultado1, resultado2, ...]
+            idPlacas: [], //idPlaca: [resultado1, resultado2, ...]
             ...
-        ],
-        idPlacas: [
-            vivos, //dia 1
-            vivos, //dia 2
-            ...
-        ],
+        },
         ...
     },
 }
