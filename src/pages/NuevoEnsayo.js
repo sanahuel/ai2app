@@ -240,7 +240,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   let createEnsayo = () => {
     if (
       nombreRef.current.value !== "" &&
-      inicioRef.current.value !== "" &&
+      // inicioRef.current.value !== "" &&
       numRef.current.value !== "" &&
       hfreqRef.current.value !== "" &&
       minfreqRef.current.value !== "" &&
@@ -267,6 +267,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         ).fill(0);
 
         // N CONDICIONES
+        console.log('n cond')
         let nCondiciones = 0;
         condiciones.forEach((cond) => {
           if (cond.name !== "") {
@@ -275,6 +276,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         });
 
         // ESPACIO
+        console.log('espacio')
         condiciones.forEach((cond, index) => {
           if (cond.name !== "") {
             const espacio =
@@ -311,8 +313,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         
         if (espacioLibre >= espacioNecesarioValue) {
           // PALLETS
+          console.log('pallets')
           let pallets = orderPallets(espacioNecesarioValue);
           //PLACAS
+          console.log('placas')
           let placas = {};
           for (let i = 0; i < condiciones.length; i++) {
             let placasCond = [];
@@ -353,6 +357,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           }
 
           // TAREAS
+          console.log('tareas')
           const fetchEvents = [];
           rawEvents.forEach((event) => {
             fetchEvents.push({
@@ -361,12 +366,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               holguraNegativa: event[2],
             });
           });
+          const earliestDate = fetchEvents.reduce(
+            (earliest, current) => (current.event < earliest.event ? current : earliest),
+            fetchEvents[0]
+          );
+          
 
 
           // FETCH
           const disp = ipData.find((obj) => obj.nDisp === selectedOption);
           const decodedToken = jwt_decode(authTokens.access);
           setIsLoading(true)
+
           fetch(`http://${disp.IP}:8000/new/`, {
             method: "POST",
             headers: {
@@ -389,8 +400,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 tipoPlaca: `${configCondicion.filas}x${configCondicion.columnas}`,
               },
               captura: {
-                fechaInicio:
-                  inicioRef.current.value + " " + horaRef.current.value,
+                fechaInicio: earliestDate.event,
                 ventanaEntreCapturas:
                   parseInt(hfreqRef.current.value) * 60 +
                   parseInt(minfreqRef.current.value),
@@ -1519,6 +1529,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     }
   };
 
+  // FullCalendar
+
   let createCalendarEvent = (ini) => {
     const j = new Date(ini.getTime());
     let i = checkCalendarEvents(ini);
@@ -1533,24 +1545,54 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         },
       ]);
       setIds(ids + 1);
+      setRawEvents([
+        ...rawEvents,
+        [
+          i,
+          holguraPositivaRef.current.value,
+          holguraNegativaRef.current.value
+        ]
+      ])
+      console.log(rawEvents)
     }
   };
 
-  let deleteCalendarEvent = (id) => {
-    setEvents(events.filter((e) => e.id != id));
+  let deleteCalendarEvent = (event) => {
+    setEvents(events.filter((e) => e.id != event.id));
+    setRawEvents(rawEvents.filter((e) => e[0].toISOString() != event.start.toISOString()))
+    console.log(rawEvents)
   };
 
   let dragCalendarEvent = (event) => {
-    let temporalEvents = events.filter((e) => e.id != event.id);
+    // events contiene los datos que se ven en el calendario
+    // rawEvents contiene los datos (tiene las holguras de cada tarea) que se utilizan para escribir en la BBDD
+    console.log('drag...')
+    console.log(rawEvents)
+    let temporalEvents = events.filter((e) => e.id != event.event.id);
     setEvents([
       ...temporalEvents,
       {
         title: "",
-        start: event.start,
-        id: event.id,
+        start: event.event.start.toISOString(),
+        id: parseInt(event.event.id),
         color: selectedColor,
       },
     ]);
+
+    let temporalRawEvents = rawEvents.filter((e) => e[0].toISOString() != event.oldEvent.start.toISOString());
+    console.log(temporalRawEvents)
+    let oldRawEvent = rawEvents.filter((e) => e[0].toISOString() === event.oldEvent.start.toISOString());
+    console.log(oldRawEvent)
+    setRawEvents([
+      ...temporalRawEvents,
+      [
+        event.event.start,
+        oldRawEvent[0][1],
+        oldRawEvent[0][2],
+      ],
+    ]);
+    console.log(rawEvents)
+
   };
 
   let changeExpand = () => {
@@ -2095,7 +2137,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 locale={esLocale}
                 events={events.concat(capturas)}
                 eventClick={(eventClickInfo) => {
-                  deleteCalendarEvent(eventClickInfo.event.id);
+                  deleteCalendarEvent(eventClickInfo.event);
                 }}
                 dateClick={(dateClickInfo) => {
                   if (dateClickInfo.date.getTime() >= new Date().getTime()) {
@@ -2106,7 +2148,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   if (
                     eventDropInfo.event.start.getTime() >= new Date().getTime()
                   ) {
-                    dragCalendarEvent(eventDropInfo.event);
+                    dragCalendarEvent(eventDropInfo);
+                    console.log(eventDropInfo)
                   } else {
                     let old = events.filter(
                       (e) => e.id === eventDropInfo.event.id
@@ -2137,7 +2180,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         </>
       )}
 
-      {/* SI NO ESTÁS */}
+      {/* SI NO ESTÁ LIBRE EL SEMÁFORO */}
       {repeat && (
         <div className="loading-div">
           <img src={loading} alt="" className="loading-img" />
