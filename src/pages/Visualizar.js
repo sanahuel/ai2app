@@ -46,7 +46,7 @@ const Visualizar = () => {
                 setDisplay(ensayos[data.nDisp]);
               }}
               onDoubleClick={() => {
-                window.open(`http://${data.IP}:3001/ai2app`, "_blank");
+                window.open(`http://${data.IP}:3001/`, "_blank");
               }}
             >
               Dispositivo {data.nDisp}
