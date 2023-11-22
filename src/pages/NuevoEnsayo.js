@@ -106,8 +106,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     };
   });
 
-  useEffect(() => {
-    let formatCapturas = (data) => {
+      let formatCapturas = (data) => {
       return data.map((captura) => {
         return {
           title: captura[1],
@@ -115,9 +114,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           allDay: false,
           color: "#ddd",
           editable: false,
+          id: captura[2]
         };
       });
     };
+
+  useEffect(() => {
     let checkResponse = (data) => {
       if (data.capturas != null) {
         updateSemaphore(true);
@@ -138,10 +140,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           checkResponse(data);
           const copy = fetchedData;
           copy[ipData.nDisp] = data;
+          console.log('COPY', copy)
           setFetchedData(copy);
 
           const captCopy = capturas;
           captCopy[ipData.nDisp] = formatCapturas(data.capturas);
+          console.log('CAPTCOPY', captCopy)
           setCapturas(captCopy[ipData.nDisp]);
         });
     }
@@ -267,7 +271,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         ).fill(0);
 
         // N CONDICIONES
-        console.log('n cond')
         let nCondiciones = 0;
         condiciones.forEach((cond) => {
           if (cond.name !== "") {
@@ -276,7 +279,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         });
 
         // ESPACIO
-        console.log('espacio')
         condiciones.forEach((cond, index) => {
           if (cond.name !== "") {
             const espacio =
@@ -313,10 +315,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         
         if (espacioLibre >= espacioNecesarioValue) {
           // PALLETS
-          console.log('pallets')
           let pallets = orderPallets(espacioNecesarioValue);
           //PLACAS
-          console.log('placas')
           let placas = {};
           for (let i = 0; i < condiciones.length; i++) {
             let placasCond = [];
@@ -357,13 +357,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           }
 
           // TAREAS
-          console.log('tareas')
           const fetchEvents = [];
           rawEvents.forEach((event) => {
             fetchEvents.push({
               event: formatDateWithTimezone(event[0]),
-              holguraPositiva: event[1],
-              holguraNegativa: event[2],
+              holguraPositiva: event[1] * 60000,
+              holguraNegativa: event[2] * 60000,
             });
           });
           const earliestDate = fetchEvents.reduce(
@@ -513,7 +512,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     // oldEvents = [[fechayHora, holguraPositiva, holguraNegativa], [fechayHora, holguraPositiva, holguraNegativa], ...]
     
     let oldEvents = capturas.map((captura) => {
-      return [new Date(captura.start), 5, 5];
+      return [new Date(captura.start), 0, 0];
     });
 
     // let oldEvents = databaseEvents[dispositivo].map((event) => event.slice());
@@ -549,6 +548,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         );
         if (comienzo < fin) {
           // si hay solape
+
           if (newEvents[i][0].getTime() >= oldEvents[j][0].getTime()) {
             ////////////////////////////////     1º antiguo ensayo
             if (
@@ -748,7 +748,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   }
                 } else {
                   // se tiene que mover más la nueva
-
                   changes[j] = [
                     new Date(oldEvents[j][0].getTime() - oldEvents[j][2]),
                     oldEvents[j][1],
@@ -1422,7 +1421,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       if (conf) {
         inicio = new Date(inicio.getTime() + conflicto);
       } else {
-        return inicio, newEvents;
+        return inicio, newEvents; // sin este return falla.....
       }
     } while (conf === true);
 
@@ -1525,6 +1524,24 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           ];
         });
         setChangesBBDD(formatedChanges);
+        // let formatedData = [];
+        // for (
+        //   let key = 0;
+        //   key < Object.keys(changes).length;
+        //   key++
+        // ) {
+        //   formatedData[Object.keys(changes)[key]] = {
+        //     title: "",
+        //     start:
+        //       changes[
+        //         Object.keys(changes)[key]
+        //       ][0].toISOString(),
+        //     color: "#ddd",
+        //     editable: false,
+        //   };
+        // }
+        // console.log('AQUI.....', formatedData)
+        // setCapturas(formatedData);
       }
     }
   };
@@ -1553,21 +1570,17 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           holguraNegativaRef.current.value
         ]
       ])
-      console.log(rawEvents)
     }
   };
 
   let deleteCalendarEvent = (event) => {
     setEvents(events.filter((e) => e.id != event.id));
     setRawEvents(rawEvents.filter((e) => e[0].toISOString() != event.start.toISOString()))
-    console.log(rawEvents)
   };
 
   let dragCalendarEvent = (event) => {
     // events contiene los datos que se ven en el calendario
     // rawEvents contiene los datos (tiene las holguras de cada tarea) que se utilizan para escribir en la BBDD
-    console.log('drag...')
-    console.log(rawEvents)
     let temporalEvents = events.filter((e) => e.id != event.event.id);
     setEvents([
       ...temporalEvents,
@@ -1580,9 +1593,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     ]);
 
     let temporalRawEvents = rawEvents.filter((e) => e[0].toISOString() != event.oldEvent.start.toISOString());
-    console.log(temporalRawEvents)
     let oldRawEvent = rawEvents.filter((e) => e[0].toISOString() === event.oldEvent.start.toISOString());
-    console.log(oldRawEvent)
     setRawEvents([
       ...temporalRawEvents,
       [
@@ -1591,7 +1602,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         oldRawEvent[0][2],
       ],
     ]);
-    console.log(rawEvents)
 
   };
 
@@ -2149,7 +2159,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     eventDropInfo.event.start.getTime() >= new Date().getTime()
                   ) {
                     dragCalendarEvent(eventDropInfo);
-                    console.log(eventDropInfo)
                   } else {
                     let old = events.filter(
                       (e) => e.id === eventDropInfo.event.id
