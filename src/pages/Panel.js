@@ -10,30 +10,83 @@ const Panel = () => {
   const [ensayos, setEnsayos] = useState({});
   const [display, setDisplay] = useState([]);
 
+  // useEffect(() => {
+  //   async function fetchData(ipData) {
+  //     fetch(`http://${ipData.IP}:8000/control/`, {
+  //       method: "GET",
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         for (let i = 0; i < data["experimentos"].length; i++) {
+  //           data["experimentos"][i].ip = ipData.IP;
+  //         }
+
+  //         const sortedArray = data["experimentos"].sort(
+  //           (a, b) => a.porcentaje - b.porcentaje
+  //         );
+  //         const copy = ensayos;
+  //         copy[ipData.nDisp] = sortedArray;
+  //         setEnsayos(copy);
+  //         setDisplay([...display, ...sortedArray]);
+  //       });
+  //   }
+  //   for (let i = 0; i < ipData.length; i++) {
+  //     fetchData(ipData[i]);
+  //   }
+  // }, []);
+
   useEffect(() => {
     async function fetchData(ipData) {
-      fetch(`http://${ipData.IP}:8000/control/`, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          for (let i = 0; i < data["experimentos"].length; i++) {
-            data["experimentos"][i].ip = ipData.IP;
-          }
-
-          const sortedArray = data["experimentos"].sort(
-            (a, b) => a.porcentaje - b.porcentaje
-          );
-          const copy = ensayos;
-          copy[ipData.nDisp] = sortedArray;
-          setEnsayos(copy);
-          setDisplay([...display, ...sortedArray]);
-        });
+      try {
+        const response = await fetch(`http://${ipData.IP}:8000/control/`);
+        const data = await response.json();
+  
+        for (let i = 0; i < data["experimentos"].length; i++) {
+          data["experimentos"][i].ip = ipData.IP;
+        }
+  
+        const sortedArray = data["experimentos"].sort(
+          (a, b) => a.porcentaje - b.porcentaje
+        );
+  
+        return {
+          nDisp: ipData.nDisp,
+          sortedExperimentos: sortedArray
+        };
+      } catch (error) {
+        console.error(`Error fetching data for IP ${ipData.IP}:`, error);
+        return null;
+      }
     }
-    for (let i = 0; i < ipData.length; i++) {
-      fetchData(ipData[i]);
+  
+    async function fetchAllData() {
+      try {
+        const fetchedData = await Promise.all(ipData.map(async (data) => {
+          return await fetchData(data);
+        }));
+  
+        const updatedEnsayos = {...ensayos};
+        const updatedDisplay = [];
+  
+        fetchedData.forEach(item => {
+          if (item) {
+            updatedEnsayos[item.nDisp] = item.sortedExperimentos;
+            updatedDisplay.push(...item.sortedExperimentos);
+          }
+        });
+  
+        setEnsayos(updatedEnsayos);
+        setDisplay(prevDisplay => [...prevDisplay, ...updatedDisplay]);
+      } catch (error) {
+        console.error("Error fetching multiple IPs:", error);
+      }
+    }
+  
+    if (ipData.length > 0) {
+      fetchAllData();
     }
   }, []);
+  
 
   return (
     <div className="nuevo-ensayo">

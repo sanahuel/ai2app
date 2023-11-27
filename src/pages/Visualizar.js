@@ -13,26 +13,57 @@ const Visualizar = () => {
 
   useEffect(() => {
     async function fetchData(ipData) {
-      fetch(`http://${ipData.IP}:8000/results/`, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          for (let i = 0; i < data["experimentos"].length; i++) {
-            data["experimentos"][i].ip = ipData.IP;
-          }
-
-          const copy = ensayos;
-          copy[ipData.nDisp] = data["experimentos"];
-          setEnsayos(copy);
-          setDisplay([...display, ...data["experimentos"]]);
-        });
+      try {
+        const response = await fetch(`http://${ipData.IP}:8000/results/`);
+        const data = await response.json();
+        console.log('DATA', data)
+  
+        for (let i = 0; i < data["experimentos"].length; i++) {
+          data["experimentos"][i].ip = ipData.IP;
+        }
+  
+        return {
+          nDisp: ipData.nDisp,
+          experimentos: data["experimentos"]
+        };
+      } catch (error) {
+        console.error(`Error fetching data for IP ${ipData.IP}:`, error);
+        return null;
+      }
     }
-    for (let i = 0; i < ipData.length; i++) {
-      fetchData(ipData[i]);
+  
+    async function fetchAllData() {
+      try {
+        const fetchedData = await Promise.all(ipData.map(async (data) => {
+          return await fetchData(data);
+        }));
+  
+        console.log('FETCHED', fetchedData)
+
+        const updatedEnsayos = {...ensayos};
+        const updatedDisplay = [];
+        console.log('for each....')
+        fetchedData.forEach(item => {
+          if (item) {
+            updatedEnsayos[item.nDisp] = item.experimentos;
+            updatedDisplay.push(...item.experimentos);
+          }
+        });
+        console.log('ENSAYOS', updatedEnsayos)
+        console.log('DISPLAY', updatedDisplay)
+  
+        setEnsayos(updatedEnsayos);
+        setDisplay(prevDisplay => [...prevDisplay, ...updatedDisplay]);
+      } catch (error) {
+        console.error("Error fetching multiple IPs:", error);
+      }
+    }
+  
+    if (ipData.length > 0) {
+      fetchAllData();
     }
   }, []);
-
+  
   return (
     <div className="nuevo-ensayo">
       {/* DISPOSITIVOS */}

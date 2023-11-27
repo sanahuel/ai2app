@@ -45,7 +45,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const placasPorCondicionRef = useRef(null);
   const gusanosPorCondicionRef = useRef(null);
 
-  let dispositivos = ["1", "2", "3"];
+  let dispositivos = ["1", "2", "3"]; // borrar...
 
   const [fetchedData, setFetchedData] = useState({});
   const [capturas, setCapturas] = useState([]);
@@ -1473,7 +1473,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         let inicios = {};
         let events_disp = {};
         let changes_disp = {};
-        for (let disp = 1; disp <= dispositivos.length; disp++) {
+        for (let disp = 1; disp <= dispositivos.length; disp++) { // está mal por usar dispositivos, hay que cambiarlo a ipData...
           let inicio,
             newEvents = newCheckEvents(
               new Date(inicioRef.current.value + " " + horaRef.current.value),

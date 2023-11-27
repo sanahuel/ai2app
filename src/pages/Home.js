@@ -16,31 +16,54 @@ const Home = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    ipData.map((data) => {
-      fetch(`http://${data.IP}:8000/dispositivo/`, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((response_data) => {
-          const temp_info = [
+    const fetchData = async () => {
+      const promises = ipData.map(async (data) => {
+        try {
+          const response = await fetch(`http://${data.IP}:8000/dispositivo/`);
+          const response_data = await response.json();
+          
+          return [
             data.nDisp,
             data.IP,
             response_data.pallets_disponibles,
             response_data.pallets_ocupados,
             response_data.nExp,
           ];
-          setInfo([...info, temp_info]);
-          if (ipData.length === 1) {
-            const copy = Array(ipData.length).fill(0);
-            copy[0] = 1;
-            setSelectedDispositivos(copy);
-            fetchTareas(0);
-          } else {
-            setSelectedDispositivos(Array(ipData.length).fill(0));
-          }
-        });
-    });
-  }, ipData);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          return null;
+        }
+      });
+  
+      try {
+        const fetchedInfo = await Promise.all(promises);
+        const filteredInfo = fetchedInfo.filter(Boolean); // Filter out null values
+  
+        setInfo(filteredInfo);
+  
+        if (filteredInfo.length === 1) {
+          const copy = Array(ipData.length).fill(0);
+          copy[0] = 1;
+          setSelectedDispositivos(copy);
+          fetchTareas(0);
+        } else {
+          setSelectedDispositivos(Array(ipData.length).fill(0));
+        }
+      } catch (error) {
+        console.error("Error fetching multiple IPs:", error);
+      }
+    };
+  
+    if (ipData.length > 0) {
+      fetchData();
+    }
+
+    const copy = Array(ipData.length).fill(0);
+    copy[0] = 1;
+    fetchTareas(0);
+    setSelectedDispositivos(copy);
+
+  }, [ipData]);
 
   async function fetchTareas(id) {
     fetch(`http://${ipData[id].IP}:8000/dispositivo/tareas`, {
