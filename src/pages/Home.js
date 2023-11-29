@@ -74,13 +74,16 @@ const Home = () => {
         let temp_id = 0;
         const formatedEvents = response_data["tareas"].map((subarray) => {
           temp_id++;
+          const startDate = new Date(subarray[0])
           return {
             title: subarray[2],
             start: subarray[0],
+            end: new Date(startDate.getTime() + subarray[3]*60000),
             color: subarray[1],
             id: temp_id,
           };
         });
+        console.log(formatedEvents)
         setEvents(formatedEvents);
       });
   }

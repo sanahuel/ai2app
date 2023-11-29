@@ -4,6 +4,8 @@ import AuthContext from "../context/AuthContext";
 import { IdleTimer } from "../components/idleTimer";
 import "./NuevoEnsayo.css";
 import IpContext from "../context/IpContext";
+import Dialog from "../components/dialog";
+
 
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -63,6 +65,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [configCondiciones, setConfigCondiciones] = useState([]);
   const [changesBBDD, setChangesBBDD] = useState({});
   const [isLoading, setIsLoading] = useState(false)
+  const [dialog, setDialog] = useState({
+    message: "",
+    isLoading: false,
+    index: "",
+  });
+
 
   let changes = {};
 
@@ -108,9 +116,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
       let formatCapturas = (data) => {
       return data.map((captura) => {
+        const startDate = new Date(captura[0])
         return {
           title: captura[1],
           start: captura[0],
+          end: new Date(startDate.getTime() + captura[5]*60000),
           allDay: false,
           color: "#ddd",
           editable: false,
@@ -140,12 +150,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           checkResponse(data);
           const copy = fetchedData;
           copy[ipData.nDisp] = data;
-          console.log('COPY', copy)
+          // console.log('COPY', copy)
           setFetchedData(copy);
 
           const captCopy = capturas;
           captCopy[ipData.nDisp] = formatCapturas(data.capturas);
-          console.log('CAPTCOPY', captCopy)
+          // console.log('CAPTCOPY', captCopy)
           setCapturas(captCopy[ipData.nDisp]);
         });
     }
@@ -239,6 +249,50 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
     return order;
   };
+
+  //CALCULAR DURACION
+  let calcDuracion = () => {
+    let espacioNecesario = Array(
+      condiciones.length / Object.keys(configCondicion.condiciones).length
+    ).fill(0);
+
+    condiciones.forEach((cond, index) => {
+      if (cond.name !== "") {
+        const espacio =
+          placasPorCondicionRef.current.value /
+          Object.values(configCondicion.condiciones)[
+            index -
+              Object.keys(configCondicion.condiciones).length *
+                Math.trunc(
+                  index / Object.keys(configCondicion.condiciones).length
+                )
+          ].length;
+        if (
+          espacio >
+          espacioNecesario[
+            Math.trunc(
+              index / Object.keys(configCondicion.condiciones).length
+            )
+          ]
+        ) {
+          espacioNecesario[
+            Math.trunc(
+              index / Object.keys(configCondicion.condiciones).length
+            )
+          ] = Math.ceil(espacio);
+        }
+      }
+    });
+
+    const espacioNecesarioValue = espacioNecesario.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      0
+    );
+
+    const npallets = espacioNecesarioValue
+    const duracionTareas = (45.02 + npallets*(73,34 + imgsPorCapturaRef.current.value/freqCapturaRef.current.value))/60 //min
+    return 1.33 * duracionTareas
+  }
 
   // ESCRIBIR BBDD
   let createEnsayo = () => {
@@ -369,7 +423,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             (earliest, current) => (current.event < earliest.event ? current : earliest),
             fetchEvents[0]
           );
-          
+          // DURACIÓN
+          const npallets = espacioNecesarioValue
+          const duracionTareas = (45.02 + npallets*(73,34 + imgsPorCapturaRef.current.value/freqCapturaRef.current.value))/60 //min
 
 
           // FETCH
@@ -407,6 +463,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 pallets: pallets,
                 placasPorCondicion: placasPorCondicionRef.current.value,
                 tareas: fetchEvents,
+                duracion:1.33*duracionTareas, //sobredimensionado
               },
               parametros: {
                 tipoImg: tipoImgRef.current.value,
@@ -458,18 +515,22 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   };
 
   let checkCalendarEvents = (inicio) => {
+    let duracion = calcDuracion();
+
     // capturas de otros ensayos
     let capturasEvents = capturas.map((captura) => {
-      return [new Date(captura.start), 5, 5];
+      return [new Date(captura.start), 5, 5, 0, (new Date(captura.end).getTime() - new Date(captura.start).getTime())/60000];
     });
     let calendarEvents = [];
     Object.values(events).forEach((event) => {
-      calendarEvents.push([new Date(event.start), 5, 5]);
+      calendarEvents.push([new Date(event.start), 5, 5, 0, duracion]);
     });
-    let oldEvents = [...capturasEvents, ...calendarEvents];
-
-    // por ahora duración = 30 min
-    let duracion = 60;
+    // [fechayHora, holguraPositiva, holguraNegativa, idOperativo, duracion]
+    // let oldEvents = fetchedData[selectedOption].capturas.map((captura) => {
+    //   return [new Date(captura[0]), captura[3], captura[4], captura[2], captura[5]];
+    // });
+    // let oldEvents = [...capturasEvents, ...calendarEvents];
+    let oldEvents = [...capturasEvents, ...calendarEvents]
     let conf = false;
 
     let n = 1; //nuevos
@@ -483,10 +544,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
       //bucle
       while (j < m) {
+        // console.log('---', j, '---')
+        // console.log(oldEvents[j])
         let comienzo = Math.max(inicio.getTime(), oldEvents[j][0].getTime());
         let fin = Math.min(
           inicio.getTime() + duracion * 60000,
-          oldEvents[j][0].getTime() + duracion * 60000
+          oldEvents[j][0].getTime() + oldEvents[j][4] * 60000
         );
         if (comienzo < fin) {
           conf = true;
@@ -499,7 +562,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       }
 
       if (conf) {
-        inicio = new Date(inicio.getTime() + conflicto);
+        inicio = new Date(inicio.getTime() + conflicto + 100);
       }
     } while (conf === true);
 
@@ -509,12 +572,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // newCheckEvents -> calcula primer comienzo posible en el dispositivo ajustando holguras si es necesario y posible
   // +Info -> Calendario.md
   let newCheckEvents = (inicio, dispositivo) => {
-    // oldEvents = [[fechayHora, holguraPositiva, holguraNegativa, idTareas], [fechayHora, holguraPositiva, holguraNegativa, idTareas], ...]
-    console.log('. . .', dispositivo)
-    console.log('QQQQ', fetchedData[dispositivo])
+    // oldEvents = [[fechayHora, holguraPositiva, holguraNegativa, idTareas, duracion], [fechayHora, holguraPositiva, holguraNegativa, idTareas, duracion], ...]
 
     let oldEvents = fetchedData[dispositivo].capturas.map((captura) => {
-      return [new Date(captura[0]), captura[3], captura[4], captura[2]];
+      return [new Date(captura[0]), captura[3], captura[4], captura[2], captura[5]];
     });
 
     // let oldEvents = databaseEvents[dispositivo].map((event) => event.slice());
@@ -522,7 +583,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     inicio = newEvents[0][0];
 
     // por ahora duración = 30 min    BBDD????
-    let duracion = 60;
+    let duracion = calcDuracion();
     let conf = false;
     let n = parseInt(numRef.current.value); //nuevos
     let m = oldEvents.length; //antiguos
@@ -543,33 +604,55 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         let comienzo = Math.max(
           newEvents[i][0].getTime(),
           oldEvents[j][0].getTime()
-        );
+        ) - 6000; //se resta un minuto para evitar solapes al representar en el calendario
         let fin = Math.min(
           newEvents[i][0].getTime() + duracion * 60000,
-          oldEvents[j][0].getTime() + duracion * 60000
-        );
+          oldEvents[j][0].getTime() + oldEvents[j][4] * 60000
+        ) + 6000; //se añade un minuto por el mismo motivo
+        
+        // console.log('------ ------ ------')
+        // console.log('NEW', newEvents[i][0])
+        // console.log('OLD', oldEvents[j][0])
+        // console.log('CONFLICTO?', comienzo<fin)
+        // console.log('DURACION', duracion)
+        // console.log('DURACION OLD', oldEvents[j][4])
+        // console.log('------ ------ ------')
+
         if (comienzo < fin) {
-          // si hay solape
+          // sí hay solape
+          // ahora hay que determinar cuál es el solape
+          const comienzoNew = newEvents[i][0].getTime()
+          const comienzoOld = oldEvents[j][0].getTime()
+          const endNew = comienzoNew + duracion * 60000
+          const endOld = comienzoOld + oldEvents[j][4] *60000
+          let conflictoCalc = 0
+          if (comienzoNew>comienzoOld & endNew<endOld){ //si la nueva es tan corta que está dentro de la antigua
+            conflictoCalc = Math.max(endOld - comienzoNew, endNew - comienzoOld)
+          } else if (comienzoOld>comienzoNew & endOld<endNew) { //si la antigua es tan corta que está dentro de la nueva
+            conflictoCalc = Math.max(endOld - comienzoNew, endNew - comienzoOld)
+          } else { //solape simple
+            conflictoCalc = fin - comienzo
+          }
 
           if (newEvents[i][0].getTime() >= oldEvents[j][0].getTime()) {
             ////////////////////////////////     1º antiguo ensayo
             if (
-              fin - comienzo <=
+              conflictoCalc <=
               holguraPositivaRef.current.value * 60000 + oldEvents[j][2]
             ) {
               // se puede resolver ajustando holguras
               if (
-                (fin - comienzo) / 2 < oldEvents[j][2] &&
-                (fin - comienzo) / 2 < holguraPositivaRef.current.value * 60000
+                (conflictoCalc) / 2 < oldEvents[j][2] &&
+                (conflictoCalc) / 2 < holguraPositivaRef.current.value * 60000
               ) {
                 // se puede ajustar ambas por igual
                 newEvents[i][0] = new Date(
-                  newEvents[i][0].getTime() + (fin - comienzo) / 2
+                  newEvents[i][0].getTime() + (conflictoCalc) / 2
                 );
                 changes[j] = [
-                  new Date(oldEvents[j][0].getTime() - (fin - comienzo) / 2),
+                  new Date(oldEvents[j][0].getTime() - (conflictoCalc) / 2),
                   oldEvents[j][1],
-                  oldEvents[j][2] - (fin - comienzo) / 2,
+                  oldEvents[j][2] - (conflictoCalc) / 2,
                   oldEvents[j][3]
                 ];
 
@@ -613,14 +696,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     if (k in changes) {
                       c =
                         oldEvents[k - 1][0].getTime() +
-                        duracion * 60000 -
+                        oldEvents[k - 1][4] * 60000 -
                         changes[k][0].getTime();
                     } else {
                       c =
                         oldEvents[k - 1][0].getTime() +
-                        duracion * 60000 -
+                        oldEvents[k - 1][4] * 60000 -
                         new Date(
-                          oldEvents[j][0].getTime() - (fin - comienzo) / 2
+                          oldEvents[j][0].getTime() - (conflictoCalc) / 2
                         ).getTime(); //final del k-1 con comienzo del k al moverlo
                     }
                     if (c > 0) {
@@ -646,9 +729,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   } while (repeat === true && k > 0);
                 }
               } else if (
-                !((fin - comienzo) / 2 < oldEvents[j][2]) ||
+                !((conflictoCalc) / 2 < oldEvents[j][2]) ||
                 !(
-                  (fin - comienzo) / 2 <
+                  (conflictoCalc) / 2 <
                   holguraPositivaRef.current.value * 60000
                 ) ||
                 next
@@ -656,7 +739,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 // conf = false;
                 // no se ajustan por igual
                 if (
-                  (fin - comienzo) / 2 >=
+                  (conflictoCalc) / 2 >=
                   holguraPositivaRef.current.value * 60000
                 ) {
                   // se tiene que mover más la antigua
@@ -718,12 +801,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       if (k in changes) {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           changes[k][0].getTime();
                       } else {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           new Date(
                             oldEvents[j][0].getTime() -
                               (fin -
@@ -762,7 +845,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   ];
                   newEvents[i][0] = new Date(
                     newEvents[i][0].getTime() +
-                      (fin - comienzo) -
+                      (conflictoCalc) -
                       oldEvents[j][2]
                   );
 
@@ -806,12 +889,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       if (k in changes) {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           changes[k][0].getTime();
                       } else {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           new Date(
                             oldEvents[j][0].getTime() - oldEvents[j][2]
                           ).getTime(); //final del k-1 con comienzo del k al moverlo
@@ -841,28 +924,27 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               }
             } else {
               // no se puede resolver ajustando holguras
-              conflicto = Math.max(fin - comienzo, conflicto);
+              conflicto = Math.max(conflictoCalc, conflicto);
               conf = true;
             }
           } else {
             ////////////////////////////////////////////////////     1° nuevo ensayo
             if (
-              fin - comienzo <=
+              conflictoCalc <=
               holguraNegativaRef.current.value * 60000 + oldEvents[j][1]
             ) {
               // se puede resolver ajustando holguras
               if (
-                (fin - comienzo) / 2 < oldEvents[j][1] &&
-                (fin - comienzo) / 2 < holguraNegativaRef.current.value * 60000
+                (conflictoCalc) / 2 < oldEvents[j][1] &&
+                (conflictoCalc) / 2 < holguraNegativaRef.current.value * 60000
               ) {
                 // se puede ajustar ambas por igual
-
                 newEvents[i][0] = new Date(
-                  newEvents[i][0].getTime() - (fin - comienzo) / 2
+                  newEvents[i][0].getTime() - (conflictoCalc) / 2
                 );
                 changes[j] = [
-                  new Date(oldEvents[j][0].getTime() + (fin - comienzo) / 2),
-                  oldEvents[j][1] - (fin - comienzo) / 2,
+                  new Date(oldEvents[j][0].getTime() + (conflictoCalc) / 2),
+                  oldEvents[j][1] - (conflictoCalc) / 2,
                   oldEvents[j][2],
                   oldEvents[j][3]
                 ];
@@ -877,7 +959,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   // 1º antiguo con nuevo+1
                   c =
                     changes[j][0].getTime() +
-                    duracion * 60000 -
+                    oldEvents[j][4] * 60000 -
                     newEvents[l + 1][0].getTime();
                   if (c > 0) {
                     repeat = true;
@@ -925,7 +1007,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   do {
                     c =
                       changes[k][0].getTime() +
-                      duracion * 60000 -
+                      oldEvents[k][4] * 60000 -
                       oldEvents[k + 1][0].getTime();
                     if (c > 0) {
                       if (c <= oldEvents[k + 1][1]) {
@@ -956,7 +1038,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   // 1º nueva con antiguo-1
                   c =
                     oldEvents[k - 1][0].getTime() +
-                    duracion * 60000 -
+                    oldEvents[k - 1][4] * 60000 -
                     newEvents[i][0].getTime();
                   if (c > 0) {
                     repeat = true;
@@ -984,14 +1066,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     if (k in changes) {
                       c =
                         oldEvents[k - 1][0].getTime() +
-                        duracion * 60000 -
+                        oldEvents[k - 1][4] * 60000 -
                         changes[k][0].getTime();
                     } else {
                       c =
                         oldEvents[k - 1][0].getTime() +
-                        duracion * 60000 -
+                        oldEvents[k - 1][4] * 60000 -
                         new Date(
-                          oldEvents[j][0].getTime() - (fin - comienzo) / 2
+                          oldEvents[j][0].getTime() - (conflictoCalc) / 2
                         ).getTime(); //final del k-1 con comienzo del k al moverlo
                     }
                     if (c > 0) {
@@ -1041,9 +1123,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   } while (repeat === true && l > 0);
                 }
               } else if (
-                !((fin - comienzo) / 2 < oldEvents[j][1]) ||
+                !((conflictoCalc) / 2 < oldEvents[j][1]) ||
                 !(
-                  (fin - comienzo) / 2 <
+                  (conflictoCalc) / 2 <
                   holguraNegativaRef.current.value * 60000
                 ) ||
                 next
@@ -1051,7 +1133,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 // no se pueden ajustar por igual
                 // conf = false;
                 if (
-                  (fin - comienzo) / 2 >=
+                  (conflictoCalc) / 2 >=
                   holguraNegativaRef.current.value * 60000
                 ) {
                   // se tiene que mover más la antigua
@@ -1084,7 +1166,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     // 1º antiguo con nuevo+1
                     c =
                       changes[j][0].getTime() +
-                      duracion * 60000 -
+                      oldEvents[j][4] * 60000 -
                       newEvents[l + 1][0].getTime();
                     if (c > 0) {
                       repeat = true;
@@ -1130,7 +1212,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     do {
                       c =
                         changes[k][0].getTime() +
-                        duracion * 60000 -
+                        oldEvents[k][4] * 60000 -
                         oldEvents[k + 1][0].getTime();
                       if (c > 0) {
                         if (c <= oldEvents[k + 1][1]) {
@@ -1160,7 +1242,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     // 1º nueva con antiguo-1
                     c =
                       oldEvents[k - 1][0].getTime() +
-                      duracion * 60000 -
+                      oldEvents[k - 1][4] * 60000 -
                       newEvents[i][0].getTime();
                     if (c > 0) {
                       repeat = true;
@@ -1187,14 +1269,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       if (k in changes) {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k- 1][4] * 60000 -
                           changes[k][0].getTime();
                       } else {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           new Date(
-                            oldEvents[j][0].getTime() - (fin - comienzo) / 2
+                            oldEvents[j][0].getTime() - (conflictoCalc) / 2
                           ).getTime(); //final del k-1 con comienzo del k al moverlo
                       }
                       if (c > 0) {
@@ -1249,9 +1331,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     oldEvents[j][2],
                     oldEvents[j][3]
                   ];
+
                   newEvents[i][0] = new Date(
                     newEvents[i][0].getTime() -
-                      (fin - comienzo - oldEvents[j][1])
+                      (conflictoCalc - oldEvents[j][1])
                   );
 
                   // comprobar que al mover no hay solape con otros ensayos antiguos
@@ -1264,7 +1347,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     // 1º antiguo con nuevo+1
                     c =
                       changes[j][0].getTime() +
-                      duracion * 60000 -
+                      oldEvents[j][4] * 60000 -
                       newEvents[l + 1][0].getTime();
                     if (c > 0) {
                       repeat = true;
@@ -1310,7 +1393,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     do {
                       c =
                         changes[k][0].getTime() +
-                        duracion * 60000 -
+                        oldEvents[k][4] * 60000 -
                         oldEvents[k + 1][0].getTime();
                       if (c > 0) {
                         if (c <= oldEvents[k + 1][1]) {
@@ -1340,7 +1423,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     // 1º nueva con antiguo-1
                     c =
                       oldEvents[k - 1][0].getTime() +
-                      duracion * 60000 -
+                      oldEvents[k - 1][4] * 60000 -
                       newEvents[i][0].getTime();
                     if (c > 0) {
                       repeat = true;
@@ -1367,14 +1450,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       if (k in changes) {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           changes[k][0].getTime();
                       } else {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          duracion * 60000 -
+                          oldEvents[k- 1][4] * 60000 -
                           new Date(
-                            oldEvents[j][0].getTime() - (fin - comienzo) / 2
+                            oldEvents[j][0].getTime() - (conflictoCalc) / 2
                           ).getTime(); //final del k-1 con comienzo del k al moverlo
                       }
                       if (c > 0) {
@@ -1425,7 +1508,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               }
             } else {
               // no se puede resolver ajustando holguras
-              conflicto = Math.max(fin - comienzo, conflicto);
+              conflicto = Math.max(conflictoCalc, conflicto);
               conf = true;
             }
           }
@@ -1459,15 +1542,16 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       inicioRef.current.value
     ) {
       //reset capturas por si se han desplazado y se quiere volver a planificar
-      console.log('FETCHEDDATA', fetchedData[1].capturas)
       let captCopy = []
       for (let i = 0; i < ipData.length; i++) {
         captCopy.push(formatCapturas(fetchedData[i + 1].capturas));
       }
-      console.log('CAPTCOPY', captCopy)
       setCapturas(...captCopy);
       setChangesBBDD({})
-  
+
+      //calcular duracion
+      const duracion = calcDuracion()
+
       if (selectedOption === "0") {
         // comparar para cada dispositivo
         let inicios = {};
@@ -1493,9 +1577,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         const formatedEvents = events_disp[earliestDateTime[0]].map(
           (subarray) => {
             temp_ids++;
+            const startDate = new Date(subarray[0])
             return {
               title: "",
               start: subarray[0].toISOString(),
+              end: new Date(startDate.getTime() + duracion*60000),
               id: temp_ids,
             };
           }
@@ -1533,9 +1619,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         let temp_ids = ids;
         const formatedEvents = newEvents.map((subarray) => {
           temp_ids++;
+          const startDate = new Date(subarray[0])
           return {
             title: "",
             start: subarray[0].toISOString(),
+            end: new Date(startDate.getTime() + duracion*60000),
             id: temp_ids,
             color: selectedColor,
           };
@@ -1545,7 +1633,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         setEvents(formatedEvents);
         setRawEvents(newEvents);
         // Changes
-        console.log('CHANGES', changes)
+        // console.log('CHANGES', changes)
         const formatedChanges = Object.keys(changes).map((key) => {
           return [
             key,
@@ -1555,16 +1643,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             changes[key][3]
           ];
         });
-        console.log('FORMATED', formatedChanges)
+        // console.log('FORMATED', formatedChanges)
         setChangesBBDD(formatedChanges);
 
         // update calendar capturas
         //let copyCapt = capturas
         Object.keys(changes).map((key) => {
-          console.log('-- ', captCopy[0][key])
-          captCopy[0][key].start = changes[key][0]
+          const dateChanges = new Date(changes[key][0])
+          const timeDelta = new Date(captCopy[0][key].end).getTime() - new Date(captCopy[0][key].start).getTime() //duracion
+          captCopy[0][key].start = dateChanges
+          captCopy[0][key].end = new Date(dateChanges.getTime() + timeDelta)
         })
-        console.log('COPY 2', captCopy)
+        // console.log('COPY 2', captCopy)
         setCapturas(captCopy[0])
 
       }
@@ -1574,14 +1664,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // FullCalendar
 
   let createCalendarEvent = (ini) => {
+    const duracion = calcDuracion()
+
     const j = new Date(ini.getTime());
     let i = checkCalendarEvents(ini);
     if (i.getTime() === j.getTime()) {
+      const startDate = new Date(j)
       setEvents([
         ...events,
         {
           title: "",
           start: j,
+          end: new Date(startDate.getTime() + duracion*60000),
           id: ids,
           color: selectedColor,
         },
@@ -1606,12 +1700,15 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   let dragCalendarEvent = (event) => {
     // events contiene los datos que se ven en el calendario
     // rawEvents contiene los datos (tiene las holguras de cada tarea) que se utilizan para escribir en la BBDD
+    const duracion = calcDuracion();
+    const startDate = new Date(event.event.start)
     let temporalEvents = events.filter((e) => e.id != event.event.id);
     setEvents([
       ...temporalEvents,
       {
         title: "",
         start: event.event.start.toISOString(),
+        end: new Date(startDate.getTime() + duracion*60000),
         id: parseInt(event.event.id),
         color: selectedColor,
       },
@@ -1690,6 +1787,39 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     copy.splice(index, configCondicion.numCondiciones);
     setCondiciones(copy);
   };
+
+  //Reset del semaforo
+  //Botón para resetear el semáforo solo si se ha quedado en lock a causa de un error
+  let resetSemaphore = () => {
+    let token = localStorage.getItem("authTokens")
+    ? JSON.parse(localStorage.getItem("authTokens"))
+    : null;
+
+    fetch(`http://${window.location.hostname}:8000/new/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token.access}`,
+        },
+        body: JSON.stringify({
+          release: "release",
+        }),
+      });
+
+    window.location.reload();
+  }
+  // DIALOG
+  const areUSureDelete = (choose) => {
+    if (dialog.table == "Semaforo") {
+      if (choose) {
+        setDialog("", false, "");
+        resetSemaphore()
+      } else {
+        setDialog("", false, "");
+      }
+    }  
+  };
+  
 
   return (
     <div className="nuevo-ensayo">
@@ -2222,7 +2352,22 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           <span style={{ fontWeight: "bold", color: "#444" }}>
             Otro usuario está programando un ensayo
           </span>
+          <br />
+          <button className="liberar-button" onClick={() => setDialog({
+            table: "Semaforo",
+            message: "Solo hacer reset si no hay otro usuario",
+            isLoading: true,
+            index: 0,
+          })
+          }>
+            RESET
+          </button>
         </div>
+      )}
+
+      {/* DIALOG */}
+      {dialog.isLoading && (
+        <Dialog onDialog={areUSureDelete} message={dialog.message} />
       )}
 
       {/* SPINEER */}

@@ -272,6 +272,7 @@ const Control = () => {
         body: JSON.stringify({
           table: 'Tareas_New',
           time: formatDateWithTimezone(time),
+          duracion: ensayo.duracion,
           userId: decodedToken.user_id,
         }),
       })
