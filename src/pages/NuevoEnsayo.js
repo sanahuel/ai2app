@@ -46,6 +46,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const resWidthRef = useRef(null);
   const placasPorCondicionRef = useRef(null);
   const gusanosPorCondicionRef = useRef(null);
+  const temperaturaMinRef = useRef(null);
+  const humedadMinRef = useRef(null);
+  const temperaturaMaxRef = useRef(null);
+  const humedadMaxRef = useRef(null);
+
 
   let dispositivos = ["1", "2", "3"]; // borrar...
 
@@ -447,6 +452,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 color: selectedColor,
                 userId: decodedToken.user_id,
                 gusanosPorCondicion: gusanosPorCondicionRef.current.value,
+                temperatura: `${temperaturaMinRef.current.value}-${temperaturaMaxRef.current.value}`,
+                humedad: `${humedadMinRef.current.value}-${humedadMaxRef.current.value}`,
               },
               condiciones: {
                 nCondiciones: nCondiciones,
@@ -1751,7 +1758,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     setConfigCondicion(JSON.parse(config).configCondicion);
     placasPorCondicionRef.current.value = JSON.parse(config).placasPorCond;
     setCondiciones(JSON.parse(config).condiciones);
-    gusanosPorCondicionRef.current.value = JSON.parse(config).gusanosPorCond
+    gusanosPorCondicionRef.current.value = JSON.parse(config).gusanosPorCond;
+    temperaturaMinRef.current.value= JSON.parse(config).temperaturaMin;
+    temperaturaMaxRef.current.value= JSON.parse(config).temperaturaMax;
+    humedadMinRef.current.value= JSON.parse(config).humedadMin;
+    humedadMaxRef.current.value= JSON.parse(config).humedadMax;
+
   };
 
   let changeConfigCondicion = (config) => {
@@ -2254,6 +2266,95 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     style={{ width: "138.4px" }}
                   />
                 </div>
+                <div className="input-div">
+                  <span>Rango de Temperatura</span>
+                  <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  ref={temperaturaMinRef}
+                  style={{ position: "relative", width: "60px" }}
+                />
+                <span
+                  id="min-span"
+                  style={{
+                    position: "relative",
+                    left: "10px",
+                    width: "2px",
+                  }}
+                >
+                  min
+                </span>
+                <span
+                  style={{
+                    width: "63px",
+                    paddingLeft: "34px",
+                    color: "#555",
+                  }}
+                >
+                  
+                </span>
+                <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  ref={temperaturaMaxRef}
+                  style={{ position: "relative", left: "-13px", width: "60px" }}
+                />
+                <span
+                  id="min-span"
+                  style={{ position: "relative", left: "-5px" }}
+                >
+                  max
+                </span>                
+                </div>
+                <div className="input-div">
+                  <span>Rango de Humedad</span>
+                  <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  ref={humedadMinRef}
+                  style={{ position: "relative", width: "60px" }}
+                />
+                  <span
+                  id="min-span"
+                  style={{
+                    position: "relative",
+                    left: "10px",
+                    width: "2px",
+                  }}
+                >
+                  min
+                </span>
+                <span
+                  style={{
+                    width: "63px",
+                    paddingLeft: "34px",
+                    color: "#555",
+                  }}
+                >
+                  
+                </span>
+                <input
+                  className="input-field"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  ref={humedadMaxRef}
+                  style={{ position: "relative", left: "-13px", width: "60px" }}
+                />
+                <span
+                  id="min-span"
+                  style={{ position: "relative", left: "-5px" }}
+                >
+                  max
+                </span>  
+                </div>
+
               </div>
               <button className="nueva-button" onClick={changeExpand}>
                 <img

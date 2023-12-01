@@ -28,6 +28,10 @@ const EditPlanner = () => {
   const [configCondicion, setConfigCondicion] = useState("DEFAULT");
   const [placasPorCond, setPlacasPorCond] = useState();
   const [gusanosPorCond,setGusanosPorCond] = useState()
+  const [temperaturaMin, setTemperaturaMin] = useState();
+  const [temperaturaMax, setTemperaturaMax] = useState();
+  const [humedadMin, setHumedadMin] = useState();
+  const [humedadMax, setHumedadMax] = useState();
 
   let colorRef = useRef();
 
@@ -70,7 +74,11 @@ const EditPlanner = () => {
           setCondiciones(data.condiciones);
           setPlacasPorCond(data.placasPorCond);
           setConfigCondicion(data.configCondicion);
-          setGusanosPorCond(data.gusanosPorCond)
+          setGusanosPorCond(data.gusanosPorCond);
+          setTemperaturaMin(data.temperaturaMin);
+          setTemperaturaMax(data.temperaturaMax);
+          setHumedadMin(data.humedadMin);
+          setHumedadMax(data.humedadMax);
         });
     }
     async function fetchCondiciones() {
@@ -116,6 +124,10 @@ const EditPlanner = () => {
           placasPorCond: placasPorCond,
           configCondicion: configCondicion,
           gusanosPorCond: gusanosPorCond,
+          temperaturaMin: temperaturaMin,
+          temperaturaMax: temperaturaMax,
+          humedadMin: humedadMin,
+          humedadMax: humedadMax,
         }),
       })
         .then((response) => response.json())
@@ -528,6 +540,98 @@ const EditPlanner = () => {
               onChange={(e) => setImgsPorCaptura(e.target.value)}
             />
           </div>
+          <div className="input-div">
+                  <span>Rango de Temperatura</span>
+                  <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={temperaturaMin}
+                  style={{ position: "relative", width: "60px" }}
+                  onChange={(e) => setTemperaturaMin(e.target.value)}
+                />
+                <span
+                  id="min-span"
+                  style={{
+                    position: "relative",
+                    left: "10px",
+                    width: "2px",
+                  }}
+                >
+                  min
+                </span>
+                <span
+                  style={{
+                    width: "63px",
+                    paddingLeft: "34px",
+                    color: "#555",
+                  }}
+                >
+                  
+                </span>
+                <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={temperaturaMax}
+                  style={{ position: "relative", left: "-13px", width: "60px" }}
+                  onChange={(e) => setTemperaturaMax(e.target.value)}
+                />
+                <span
+                  id="min-span"
+                  style={{ position: "relative", left: "-5px" }}
+                >
+                  max
+                </span>                
+                </div>
+                <div className="input-div">
+                  <span>Rango de Humedad</span>
+                  <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={humedadMin}
+                  style={{ position: "relative", width: "60px" }}
+                  onChange={(e) => setHumedadMin(e.target.value)}
+                />
+                  <span
+                  id="min-span"
+                  style={{
+                    position: "relative",
+                    left: "10px",
+                    width: "2px",
+                  }}
+                >
+                  min
+                </span>
+                <span
+                  style={{
+                    width: "63px",
+                    paddingLeft: "34px",
+                    color: "#555",
+                  }}
+                >
+                  
+                </span>
+                <input
+                  className="input-field"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={humedadMax}
+                  style={{ position: "relative", left: "-13px", width: "60px" }}
+                  onChange={(e) => setHumedadMax(e.target.value)}
+                />
+                <span
+                  id="min-span"
+                  style={{ position: "relative", left: "-5px" }}
+                >
+                  max
+                </span>  
+                </div>
         </div>
       </div>
       <button className="crear-dispositivo" onClick={() => postPlanif()}>

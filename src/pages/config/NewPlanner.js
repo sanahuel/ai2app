@@ -26,6 +26,11 @@ const NewPlanner = () => {
   const placasPorCond = useRef();
   const gusanosPorCond = useRef();
   let colorRef = useRef();
+  const temperaturaMinRef = useRef(null);
+  const humedadMinRef = useRef(null);
+  const temperaturaMaxRef = useRef(null);
+  const humedadMaxRef = useRef(null);
+
 
   let navigate = useNavigate();
 
@@ -85,6 +90,10 @@ const NewPlanner = () => {
           placasPorCond: placasPorCond.current.value,
           configCondicion: configCondicion,
           gusanosPorCond: gusanosPorCond.current.value,
+          temperaturaMin: temperaturaMinRef.current.value,
+          temperaturaMax: temperaturaMaxRef.current.value,
+          humedadMin: humedadMinRef.current.value,
+          humedadMaxRef: humedadMaxRef.current.value,
         }),
       })
         .then((response) => response.json())
@@ -477,6 +486,94 @@ const NewPlanner = () => {
               ref={imgsPorCaptura}
             />
           </div>
+          <div className="input-div">
+                  <span>Rango de Temperatura</span>
+                  <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  ref={temperaturaMinRef}
+                  style={{ position: "relative", width: "60px" }}
+                />
+                <span
+                  id="min-span"
+                  style={{
+                    position: "relative",
+                    left: "10px",
+                    width: "2px",
+                  }}
+                >
+                  min
+                </span>
+                <span
+                  style={{
+                    width: "63px",
+                    paddingLeft: "34px",
+                    color: "#555",
+                  }}
+                >
+                  
+                </span>
+                <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  ref={temperaturaMaxRef}
+                  style={{ position: "relative", left: "-13px", width: "60px" }}
+                />
+                <span
+                  id="min-span"
+                  style={{ position: "relative", left: "-5px" }}
+                >
+                  max
+                </span>                
+                </div>
+                <div className="input-div">
+                  <span>Rango de Humedad</span>
+                  <input
+                  className="input-field"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  ref={humedadMinRef}
+                  style={{ position: "relative", width: "60px" }}
+                />
+                  <span
+                  id="min-span"
+                  style={{
+                    position: "relative",
+                    left: "10px",
+                    width: "2px",
+                  }}
+                >
+                  min
+                </span>
+                <span
+                  style={{
+                    width: "63px",
+                    paddingLeft: "34px",
+                    color: "#555",
+                  }}
+                >
+                  
+                </span>
+                <input
+                  className="input-field"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  ref={humedadMaxRef}
+                  style={{ position: "relative", left: "-13px", width: "60px" }}
+                />
+                <span
+                  id="min-span"
+                  style={{ position: "relative", left: "-5px" }}
+                >
+                  max
+                </span>  
+                </div>
         </div>
       </div>
       <button className="crear-dispositivo" onClick={() => postPlan()}>

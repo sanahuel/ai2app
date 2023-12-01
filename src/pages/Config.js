@@ -10,6 +10,7 @@ const Config = () => {
   let [disp, setDisp] = useState([]);
   let [planif, setPlanif] = useState([]);
   let [placas, setPlacas] = useState([]);
+  let [IPs, setIPs] = useState([]);
   const [dialog, setDialog] = useState({
     message: "",
     isLoading: false,
@@ -49,9 +50,20 @@ const Config = () => {
         });
     }
 
+    async function fetchIPs() {
+      fetch(`http://${window.location.hostname}:8000/config/ips`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setIPs(data["ips"]);
+        });
+    }
+
     fetchDisp();
     fetchPlanif();
     fetchPlacas();
+    fetchIPs();
   }, []);
 
   const deleteDisp = (id) => {
@@ -97,6 +109,20 @@ const Config = () => {
     fetchDelete();
   };
 
+  const deleteIPs = (id) => {
+    async function fetchDelete() {
+      fetch(`http://${window.location.hostname}:8000/config/ips/` + id, {
+        method: "DELETE",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          window.location.reload();
+        });
+    }
+    fetchDelete();
+  };
+
   // DIALOG
   const areUSureDelete = (choose) => {
     if (dialog.table == "Dispositivo") {
@@ -117,6 +143,13 @@ const Config = () => {
       if (choose){
         setDialog("", false, "");
         deletePlate(dialog.index);
+      } else {
+        setDialog("", false, "");
+      }
+    } else if (dialog.table == "IP"){
+      if (choose){
+        setDialog("", false, "");
+        deleteIPs(dialog.index);
       } else {
         setDialog("", false, "");
       }
@@ -248,6 +281,51 @@ const Config = () => {
           </Link>
         </div>
       </div>
+
+      {/* ALLOWED HOSTS */}
+      {/* <div className="container-div">
+        <div className="container-header">
+          <span>Configuración de IPs</span>
+        </div>
+        <div className="border-div" style={{ width: "420px" }}></div>
+        <div className="container-content">
+        {IPs.map((ip, index) => (
+            <div className="input-div" key={index}>
+              <div className="dispositivo-div">
+                <span style={{width:"70px"}}>IP {index+1}</span>
+                <span style={{left:"0px", fontStyle:"italic", color:"#555"}}>{ip}</span>
+                <button
+                  className="button-editar-dispositivo"
+                  style={{position: "relative",left: "10px"}}
+                  // onClick={() =>
+                  //   navigate(`/config/device/${dispositivo.nDisp}`)
+                  // }
+                >
+                  <img src={pen} alt="edit" />
+                </button>
+                <button
+                  className="button-eliminar-dispositivo"
+                  style={{position: "relative",left: "20px"}}
+                  onClick={() => setDialog({
+                    table: "IP",
+                    message: "Eliminar una IP no es reversible",
+                    isLoading: true,
+                    index: index,
+                  })}
+                >
+                  <img src={del} alt="delete" />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          <Link to={"/config/ip/new"}>
+            <button className="nueva-button">
+              <span style={{ color: "#666" }}>+</span>
+            </button>
+          </Link>
+        </div>
+      </div> */}
 
       {/* DIALOG */}
       {dialog.isLoading && (

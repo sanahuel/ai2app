@@ -18,6 +18,7 @@ import NewPlate from "./pages/config/NewPlate";
 import EditDevice from "./pages/config/EditDevice";
 import EditPlanner from "./pages/config/EditPlanner";
 import EditPlate from "./pages/config/EditPlate";
+import NewIP from "./pages/config/NewIP";
 
 import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
@@ -141,6 +142,8 @@ function App() {
                 <Route path="config/planner/:id" element={<EditPlanner />} />
                 <Route path="config/plates/new" element={<NewPlate />} />
                 <Route path="config/plates/:id" element={<EditPlate />} />
+                {/* <Route path="config/ip/new" element={<NewIP />} /> */}
+                {/* <Route path="config/ip/:id" element={<EditIP />} /> */}
               </Route>
             </Routes>
           </div>
