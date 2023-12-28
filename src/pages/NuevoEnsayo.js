@@ -6,7 +6,6 @@ import "./NuevoEnsayo.css";
 import IpContext from "../context/IpContext";
 import Dialog from "../components/dialog";
 
-
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -51,13 +50,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const temperaturaMaxRef = useRef(null);
   const humedadMaxRef = useRef(null);
 
-
   let dispositivos = ["1", "2", "3"]; // borrar...
 
   const [fetchedData, setFetchedData] = useState({});
   const [capturas, setCapturas] = useState([]);
   const [condiciones, setCondiciones] = useState([]);
-  const [configCondicion, setConfigCondicion] = useState({value: "DEFAULT"});
+  const [configCondicion, setConfigCondicion] = useState({ value: "DEFAULT" });
   const [events, setEvents] = useState([]);
   let [ids, setIds] = useState(0);
   let [selectedOption, setSelectedOption] = useState(ipData[0].nDisp);
@@ -69,13 +67,12 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [configEnsayo, setConfigEnsayo] = useState([]);
   const [configCondiciones, setConfigCondiciones] = useState([]);
   const [changesBBDD, setChangesBBDD] = useState({});
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [dialog, setDialog] = useState({
     message: "",
     isLoading: false,
     index: "",
   });
-
 
   let changes = {};
 
@@ -119,20 +116,20 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     };
   });
 
-      let formatCapturas = (data) => {
-      return data.map((captura) => {
-        const startDate = new Date(captura[0])
-        return {
-          title: captura[1],
-          start: captura[0],
-          end: new Date(startDate.getTime() + captura[5]*60000),
-          allDay: false,
-          color: "#ddd",
-          editable: false,
-          id: captura[2]
-        };
-      });
-    };
+  let formatCapturas = (data) => {
+    return data.map((captura) => {
+      const startDate = new Date(captura[0]);
+      return {
+        title: captura[1],
+        start: captura[0],
+        end: new Date(startDate.getTime() + captura[5] * 60000),
+        allDay: false,
+        color: "#ddd",
+        editable: false,
+        id: captura[2],
+      };
+    });
+  };
 
   useEffect(() => {
     let checkResponse = (data) => {
@@ -207,20 +204,22 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // Format Dates
   function formatDateWithTimezone(date) {
     const timezoneOffsetMinutes = date.getTimezoneOffset();
-    const timezoneOffsetHours = Math.abs(Math.floor(timezoneOffsetMinutes / 60));
-    const timezoneOffsetSign = timezoneOffsetMinutes < 0 ? '+' : '-';
-  
-    const pad = (number) => (number < 10 ? '0' : '') + number;
-  
+    const timezoneOffsetHours = Math.abs(
+      Math.floor(timezoneOffsetMinutes / 60)
+    );
+    const timezoneOffsetSign = timezoneOffsetMinutes < 0 ? "+" : "-";
+
+    const pad = (number) => (number < 10 ? "0" : "") + number;
+
     const year = date.getFullYear();
     const month = pad(date.getMonth() + 1);
     const day = pad(date.getDate());
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
-  
+
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-  
+
     return `${formattedDate}`;
   }
 
@@ -275,15 +274,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         if (
           espacio >
           espacioNecesario[
-            Math.trunc(
-              index / Object.keys(configCondicion.condiciones).length
-            )
+            Math.trunc(index / Object.keys(configCondicion.condiciones).length)
           ]
         ) {
           espacioNecesario[
-            Math.trunc(
-              index / Object.keys(configCondicion.condiciones).length
-            )
+            Math.trunc(index / Object.keys(configCondicion.condiciones).length)
           ] = Math.ceil(espacio);
         }
       }
@@ -294,10 +289,16 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       0
     );
 
-    const npallets = espacioNecesarioValue
-    const duracionTareas = (45.02 + npallets*(73,34 + imgsPorCapturaRef.current.value/freqCapturaRef.current.value))/60 //min
-    return 1.33 * duracionTareas
-  }
+    const npallets = espacioNecesarioValue;
+    const duracionTareas =
+      (45.02 +
+        npallets *
+          (73,
+          34 +
+            imgsPorCapturaRef.current.value / freqCapturaRef.current.value)) /
+      60; //min
+    return 1.33 * duracionTareas;
+  };
 
   // ESCRIBIR BBDD
   let createEnsayo = () => {
@@ -323,7 +324,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             });
           }
         );
-
 
         let espacioNecesario = Array(
           condiciones.length / Object.keys(configCondicion.condiciones).length
@@ -366,12 +366,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           }
         });
 
-
         const espacioNecesarioValue = espacioNecesario.reduce(
           (accumulator, currentValue) => accumulator + currentValue,
           0
         );
-        
+
         if (espacioLibre >= espacioNecesarioValue) {
           // PALLETS
           let pallets = orderPallets(espacioNecesarioValue);
@@ -401,7 +400,16 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                         )
                   ].length;
                 placasCond.push({
-                  pallet: p + Math.trunc(i/Object.keys(configCondicion.condiciones).length)*Math.trunc(espacioNecesarioValue*(Object.keys(configCondicion.condiciones).length/condiciones.length)),
+                  pallet:
+                    p +
+                    Math.trunc(
+                      i / Object.keys(configCondicion.condiciones).length
+                    ) *
+                      Math.trunc(
+                        espacioNecesarioValue *
+                          (Object.keys(configCondicion.condiciones).length /
+                            condiciones.length)
+                      ),
                   posicion: Object.values(configCondicion.condiciones)[
                     i -
                       Object.keys(configCondicion.condiciones).length *
@@ -425,18 +433,25 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             });
           });
           const earliestDate = fetchEvents.reduce(
-            (earliest, current) => (current.event < earliest.event ? current : earliest),
+            (earliest, current) =>
+              current.event < earliest.event ? current : earliest,
             fetchEvents[0]
           );
           // DURACIÓN
-          const npallets = espacioNecesarioValue
-          const duracionTareas = (45.02 + npallets*(73,34 + imgsPorCapturaRef.current.value/freqCapturaRef.current.value))/60 //min
-
+          const npallets = espacioNecesarioValue;
+          const duracionTareas =
+            (45.02 +
+              npallets *
+                (73,
+                34 +
+                  imgsPorCapturaRef.current.value /
+                    freqCapturaRef.current.value)) /
+            60; //min
 
           // FETCH
           const disp = ipData.find((obj) => obj.nDisp === selectedOption);
           const decodedToken = jwt_decode(authTokens.access);
-          setIsLoading(true)
+          setIsLoading(true);
 
           fetch(`http://${disp.IP}:8000/new/`, {
             method: "POST",
@@ -470,7 +485,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 pallets: pallets,
                 placasPorCondicion: placasPorCondicionRef.current.value,
                 tareas: fetchEvents,
-                duracion:1.33*duracionTareas, //sobredimensionado
+                duracion: 1.33 * duracionTareas, //sobredimensionado
               },
               parametros: {
                 tipoImg: tipoImgRef.current.value,
@@ -483,14 +498,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             }),
           })
             .then((response) => {
-              response.json();
+              return response.json();
             })
             .then((data) => {
-              navigate("/");
-            })
-            .catch((error) => {
-              setIsLoading(false)
-              alert("Error: " + error.message);
+              console.log(data);
+              if (data.status === 400) {
+                console.log("if");
+                setIsLoading(false);
+                alert("Error: " + data.message);
+              } else {
+                console.log("else");
+                navigate("/");
+              }
             });
         } else {
           alert("No hay espacio suficiente en el dispositivo");
@@ -526,7 +545,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
     // capturas de otros ensayos
     let capturasEvents = capturas.map((captura) => {
-      return [new Date(captura.start), 5, 5, 0, (new Date(captura.end).getTime() - new Date(captura.start).getTime())/60000];
+      return [
+        new Date(captura.start),
+        5,
+        5,
+        0,
+        (new Date(captura.end).getTime() - new Date(captura.start).getTime()) /
+          60000,
+      ];
     });
     let calendarEvents = [];
     Object.values(events).forEach((event) => {
@@ -537,7 +563,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     //   return [new Date(captura[0]), captura[3], captura[4], captura[2], captura[5]];
     // });
     // let oldEvents = [...capturasEvents, ...calendarEvents];
-    let oldEvents = [...capturasEvents, ...calendarEvents]
+    let oldEvents = [...capturasEvents, ...calendarEvents];
     let conf = false;
 
     let n = 1; //nuevos
@@ -582,7 +608,13 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     // oldEvents = [[fechayHora, holguraPositiva, holguraNegativa, idTareas, duracion], [fechayHora, holguraPositiva, holguraNegativa, idTareas, duracion], ...]
 
     let oldEvents = fetchedData[dispositivo].capturas.map((captura) => {
-      return [new Date(captura[0]), captura[3], captura[4], captura[2], captura[5]];
+      return [
+        new Date(captura[0]),
+        captura[3],
+        captura[4],
+        captura[2],
+        captura[5],
+      ];
     });
 
     // let oldEvents = databaseEvents[dispositivo].map((event) => event.slice());
@@ -608,15 +640,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       //bucle
       while (i < n && j < m) {
         let next = false;
-        let comienzo = Math.max(
-          newEvents[i][0].getTime(),
-          oldEvents[j][0].getTime()
-        ) - 6000; //se resta un minuto para evitar solapes al representar en el calendario
-        let fin = Math.min(
-          newEvents[i][0].getTime() + duracion * 60000,
-          oldEvents[j][0].getTime() + oldEvents[j][4] * 60000
-        ) + 6000; //se añade un minuto por el mismo motivo
-        
+        let comienzo =
+          Math.max(newEvents[i][0].getTime(), oldEvents[j][0].getTime()) - 6000; //se resta un minuto para evitar solapes al representar en el calendario
+        let fin =
+          Math.min(
+            newEvents[i][0].getTime() + duracion * 60000,
+            oldEvents[j][0].getTime() + oldEvents[j][4] * 60000
+          ) + 6000; //se añade un minuto por el mismo motivo
+
         // console.log('------ ------ ------')
         // console.log('NEW', newEvents[i][0])
         // console.log('OLD', oldEvents[j][0])
@@ -628,17 +659,26 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         if (comienzo < fin) {
           // sí hay solape
           // ahora hay que determinar cuál es el solape
-          const comienzoNew = newEvents[i][0].getTime()
-          const comienzoOld = oldEvents[j][0].getTime()
-          const endNew = comienzoNew + duracion * 60000
-          const endOld = comienzoOld + oldEvents[j][4] *60000
-          let conflictoCalc = 0
-          if (comienzoNew>comienzoOld & endNew<endOld){ //si la nueva es tan corta que está dentro de la antigua
-            conflictoCalc = Math.max(endOld - comienzoNew, endNew - comienzoOld)
-          } else if (comienzoOld>comienzoNew & endOld<endNew) { //si la antigua es tan corta que está dentro de la nueva
-            conflictoCalc = Math.max(endOld - comienzoNew, endNew - comienzoOld)
-          } else { //solape simple
-            conflictoCalc = fin - comienzo
+          const comienzoNew = newEvents[i][0].getTime();
+          const comienzoOld = oldEvents[j][0].getTime();
+          const endNew = comienzoNew + duracion * 60000;
+          const endOld = comienzoOld + oldEvents[j][4] * 60000;
+          let conflictoCalc = 0;
+          if ((comienzoNew > comienzoOld) & (endNew < endOld)) {
+            //si la nueva es tan corta que está dentro de la antigua
+            conflictoCalc = Math.max(
+              endOld - comienzoNew,
+              endNew - comienzoOld
+            );
+          } else if ((comienzoOld > comienzoNew) & (endOld < endNew)) {
+            //si la antigua es tan corta que está dentro de la nueva
+            conflictoCalc = Math.max(
+              endOld - comienzoNew,
+              endNew - comienzoOld
+            );
+          } else {
+            //solape simple
+            conflictoCalc = fin - comienzo;
           }
 
           if (newEvents[i][0].getTime() >= oldEvents[j][0].getTime()) {
@@ -649,18 +689,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             ) {
               // se puede resolver ajustando holguras
               if (
-                (conflictoCalc) / 2 < oldEvents[j][2] &&
-                (conflictoCalc) / 2 < holguraPositivaRef.current.value * 60000
+                conflictoCalc / 2 < oldEvents[j][2] &&
+                conflictoCalc / 2 < holguraPositivaRef.current.value * 60000
               ) {
                 // se puede ajustar ambas por igual
                 newEvents[i][0] = new Date(
-                  newEvents[i][0].getTime() + (conflictoCalc) / 2
+                  newEvents[i][0].getTime() + conflictoCalc / 2
                 );
                 changes[j] = [
-                  new Date(oldEvents[j][0].getTime() - (conflictoCalc) / 2),
+                  new Date(oldEvents[j][0].getTime() - conflictoCalc / 2),
                   oldEvents[j][1],
-                  oldEvents[j][2] - (conflictoCalc) / 2,
-                  oldEvents[j][3]
+                  oldEvents[j][2] - conflictoCalc / 2,
+                  oldEvents[j][3],
                 ];
 
                 // comprobar que al mover no hay solape con otros ensayos antiguos
@@ -710,7 +750,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                         oldEvents[k - 1][0].getTime() +
                         oldEvents[k - 1][4] * 60000 -
                         new Date(
-                          oldEvents[j][0].getTime() - (conflictoCalc) / 2
+                          oldEvents[j][0].getTime() - conflictoCalc / 2
                         ).getTime(); //final del k-1 con comienzo del k al moverlo
                     }
                     if (c > 0) {
@@ -721,7 +761,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                           new Date(oldEvents[k - 1][0].getTime() - c),
                           oldEvents[k - 1][1],
                           oldEvents[k - 1][2] - c,
-                          oldEvents[k - 1][3]
+                          oldEvents[k - 1][3],
                         ];
                       } else {
                         repeat = false;
@@ -736,9 +776,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   } while (repeat === true && k > 0);
                 }
               } else if (
-                !((conflictoCalc) / 2 < oldEvents[j][2]) ||
+                !(conflictoCalc / 2 < oldEvents[j][2]) ||
                 !(
-                  (conflictoCalc) / 2 <
+                  conflictoCalc / 2 <
                   holguraPositivaRef.current.value * 60000
                 ) ||
                 next
@@ -746,7 +786,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 // conf = false;
                 // no se ajustan por igual
                 if (
-                  (conflictoCalc) / 2 >=
+                  conflictoCalc / 2 >=
                   holguraPositivaRef.current.value * 60000
                 ) {
                   // se tiene que mover más la antigua
@@ -766,7 +806,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       (fin -
                         comienzo -
                         holguraPositivaRef.current.value * 60000),
-                    oldEvents[j][3]
+                    oldEvents[j][3],
                   ];
 
                   // comprobar que al mover no hay solape con otros ensayos antiguos
@@ -829,7 +869,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                             new Date(oldEvents[k - 1][0].getTime() - c),
                             oldEvents[k - 1][1],
                             oldEvents[k - 1][2] - c,
-                            oldEvents[k - 1][3]
+                            oldEvents[k - 1][3],
                           ];
                         } else {
                           repeat = false;
@@ -848,12 +888,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     new Date(oldEvents[j][0].getTime() - oldEvents[j][2]),
                     oldEvents[j][1],
                     0,
-                    oldEvents[j][3]
+                    oldEvents[j][3],
                   ];
                   newEvents[i][0] = new Date(
-                    newEvents[i][0].getTime() +
-                      (conflictoCalc) -
-                      oldEvents[j][2]
+                    newEvents[i][0].getTime() + conflictoCalc - oldEvents[j][2]
                   );
 
                   // comprobar que al mover no hay solape con otros ensayos antiguos
@@ -914,7 +952,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                             new Date(oldEvents[k - 1][0].getTime() - c),
                             oldEvents[k - 1][1],
                             oldEvents[k - 1][2] - c,
-                            oldEvents[k - 1][3]
+                            oldEvents[k - 1][3],
                           ];
                         } else {
                           repeat = false;
@@ -942,18 +980,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             ) {
               // se puede resolver ajustando holguras
               if (
-                (conflictoCalc) / 2 < oldEvents[j][1] &&
-                (conflictoCalc) / 2 < holguraNegativaRef.current.value * 60000
+                conflictoCalc / 2 < oldEvents[j][1] &&
+                conflictoCalc / 2 < holguraNegativaRef.current.value * 60000
               ) {
                 // se puede ajustar ambas por igual
                 newEvents[i][0] = new Date(
-                  newEvents[i][0].getTime() - (conflictoCalc) / 2
+                  newEvents[i][0].getTime() - conflictoCalc / 2
                 );
                 changes[j] = [
-                  new Date(oldEvents[j][0].getTime() + (conflictoCalc) / 2),
-                  oldEvents[j][1] - (conflictoCalc) / 2,
+                  new Date(oldEvents[j][0].getTime() + conflictoCalc / 2),
+                  oldEvents[j][1] - conflictoCalc / 2,
                   oldEvents[j][2],
-                  oldEvents[j][3]
+                  oldEvents[j][3],
                 ];
 
                 // comprobar que al mover no hay solape con otros ensayos antiguos
@@ -1022,7 +1060,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                           new Date(oldEvents[k + 1][0].getTime() + c),
                           oldEvents[k + 1][1] + c,
                           oldEvents[k + 1][2],
-                          oldEvents[k + 1][3]
+                          oldEvents[k + 1][3],
                         ];
                       } else {
                         repeat = false;
@@ -1055,7 +1093,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                         new Date(oldEvents[k - 1][0].getTime() - c),
                         oldEvents[k - 1][1],
                         oldEvents[k - 1][2] - c,
-                        oldEvents[k - 1][3]
+                        oldEvents[k - 1][3],
                       ];
                     } else {
                       repeat = false;
@@ -1080,7 +1118,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                         oldEvents[k - 1][0].getTime() +
                         oldEvents[k - 1][4] * 60000 -
                         new Date(
-                          oldEvents[j][0].getTime() - (conflictoCalc) / 2
+                          oldEvents[j][0].getTime() - conflictoCalc / 2
                         ).getTime(); //final del k-1 con comienzo del k al moverlo
                     }
                     if (c > 0) {
@@ -1091,7 +1129,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                           new Date(oldEvents[k - 1][0].getTime() - c),
                           oldEvents[k - 1][1],
                           oldEvents[k - 1][2] - c,
-                          oldEvents[k - 1][3]
+                          oldEvents[k - 1][3],
                         ];
                       } else {
                         repeat = false;
@@ -1130,9 +1168,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   } while (repeat === true && l > 0);
                 }
               } else if (
-                !((conflictoCalc) / 2 < oldEvents[j][1]) ||
+                !(conflictoCalc / 2 < oldEvents[j][1]) ||
                 !(
-                  (conflictoCalc) / 2 <
+                  conflictoCalc / 2 <
                   holguraNegativaRef.current.value * 60000
                 ) ||
                 next
@@ -1140,7 +1178,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 // no se pueden ajustar por igual
                 // conf = false;
                 if (
-                  (conflictoCalc) / 2 >=
+                  conflictoCalc / 2 >=
                   holguraNegativaRef.current.value * 60000
                 ) {
                   // se tiene que mover más la antigua
@@ -1160,7 +1198,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                         comienzo -
                         holguraNegativaRef.current.value * 60000),
                     oldEvents[j][2],
-                    oldEvents[j][3]
+                    oldEvents[j][3],
                   ];
 
                   // comprobar que al mover no hay solape con otros ensayos antiguos
@@ -1227,7 +1265,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                             new Date(oldEvents[k + 1][0].getTime() + c),
                             oldEvents[k + 1][1] + c,
                             oldEvents[k + 1][2],
-                            oldEvents[k + 1][3]
+                            oldEvents[k + 1][3],
                           ];
                         } else {
                           repeat = false;
@@ -1259,7 +1297,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                           new Date(oldEvents[k - 1][0].getTime() - c),
                           oldEvents[k - 1][1],
                           oldEvents[k - 1][2] - c,
-                          oldEvents[k - 1][3]
+                          oldEvents[k - 1][3],
                         ];
                       } else {
                         repeat = false;
@@ -1276,14 +1314,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       if (k in changes) {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          oldEvents[k- 1][4] * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           changes[k][0].getTime();
                       } else {
                         c =
                           oldEvents[k - 1][0].getTime() +
                           oldEvents[k - 1][4] * 60000 -
                           new Date(
-                            oldEvents[j][0].getTime() - (conflictoCalc) / 2
+                            oldEvents[j][0].getTime() - conflictoCalc / 2
                           ).getTime(); //final del k-1 con comienzo del k al moverlo
                       }
                       if (c > 0) {
@@ -1294,7 +1332,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                             new Date(oldEvents[k - 1][0].getTime() - c),
                             oldEvents[k - 1][1],
                             oldEvents[k - 1][2] - c,
-                            oldEvents[k - 1][3]
+                            oldEvents[k - 1][3],
                           ];
                         } else {
                           repeat = false;
@@ -1336,7 +1374,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                     new Date(oldEvents[j][0].getTime() + oldEvents[j][1]),
                     0,
                     oldEvents[j][2],
-                    oldEvents[j][3]
+                    oldEvents[j][3],
                   ];
 
                   newEvents[i][0] = new Date(
@@ -1408,7 +1446,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                             new Date(oldEvents[k + 1][0].getTime() + c),
                             oldEvents[k + 1][1] + c,
                             oldEvents[k + 1][2],
-                            oldEvents[k + 1][3]
+                            oldEvents[k + 1][3],
                           ];
                         } else {
                           repeat = false;
@@ -1440,7 +1478,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                           new Date(oldEvents[k - 1][0].getTime() - c),
                           oldEvents[k - 1][1],
                           oldEvents[k - 1][2] - c,
-                          oldEvents[k - 1][3]
+                          oldEvents[k - 1][3],
                         ];
                       } else {
                         repeat = false;
@@ -1462,9 +1500,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                       } else {
                         c =
                           oldEvents[k - 1][0].getTime() +
-                          oldEvents[k- 1][4] * 60000 -
+                          oldEvents[k - 1][4] * 60000 -
                           new Date(
-                            oldEvents[j][0].getTime() - (conflictoCalc) / 2
+                            oldEvents[j][0].getTime() - conflictoCalc / 2
                           ).getTime(); //final del k-1 con comienzo del k al moverlo
                       }
                       if (c > 0) {
@@ -1475,7 +1513,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                             new Date(oldEvents[k - 1][0].getTime() - c),
                             oldEvents[k - 1][1],
                             oldEvents[k - 1][2] - c,
-                            oldEvents[k - 1][3]
+                            oldEvents[k - 1][3],
                           ];
                         } else {
                           repeat = false;
@@ -1549,22 +1587,23 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       inicioRef.current.value
     ) {
       //reset capturas por si se han desplazado y se quiere volver a planificar
-      let captCopy = []
+      let captCopy = [];
       for (let i = 0; i < ipData.length; i++) {
         captCopy.push(formatCapturas(fetchedData[i + 1].capturas));
       }
       setCapturas(...captCopy);
-      setChangesBBDD({})
+      setChangesBBDD({});
 
       //calcular duracion
-      const duracion = calcDuracion()
+      const duracion = calcDuracion();
 
       if (selectedOption === "0") {
         // comparar para cada dispositivo
         let inicios = {};
         let events_disp = {};
         let changes_disp = {};
-        for (let disp = 1; disp <= dispositivos.length; disp++) { // está mal por usar dispositivos, hay que cambiarlo a ipData...
+        for (let disp = 1; disp <= dispositivos.length; disp++) {
+          // está mal por usar dispositivos, hay que cambiarlo a ipData...
           let inicio,
             newEvents = newCheckEvents(
               new Date(inicioRef.current.value + " " + horaRef.current.value),
@@ -1584,11 +1623,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         const formatedEvents = events_disp[earliestDateTime[0]].map(
           (subarray) => {
             temp_ids++;
-            const startDate = new Date(subarray[0])
+            const startDate = new Date(subarray[0]);
             return {
               title: "",
               start: subarray[0].toISOString(),
-              end: new Date(startDate.getTime() + duracion*60000),
+              end: new Date(startDate.getTime() + duracion * 60000),
               id: temp_ids,
             };
           }
@@ -1626,11 +1665,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         let temp_ids = ids;
         const formatedEvents = newEvents.map((subarray) => {
           temp_ids++;
-          const startDate = new Date(subarray[0])
+          const startDate = new Date(subarray[0]);
           return {
             title: "",
             start: subarray[0].toISOString(),
-            end: new Date(startDate.getTime() + duracion*60000),
+            end: new Date(startDate.getTime() + duracion * 60000),
             id: temp_ids,
             color: selectedColor,
           };
@@ -1647,7 +1686,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             formatDateWithTimezone(changes[key][0]),
             changes[key][1],
             changes[key][2],
-            changes[key][3]
+            changes[key][3],
           ];
         });
         // console.log('FORMATED', formatedChanges)
@@ -1656,14 +1695,15 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         // update calendar capturas
         //let copyCapt = capturas
         Object.keys(changes).map((key) => {
-          const dateChanges = new Date(changes[key][0])
-          const timeDelta = new Date(captCopy[0][key].end).getTime() - new Date(captCopy[0][key].start).getTime() //duracion
-          captCopy[0][key].start = dateChanges
-          captCopy[0][key].end = new Date(dateChanges.getTime() + timeDelta)
-        })
+          const dateChanges = new Date(changes[key][0]);
+          const timeDelta =
+            new Date(captCopy[0][key].end).getTime() -
+            new Date(captCopy[0][key].start).getTime(); //duracion
+          captCopy[0][key].start = dateChanges;
+          captCopy[0][key].end = new Date(dateChanges.getTime() + timeDelta);
+        });
         // console.log('COPY 2', captCopy)
-        setCapturas(captCopy[0])
-
+        setCapturas(captCopy[0]);
       }
     }
   };
@@ -1671,18 +1711,18 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // FullCalendar
 
   let createCalendarEvent = (ini) => {
-    const duracion = calcDuracion()
+    const duracion = calcDuracion();
 
     const j = new Date(ini.getTime());
     let i = checkCalendarEvents(ini);
     if (i.getTime() === j.getTime()) {
-      const startDate = new Date(j)
+      const startDate = new Date(j);
       setEvents([
         ...events,
         {
           title: "",
           start: j,
-          end: new Date(startDate.getTime() + duracion*60000),
+          end: new Date(startDate.getTime() + duracion * 60000),
           id: ids,
           color: selectedColor,
         },
@@ -1690,48 +1730,45 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       setIds(ids + 1);
       setRawEvents([
         ...rawEvents,
-        [
-          i,
-          holguraPositivaRef.current.value,
-          holguraNegativaRef.current.value
-        ]
-      ])
+        [i, holguraPositivaRef.current.value, holguraNegativaRef.current.value],
+      ]);
     }
   };
 
   let deleteCalendarEvent = (event) => {
     setEvents(events.filter((e) => e.id != event.id));
-    setRawEvents(rawEvents.filter((e) => e[0].toISOString() != event.start.toISOString()))
+    setRawEvents(
+      rawEvents.filter((e) => e[0].toISOString() != event.start.toISOString())
+    );
   };
 
   let dragCalendarEvent = (event) => {
     // events contiene los datos que se ven en el calendario
     // rawEvents contiene los datos (tiene las holguras de cada tarea) que se utilizan para escribir en la BBDD
     const duracion = calcDuracion();
-    const startDate = new Date(event.event.start)
+    const startDate = new Date(event.event.start);
     let temporalEvents = events.filter((e) => e.id != event.event.id);
     setEvents([
       ...temporalEvents,
       {
         title: "",
         start: event.event.start.toISOString(),
-        end: new Date(startDate.getTime() + duracion*60000),
+        end: new Date(startDate.getTime() + duracion * 60000),
         id: parseInt(event.event.id),
         color: selectedColor,
       },
     ]);
 
-    let temporalRawEvents = rawEvents.filter((e) => e[0].toISOString() != event.oldEvent.start.toISOString());
-    let oldRawEvent = rawEvents.filter((e) => e[0].toISOString() === event.oldEvent.start.toISOString());
+    let temporalRawEvents = rawEvents.filter(
+      (e) => e[0].toISOString() != event.oldEvent.start.toISOString()
+    );
+    let oldRawEvent = rawEvents.filter(
+      (e) => e[0].toISOString() === event.oldEvent.start.toISOString()
+    );
     setRawEvents([
       ...temporalRawEvents,
-      [
-        event.event.start,
-        oldRawEvent[0][1],
-        oldRawEvent[0][2],
-      ],
+      [event.event.start, oldRawEvent[0][1], oldRawEvent[0][2]],
     ]);
-
   };
 
   let changeExpand = () => {
@@ -1759,11 +1796,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     placasPorCondicionRef.current.value = JSON.parse(config).placasPorCond;
     setCondiciones(JSON.parse(config).condiciones);
     gusanosPorCondicionRef.current.value = JSON.parse(config).gusanosPorCond;
-    temperaturaMinRef.current.value= JSON.parse(config).temperaturaMin;
-    temperaturaMaxRef.current.value= JSON.parse(config).temperaturaMax;
-    humedadMinRef.current.value= JSON.parse(config).humedadMin;
-    humedadMaxRef.current.value= JSON.parse(config).humedadMax;
-
+    temperaturaMinRef.current.value = JSON.parse(config).temperaturaMin;
+    temperaturaMaxRef.current.value = JSON.parse(config).temperaturaMax;
+    humedadMinRef.current.value = JSON.parse(config).humedadMin;
+    humedadMaxRef.current.value = JSON.parse(config).humedadMax;
   };
 
   let changeConfigCondicion = (config) => {
@@ -1804,34 +1840,33 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   //Botón para resetear el semáforo solo si se ha quedado en lock a causa de un error
   let resetSemaphore = () => {
     let token = localStorage.getItem("authTokens")
-    ? JSON.parse(localStorage.getItem("authTokens"))
-    : null;
+      ? JSON.parse(localStorage.getItem("authTokens"))
+      : null;
 
     fetch(`http://${window.location.hostname}:8000/new/`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.access}`,
-        },
-        body: JSON.stringify({
-          release: "release",
-        }),
-      });
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.access}`,
+      },
+      body: JSON.stringify({
+        release: "release",
+      }),
+    });
 
     window.location.reload();
-  }
+  };
   // DIALOG
   const areUSureDelete = (choose) => {
     if (dialog.table == "Semaforo") {
       if (choose) {
         setDialog("", false, "");
-        resetSemaphore()
+        resetSemaphore();
       } else {
         setDialog("", false, "");
       }
-    }  
+    }
   };
-  
 
   return (
     <div className="nuevo-ensayo">
@@ -1839,7 +1874,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       {semaphore && <IdleTimer semaphore={semaphore} />}
 
       {/* SI ESTÁ DENTRO */}
-      {semaphore===true && (
+      {semaphore === true && (
         <>
           <div className="container-div">
             <div className="container-header">
@@ -1986,9 +2021,11 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   className="input-field"
                   style={{ width: "145px" }}
                   value={JSON.stringify(configCondicion)}
-                  onChange={(e) => {changeConfigCondicion(e.target.value)}}
+                  onChange={(e) => {
+                    changeConfigCondicion(e.target.value);
+                  }}
                 >
-                  <option value={JSON.stringify({value: "DEFAULT"})} disabled>
+                  <option value={JSON.stringify({ value: "DEFAULT" })} disabled>
                     {" "}
                   </option>
                   {configCondiciones.map((config, index) => (
@@ -2269,92 +2306,95 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 <div className="input-div">
                   <span>Rango de Temperatura</span>
                   <input
-                  className="input-field"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  ref={temperaturaMinRef}
-                  style={{ position: "relative", width: "60px" }}
-                />
-                <span
-                  id="min-span"
-                  style={{
-                    position: "relative",
-                    left: "10px",
-                    width: "2px",
-                  }}
-                >
-                  min
-                </span>
-                <span
-                  style={{
-                    width: "63px",
-                    paddingLeft: "34px",
-                    color: "#555",
-                  }}
-                >
-                  
-                </span>
-                <input
-                  className="input-field"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  ref={temperaturaMaxRef}
-                  style={{ position: "relative", left: "-13px", width: "60px" }}
-                />
-                <span
-                  id="min-span"
-                  style={{ position: "relative", left: "-5px" }}
-                >
-                  max
-                </span>                
+                    className="input-field"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    ref={temperaturaMinRef}
+                    style={{ position: "relative", width: "60px" }}
+                  />
+                  <span
+                    id="min-span"
+                    style={{
+                      position: "relative",
+                      left: "10px",
+                      width: "2px",
+                    }}
+                  >
+                    min
+                  </span>
+                  <span
+                    style={{
+                      width: "63px",
+                      paddingLeft: "34px",
+                      color: "#555",
+                    }}
+                  ></span>
+                  <input
+                    className="input-field"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    ref={temperaturaMaxRef}
+                    style={{
+                      position: "relative",
+                      left: "-13px",
+                      width: "60px",
+                    }}
+                  />
+                  <span
+                    id="min-span"
+                    style={{ position: "relative", left: "-5px" }}
+                  >
+                    max
+                  </span>
                 </div>
                 <div className="input-div">
                   <span>Rango de Humedad</span>
                   <input
-                  className="input-field"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  ref={humedadMinRef}
-                  style={{ position: "relative", width: "60px" }}
-                />
+                    className="input-field"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    ref={humedadMinRef}
+                    style={{ position: "relative", width: "60px" }}
+                  />
                   <span
-                  id="min-span"
-                  style={{
-                    position: "relative",
-                    left: "10px",
-                    width: "2px",
-                  }}
-                >
-                  min
-                </span>
-                <span
-                  style={{
-                    width: "63px",
-                    paddingLeft: "34px",
-                    color: "#555",
-                  }}
-                >
-                  
-                </span>
-                <input
-                  className="input-field"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  ref={humedadMaxRef}
-                  style={{ position: "relative", left: "-13px", width: "60px" }}
-                />
-                <span
-                  id="min-span"
-                  style={{ position: "relative", left: "-5px" }}
-                >
-                  max
-                </span>  
+                    id="min-span"
+                    style={{
+                      position: "relative",
+                      left: "10px",
+                      width: "2px",
+                    }}
+                  >
+                    min
+                  </span>
+                  <span
+                    style={{
+                      width: "63px",
+                      paddingLeft: "34px",
+                      color: "#555",
+                    }}
+                  ></span>
+                  <input
+                    className="input-field"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    ref={humedadMaxRef}
+                    style={{
+                      position: "relative",
+                      left: "-13px",
+                      width: "60px",
+                    }}
+                  />
+                  <span
+                    id="min-span"
+                    style={{ position: "relative", left: "-5px" }}
+                  >
+                    max
+                  </span>
                 </div>
-
               </div>
               <button className="nueva-button" onClick={changeExpand}>
                 <img
@@ -2454,13 +2494,17 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             Otro usuario está programando un ensayo
           </span>
           <br />
-          <button className="liberar-button" onClick={() => setDialog({
-            table: "Semaforo",
-            message: "Solo hacer reset si no hay otro usuario",
-            isLoading: true,
-            index: 0,
-          })
-          }>
+          <button
+            className="liberar-button"
+            onClick={() =>
+              setDialog({
+                table: "Semaforo",
+                message: "Solo hacer reset si no hay otro usuario",
+                isLoading: true,
+                index: 0,
+              })
+            }
+          >
             RESET
           </button>
         </div>
@@ -2474,9 +2518,17 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       {/* SPINEER */}
       {isLoading && (
         <div className="outter-spinner-div">
-        <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+          <div className="lds-roller">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
-
       )}
     </div>
   );
