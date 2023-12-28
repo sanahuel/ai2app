@@ -7,6 +7,7 @@ const NewDevice = () => {
   const num = useRef();
   const ip = useRef();
   const dis = useRef();
+  const nombre = useRef();
 
   let navigate = useNavigate();
 
@@ -31,6 +32,7 @@ const NewDevice = () => {
           nDisp: num.current.value,
           IP: ip.current.value,
           Dis: dis.current.value,
+          Nombre: nombre.current.value,
         }),
       })
         .then((response) => response.json())
@@ -75,6 +77,16 @@ const NewDevice = () => {
             />
           </div>
           <div className="input-div">
+            <span>Nombre de Dispositivo</span>
+            <input
+              className="input-field"
+              min="0"
+              defaultValue=""
+              style={{ width: "138.4px" }}
+              ref={nombre}
+            />
+          </div>
+          <div className="input-div">
             <span>Tipo de Dispositivo</span>
             <select
               name="select"
@@ -85,9 +97,9 @@ const NewDevice = () => {
               <option value="DEFAULT" disabled>
                 {" "}
               </option>
-              <option value="MiniTower">MiniTower</option>
-              <option value="Tower">Tower</option>
-              <option value="Multiview">Multiview</option>
+              <option value="miniTower">miniTower</option>
+              {/* <option value="Tower">Tower</option>
+              <option value="Multiview">Multiview</option> */}
             </select>
           </div>
         </div>

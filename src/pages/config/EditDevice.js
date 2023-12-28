@@ -11,6 +11,7 @@ const EditDevice = () => {
   const [num, setNum] = useState();
   const [ip, setIp] = useState();
   const [dis, setDis] = useState("DEFAULT");
+  const [nombre, setNombre] = useState();
 
   useEffect(() => {
     async function fetchData() {
@@ -25,6 +26,7 @@ const EditDevice = () => {
             setNum(data.nDisp);
             setIp(data.IP);
             setDis(data.Dis);
+            setNombre(data.Nombre);
           }
         });
     }
@@ -51,6 +53,7 @@ const EditDevice = () => {
           nDisp: num,
           IP: ip,
           Dis: dis,
+          Nombre: nombre,
         }),
       })
         .then((response) => response.json())
@@ -97,6 +100,16 @@ const EditDevice = () => {
             />
           </div>
           <div className="input-div">
+            <span>Nombre de Dispositivo</span>
+            <input
+              className="input-field"
+              min="0"
+              defaultValue={nombre}
+              style={{ width: "138.4px" }}
+              onChange={(e) => setNombre(e.target.value)}
+            />
+          </div>
+          <div className="input-div">
             <span>Tipo de Dispositivo</span>
             <select
               name="select"
@@ -107,9 +120,9 @@ const EditDevice = () => {
               <option value="DEFAULT" disabled>
                 {" "}
               </option>
-              <option value="MiniTower">MiniTower</option>
-              <option value="Tower">Tower</option>
-              <option value="Multiview">Multiview</option>
+              <option value="miniTower">miniTower</option>
+              {/* <option value="Tower">Tower</option>
+              <option value="Multiview">Multiview</option> */}
             </select>
           </div>
         </div>

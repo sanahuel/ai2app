@@ -21,9 +21,9 @@ const Home = () => {
         try {
           const response = await fetch(`http://${data.IP}:8000/dispositivo/`);
           const response_data = await response.json();
-          
+
           return [
-            data.nDisp,
+            data.Nombre,
             data.IP,
             response_data.pallets_disponibles,
             response_data.pallets_ocupados,
@@ -34,13 +34,13 @@ const Home = () => {
           return null;
         }
       });
-  
+
       try {
         const fetchedInfo = await Promise.all(promises);
         const filteredInfo = fetchedInfo.filter(Boolean); // Filter out null values
-  
+
         setInfo(filteredInfo);
-  
+
         if (filteredInfo.length === 1) {
           const copy = Array(ipData.length).fill(0);
           copy[0] = 1;
@@ -53,7 +53,7 @@ const Home = () => {
         console.error("Error fetching multiple IPs:", error);
       }
     };
-  
+
     if (ipData.length > 0) {
       fetchData();
     }
@@ -62,7 +62,6 @@ const Home = () => {
     copy[0] = 1;
     fetchTareas(0);
     setSelectedDispositivos(copy);
-
   }, [ipData]);
 
   async function fetchTareas(id) {
@@ -74,16 +73,16 @@ const Home = () => {
         let temp_id = 0;
         const formatedEvents = response_data["tareas"].map((subarray) => {
           temp_id++;
-          const startDate = new Date(subarray[0])
+          const startDate = new Date(subarray[0]);
           return {
             title: subarray[2],
             start: subarray[0],
-            end: new Date(startDate.getTime() + subarray[3]*60000),
+            end: new Date(startDate.getTime() + subarray[3] * 60000),
             color: subarray[1],
             id: temp_id,
           };
         });
-        console.log(formatedEvents)
+        console.log(formatedEvents);
         setEvents(formatedEvents);
       });
   }
@@ -108,7 +107,7 @@ const Home = () => {
               }}
             >
               <div className="container-header">
-                <span>Dispositivo {dispositivo[0]}</span>
+                <span>{dispositivo[0]}</span>
               </div>
               <div
                 className="border-div"
