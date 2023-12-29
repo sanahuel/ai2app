@@ -10,14 +10,14 @@ const Config = () => {
   let [disp, setDisp] = useState([]);
   let [planif, setPlanif] = useState([]);
   let [placas, setPlacas] = useState([]);
-  let [IPs, setIPs] = useState([]);
+  // let [IPs, setIPs] = useState([]);
+  let [distr, setDistr] = useState([]);
+
   const [dialog, setDialog] = useState({
     message: "",
     isLoading: false,
     index: "",
   });
-
-
 
   const navigate = useNavigate();
 
@@ -50,20 +50,31 @@ const Config = () => {
         });
     }
 
-    async function fetchIPs() {
-      fetch(`http://${window.location.hostname}:8000/config/ips`, {
+    // async function fetchIPs() {
+    //   fetch(`http://${window.location.hostname}:8000/config/ips`, {
+    //     method: "GET",
+    //   })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       setIPs(data["ips"]);
+    //     });
+    // }
+
+    async function fetchDistr() {
+      fetch(`http://${window.location.hostname}:8000/config/distr`, {
         method: "GET",
       })
         .then((response) => response.json())
         .then((data) => {
-          setIPs(data["ips"]);
+          setDistr(data["distribucion"]);
         });
     }
 
     fetchDisp();
     fetchPlanif();
     fetchPlacas();
-    fetchIPs();
+    // fetchIPs();
+    fetchDistr();
   }, []);
 
   const deleteDisp = (id) => {
@@ -123,6 +134,26 @@ const Config = () => {
     fetchDelete();
   };
 
+  const putDistribucion = (d) => {
+    async function fetchPut() {
+      fetch(`http://${window.location.hostname}:8000/config/distr`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          distribucion: d,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          window.location.reload();
+        });
+    }
+    fetchPut();
+  };
+
   // DIALOG
   const areUSureDelete = (choose) => {
     if (dialog.table == "Dispositivo") {
@@ -139,15 +170,15 @@ const Config = () => {
       } else {
         setDialog("", false, "");
       }
-    } else if (dialog.table == "Condiciones"){
-      if (choose){
+    } else if (dialog.table == "Condiciones") {
+      if (choose) {
         setDialog("", false, "");
         deletePlate(dialog.index);
       } else {
         setDialog("", false, "");
       }
-    } else if (dialog.table == "IP"){
-      if (choose){
+    } else if (dialog.table == "IP") {
+      if (choose) {
         setDialog("", false, "");
         deleteIPs(dialog.index);
       } else {
@@ -155,7 +186,6 @@ const Config = () => {
       }
     }
   };
-
 
   return (
     <div className="nuevo-ensayo">
@@ -181,12 +211,14 @@ const Config = () => {
                 </button>
                 <button
                   className="button-eliminar-dispositivo"
-                  onClick={() => setDialog({
-                    table: "Dispositivo",
-                    message: "Eliminar un dispositivo no es reversible",
-                    isLoading: true,
-                    index: index,
-                  })}
+                  onClick={() =>
+                    setDialog({
+                      table: "Dispositivo",
+                      message: "Eliminar un dispositivo no es reversible",
+                      isLoading: true,
+                      index: index,
+                    })
+                  }
                 >
                   <img src={del} alt="delete" />
                 </button>
@@ -221,12 +253,14 @@ const Config = () => {
                 </button>
                 <button
                   className="button-eliminar-dispositivo"
-                  onClick={() => setDialog({
-                    table: "Planificador",
-                    message: "Eliminar una configuración no es reversible",
-                    isLoading: true,
-                    index: planificador.id,
-                  })}
+                  onClick={() =>
+                    setDialog({
+                      table: "Planificador",
+                      message: "Eliminar una configuración no es reversible",
+                      isLoading: true,
+                      index: planificador.id,
+                    })
+                  }
                 >
                   <img src={del} alt="delete" />
                 </button>
@@ -261,12 +295,14 @@ const Config = () => {
                 </button>
                 <button
                   className="button-eliminar-dispositivo"
-                  onClick={() => setDialog({
-                    table: "Condiciones",
-                    message: "Eliminar una configuración no es reversible",
-                    isLoading: true,
-                    index: placa.id,
-                  })}
+                  onClick={() =>
+                    setDialog({
+                      table: "Condiciones",
+                      message: "Eliminar una configuración no es reversible",
+                      isLoading: true,
+                      index: placa.id,
+                    })
+                  }
                 >
                   <img src={del} alt="delete" />
                 </button>
@@ -279,6 +315,48 @@ const Config = () => {
               <span style={{ color: "#666" }}>+</span>
             </button>
           </Link>
+        </div>
+      </div>
+
+      {/* DISTRIBUCION DE PALLETS */}
+      <div className="container-div">
+        <div className="container-header">
+          <span>Configuración de Distribución de Pallets</span>
+        </div>
+        <div className="border-div" style={{ width: "420px" }}></div>
+        <div className="container-content">
+          <div className="distr-div">
+            <span
+              className="distr-span"
+              style={{
+                width: "220px",
+                color: distr === "altura" ? "black" : "#ddd",
+              }}
+              onClick={() => {
+                if (distr === "cassettes") {
+                  putDistribucion("altura");
+                }
+              }}
+            >
+              Mínima Altura
+            </span>
+          </div>
+          <div className="distr-div" style={{ marginBottom: "10px" }}>
+            <span
+              className="distr-span"
+              style={{
+                width: "220px",
+                color: distr === "cassettes" ? "black" : "#ddd",
+              }}
+              onClick={() => {
+                if (distr === "altura") {
+                  putDistribucion("cassettes");
+                }
+              }}
+            >
+              Mínimo Número de Cassettes
+            </span>
+          </div>
         </div>
       </div>
 
@@ -331,7 +409,6 @@ const Config = () => {
       {dialog.isLoading && (
         <Dialog onDialog={areUSureDelete} message={dialog.message} />
       )}
-
     </div>
   );
 };

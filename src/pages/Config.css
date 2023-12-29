@@ -59,3 +59,25 @@
 .dispositivo-div:hover .button-editar-dispositivo {
   display: inline;
 }
+
+.distr-span {
+  user-select: none;
+  font-style: italic;
+  padding-left: 3px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-right: 3px;
+}
+
+.distr-div {
+  margin-left: 7px;
+  margin-right: 100px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  max-height: 45.2px;
+  border-radius: 12.7px;
+}
+
+.distr-div :hover {
+  cursor: pointer;
+}

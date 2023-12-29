@@ -73,6 +73,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     isLoading: false,
     index: "",
   });
+  const [distr, setDistr] = useState([]);
 
   let changes = {};
 
@@ -100,8 +101,19 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         });
     }
 
+    async function fetchDistr() {
+      fetch(`http://${window.location.hostname}:8000/config/distr`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setDistr(data["distribucion"]);
+        });
+    }
+
     fetchConfig();
     fetchCondiciones();
+    fetchDistr();
   }, []);
 
   useEffect(() => {
@@ -223,7 +235,9 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     return `${formattedDate}`;
   }
 
-  let orderPallets = (espacioNecesario) => {
+  // Order Pallets
+  // Cassettes = va llenando los cassettes de forma secuencial
+  let orderPalletsCassettes = (espacioNecesario) => {
     let order = [];
     let count = 0;
 
@@ -234,6 +248,37 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       const almacenIndex = i + 1;
 
       for (let j = 0; j < almacen.length; j++) {
+        let espacio = almacen[j];
+        if (espacio === 0) {
+          let pallete = (j % 9) + 1;
+          let cassette = Math.ceil((j + 1) / 9);
+          order.push(`A${almacenIndex}-C${cassette}-P${pallete}`);
+          count++;
+          if (count >= Math.ceil(espacioNecesario)) {
+            break;
+          }
+        }
+      }
+
+      if (count >= Math.ceil(espacioNecesario)) {
+        break;
+      }
+    }
+
+    return order;
+  };
+
+  // Altura = va llenando las cassettes en paralelo para tener menor diferencia de altura entre el primer y ultimo pallet
+  let orderPalletsAltura = (espacioNecesario) => {
+    let order = [];
+    let count = 0;
+
+    const almacenes = Object.values(fetchedData[selectedOption].almacenes);
+
+    for (let j = 0; j < almacenes[0].length; j++) {
+      for (let i = 0; i < almacenes.length; i++) {
+        const almacen = almacenes[i];
+        const almacenIndex = i + 1;
         let espacio = almacen[j];
         if (espacio === 0) {
           let pallete = (j % 9) + 1;
@@ -373,7 +418,16 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
 
         if (espacioLibre >= espacioNecesarioValue) {
           // PALLETS
-          let pallets = orderPallets(espacioNecesarioValue);
+          let pallets = [];
+          console.log("DISTR", distr);
+          if (distr === "altura") {
+            console.log("ALTURA");
+            pallets = orderPalletsAltura(espacioNecesarioValue);
+          } else if (distr === "cassettes") {
+            console.log("CASSETTES");
+            pallets = orderPalletsCassettes(espacioNecesarioValue);
+          }
+
           //PLACAS
           let placas = {};
           for (let i = 0; i < condiciones.length; i++) {
