@@ -4,7 +4,6 @@ import add from "../../icons/add.svg";
 import "./NewDevice.css";
 
 const NewDevice = () => {
-  const num = useRef();
   const ip = useRef();
   const dis = useRef();
   const nombre = useRef();
@@ -12,10 +11,6 @@ const NewDevice = () => {
   let navigate = useNavigate();
 
   const postDevice = () => {
-    if (num.current.value === "") {
-      alert("El dispositivo debe tener número");
-      return;
-    }
 
     if (ip.current.value === "") {
       alert("El dispositivo debe tener IP");
@@ -29,7 +24,6 @@ const NewDevice = () => {
       fetch(`http://${window.location.hostname}:8000/config/disp`, {
         method: "POST",
         body: JSON.stringify({
-          nDisp: num.current.value,
           IP: ip.current.value,
           Dis: dis.current.value,
           Nombre: nombre.current.value,
@@ -55,15 +49,14 @@ const NewDevice = () => {
         </div>
         <div className="border-div" style={{ width: "250px" }}></div>
         <div className="container-content">
-          <div className="input-div">
-            <span>Nº Dispositivo</span>
+        <div className="input-div">
+            <span>Nombre de Dispositivo</span>
             <input
               className="input-field"
-              type="number"
               min="0"
               defaultValue=""
-              style={{ width: "97.6px" }}
-              ref={num}
+              style={{ width: "138.4px" }}
+              ref={nombre}
             />
           </div>
           <div className="input-div">
@@ -74,16 +67,6 @@ const NewDevice = () => {
               defaultValue=""
               style={{ width: "138.4px" }}
               ref={ip}
-            />
-          </div>
-          <div className="input-div">
-            <span>Nombre de Dispositivo</span>
-            <input
-              className="input-field"
-              min="0"
-              defaultValue=""
-              style={{ width: "138.4px" }}
-              ref={nombre}
             />
           </div>
           <div className="input-div">

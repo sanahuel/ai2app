@@ -8,7 +8,6 @@ const EditDevice = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [num, setNum] = useState();
   const [ip, setIp] = useState();
   const [dis, setDis] = useState("DEFAULT");
   const [nombre, setNombre] = useState();
@@ -23,7 +22,6 @@ const EditDevice = () => {
           if (data.error) {
             alert(data.error);
           } else {
-            setNum(data.nDisp);
             setIp(data.IP);
             setDis(data.Dis);
             setNombre(data.Nombre);
@@ -34,10 +32,6 @@ const EditDevice = () => {
   }, []);
 
   const updateDevice = () => {
-    if (num === "") {
-      alert("El dispositivo debe tener número");
-      return;
-    }
     if (ip === "") {
       alert("El dispositivo debe tener IP");
       return;
@@ -50,7 +44,6 @@ const EditDevice = () => {
       fetch(`http://${window.location.hostname}:8000/config/disp/` + id, {
         method: "PUT",
         body: JSON.stringify({
-          nDisp: num,
           IP: ip,
           Dis: dis,
           Nombre: nombre,
@@ -78,15 +71,14 @@ const EditDevice = () => {
         </div>
         <div className="border-div" style={{ width: "250px" }}></div>
         <div className="container-content">
-          <div className="input-div">
-            <span>Nº Dispositivo</span>
+        <div className="input-div">
+            <span>Nombre de Dispositivo</span>
             <input
               className="input-field"
-              type="number"
               min="0"
-              defaultValue={num}
-              style={{ width: "97.6px" }}
-              onChange={(e) => setNum(e.target.value)}
+              defaultValue={nombre}
+              style={{ width: "138.4px" }}
+              onChange={(e) => setNombre(e.target.value)}
             />
           </div>
           <div className="input-div">
@@ -97,16 +89,6 @@ const EditDevice = () => {
               defaultValue={ip}
               style={{ width: "138.4px" }}
               onChange={(e) => setIp(e.target.value)}
-            />
-          </div>
-          <div className="input-div">
-            <span>Nombre de Dispositivo</span>
-            <input
-              className="input-field"
-              min="0"
-              defaultValue={nombre}
-              style={{ width: "138.4px" }}
-              onChange={(e) => setNombre(e.target.value)}
             />
           </div>
           <div className="input-div">
