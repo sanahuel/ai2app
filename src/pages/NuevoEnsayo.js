@@ -350,6 +350,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     if (
       nombreRef.current.value !== "" &&
       // inicioRef.current.value !== "" &&
+      aplicacionRef.current.value !== "DEFAULT" &&
       numRef.current.value !== "" &&
       hfreqRef.current.value !== "" &&
       minfreqRef.current.value !== "" &&
@@ -572,7 +573,21 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         alert("Debe haber capturas programadas");
       }
     } else {
-      alert("Todos los campos deben estar completos");
+      if(nombreRef.current.value === ""){
+        alert("El Nombre del ensayo debe estar completo")
+      } else if(aplicacionRef.current.value === "DEFAULT"){
+        alert("El campo Aplicación debe estar completo")
+      } else if(numRef.current.value === ""){
+        alert("El campo Nº de Capturas debe estar completo");
+      } else if(hfreqRef.current.value === "" || minfreqRef.current.value === ""){
+        alert("Los campos de Holgura deben estar completos");
+      } else if(imgsPorCapturaRef.current.value === ""){
+        alert("El campo Nº de Imagenes debe estar completo");
+      } else if(freqCapturaRef.current.value === ""){
+        alert("El campo Frecuencia de Captura debe estar completo");
+      } else if(resHeightRef.current.value === "" || resWidthRef.current.value === ""){
+        alert("Los campos de Resolución debe estar completo");
+      }
     }
   };
 
