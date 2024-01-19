@@ -45,7 +45,6 @@ const Control = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
           setEnsayo(data);
           setResults(data.show)
           setEvents(data.capturas);
@@ -213,13 +212,20 @@ const Control = () => {
 
   let checkCalendarEvents = (inicio) => {
     // capturas de otros ensayos
+    // filtras si allDay===True porque esas son las canceladas
     let capturasEvents = events.map((captura) => {
-      return [new Date(captura.start), 5, 5];
-    });
+      if (!captura.allDay) {
+        return [new Date(captura.start), 5, 5];
+      }
+      return null; // or []
+    }).filter(Boolean); // This will remove any null or empty array entries
     let calendarEvents = [];
     Object.values(events).forEach((event) => {
-      calendarEvents.push([new Date(event.start), 5, 5]);
+      if (!event.allDay) {
+        calendarEvents.push([new Date(event.start), 5, 5]);
+      }
     });
+
     let oldEvents = [...capturasEvents, ...calendarEvents];
 
     // por ahora duración = 30 min
@@ -262,7 +268,6 @@ const Control = () => {
 
   let putNewCalendarEvent = () => {
     const decodedToken = jwt_decode(authTokens.access);
-
     async function fetchEvent(time) {
       fetch(`http://${disp}:8000/control/` + id, {
         method: "PUT",
@@ -278,7 +283,6 @@ const Control = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
           window.location.reload();
         });
     }
@@ -473,7 +477,6 @@ const Control = () => {
             height="auto"
             minHeight="1900px !important"
             editable={true}
-            eventOverlap={false}
             eventDurationEditable={false}
             selectable={false}
             selectMirror={false}
@@ -504,6 +507,8 @@ const Control = () => {
               )}
             }}
             eventDrop={(eventDropInfo) => {
+              console.log('iiosai')
+              console.log(eventDropInfo)
               if (eventDropInfo.event.start.getTime() >= new Date().getTime()) {
                 setDragEvent({
                   title: eventDropInfo.event.title,
@@ -524,6 +529,10 @@ const Control = () => {
                 setEvents([...events, ...old]);
               }
             }}
+            eventOverlap={(stillEvent, movingEvent) =>{
+              return stillEvent.allDay //return true -> se permite el drop
+            }} // permitir "solape" si ese dia hay una captura allDay True (captura cancelada)
+            //sin esta función no se permitiría el drag en días con una función cancelada
           />
         </div>
       </div>

@@ -338,7 +338,7 @@ const Config = () => {
                 }
               }}
             >
-              Mínima Altura
+              Distribución por Altura
             </span>
           </div>
           <div className="distr-div" style={{ marginBottom: "10px" }}>
@@ -354,7 +354,7 @@ const Config = () => {
                 }
               }}
             >
-              Mínimo Número de Cassettes
+              Distribución por Número de Cassettes
             </span>
           </div>
         </div>
