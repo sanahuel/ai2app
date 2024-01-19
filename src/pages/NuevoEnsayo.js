@@ -1653,7 +1653,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       numRef.current.value &&
       minfreqRef.current.value &&
       horaRef.current.value &&
-      inicioRef.current.value
+      inicioRef.current.value &&
+      new Date(inicioRef.current.value + " " + horaRef.current.value).getTime() >= new Date().getTime() //solo si comienza ahora o en el futuro
     ) {
       //reset capturas por si se han desplazado y se quiere volver a planificar
       let captCopy = [];
