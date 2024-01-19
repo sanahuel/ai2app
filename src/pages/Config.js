@@ -199,7 +199,7 @@ const Config = () => {
           {disp.map((dispositivo, index) => (
             <div className="input-div" key={index}>
               <div className="dispositivo-div">
-                <span>Dispositivo {dispositivo.nDisp}</span>
+                <span>{dispositivo.Nombre}</span>
                 <span className="ip-span">IP {dispositivo.IP}</span>
                 <button
                   className="button-editar-dispositivo"
