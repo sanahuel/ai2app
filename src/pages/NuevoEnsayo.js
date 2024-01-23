@@ -58,7 +58,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [configCondicion, setConfigCondicion] = useState({ value: "DEFAULT" });
   const [events, setEvents] = useState([]);
   const [ids, setIds] = useState(0);
-  let [selectedOption, setSelectedOption] = useState(ipData[0].nDisp);
+  let [selectedOption, setSelectedOption] = useState(ipData[0].nDis);
   let [rawEvents, setRawEvents] = useState([]);
   let [repeat, setRepeat] = useState(null);
   let [expandDiv, setExpandDiv] = useState("none");
@@ -163,14 +163,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         .then((data) => {
           checkResponse(data);
           const copy = fetchedData;
-          copy[ipData.nDisp] = data;
+          copy[ipData.nDis] = data;
           // console.log('COPY', copy)
           setFetchedData(copy);
 
           const captCopy = capturas;
-          captCopy[ipData.nDisp] = formatCapturas(data.capturas);
+          captCopy[ipData.nDis] = formatCapturas(data.capturas);
           // console.log('CAPTCOPY', captCopy)
-          setCapturas(captCopy[ipData.nDisp]);
+          setCapturas(captCopy[ipData.nDis]);
         });
     }
 
@@ -504,7 +504,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             60; //min
 
           // FETCH
-          const disp = ipData.find((obj) => obj.nDisp === selectedOption);
+          const disp = ipData.find((obj) => obj.nDis === selectedOption);
           const decodedToken = jwt_decode(authTokens.access);
           setIsLoading(true);
 
@@ -1979,6 +1979,26 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
               </div>
 
               <div className="input-div">
+                <span>Dispositivo</span>
+                <select
+                  name="select"
+                  className="input-field"
+                  value={selectedOption}
+                  onChange={(e) => {
+                    setSelectedOption(e.target.value);
+                  }}
+                  style={{ width: "145px" }}
+                >
+                  {ipData.length > 1 && <option value="0">Cualquiera</option>}
+                  {ipData.map((ip) => (
+                    <option value={ip.ip} key={ip.ip}>
+                      {ip.Nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="input-div">
                 <span>Configuración</span>
                 <select
                   name="select"
@@ -1993,26 +2013,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   {configEnsayo.map((config) => (
                     <option value={JSON.stringify(config)}>
                       {config.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="input-div">
-                <span>Dispositivo</span>
-                <select
-                  name="select"
-                  className="input-field"
-                  value={selectedOption}
-                  onChange={(e) => {
-                    setSelectedOption(e.target.value);
-                  }}
-                  style={{ width: "115px" }}
-                >
-                  {ipData.length > 1 && <option value="0">Cualquiera</option>}
-                  {ipData.map((ip) => (
-                    <option value={ip.ip} key={ip.ip}>
-                      Dispositivo {ip.nDisp}
                     </option>
                   ))}
                 </select>
