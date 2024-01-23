@@ -502,7 +502,7 @@ const Control = () => {
               if(eventClickInfo.event.startEditable != false){
               handleDelete(
                 formatDateWithTimezone(eventClickInfo.event.start),
-                "Eliminar una placa captura no es reversible",
+                "Eliminar una captura no es reversible",
                 "Tareas_Cancel"
               )}
             }}
