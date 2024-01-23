@@ -204,7 +204,7 @@ const Config = () => {
                 <button
                   className="button-editar-dispositivo"
                   onClick={() =>
-                    navigate(`/config/device/${dispositivo.nDisp}`)
+                    navigate(`/config/device/${dispositivo.nDis}`)
                   }
                 >
                   <img src={pen} alt="edit" />

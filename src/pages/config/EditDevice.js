@@ -47,13 +47,14 @@ const EditDevice = () => {
           IP: ip,
           Dis: dis,
           Nombre: nombre,
+          nDis: parseFloat(id)
         }),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data.message == 1) {
             navigate("/config");
-          } else if (data.error === "nDisp") {
+          } else if (data.error === "nDis") {
             alert("Número de dispositivo ya asignado");
           } else {
             alert("Error communicating with server");
