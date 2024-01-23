@@ -90,9 +90,15 @@
   user-select: none;
 
   background-color: white;
-  width: 120px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   height: 40px;
   padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
   margin-right: 10px;
   border-radius: 20px;
   font-weight: 500;
@@ -102,4 +108,10 @@
   background-color: rgb(255, 255, 255);
   box-shadow: 1px 1px 7px rgb(228, 228, 228);
   cursor: pointer;
+}
+
+.dispositivo-short-container span{
+  direction: ltr;
+  display: inline-block;
+  vertical-align: top;
 }

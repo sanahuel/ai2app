@@ -80,7 +80,7 @@ const Visualizar = () => {
                 window.open(`http://${data.IP}:3001/`, "_blank");
               }}
             >
-              Dispositivo {data.nDisp}
+              <span>{data.Nombre}</span>
             </div>
           );
         })}
