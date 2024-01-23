@@ -57,7 +57,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [condiciones, setCondiciones] = useState([]);
   const [configCondicion, setConfigCondicion] = useState({ value: "DEFAULT" });
   const [events, setEvents] = useState([]);
-  let [ids, setIds] = useState(0);
+  const [ids, setIds] = useState(0);
   let [selectedOption, setSelectedOption] = useState(ipData[0].nDisp);
   let [rawEvents, setRawEvents] = useState([]);
   let [repeat, setRepeat] = useState(null);
