@@ -154,7 +154,7 @@ const Home = () => {
           <span>
             Calendario{" "}
             {Math.max(...selectedDispositivos) > 0 &&
-              `Dispositivo ${ipData[selectedDispositivos.indexOf(1)].nDisp}`}
+              `${ipData[selectedDispositivos.indexOf(1)].Nombre}`}
           </span>
         </div>
         <div className="border-div"></div>
