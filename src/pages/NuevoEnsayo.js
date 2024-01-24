@@ -422,10 +422,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           let pallets = [];
           console.log("DISTR", distr);
           if (distr === "altura") {
-            console.log("ALTURA");
             pallets = orderPalletsAltura(espacioNecesarioValue);
           } else if (distr === "cassettes") {
-            console.log("CASSETTES");
             pallets = orderPalletsCassettes(espacioNecesarioValue);
           }
 
@@ -1647,6 +1645,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   };
 
   let updateCalendar = () => {
+    if (new Date(inicioRef.current.value + " " + horaRef.current.value).getTime() <= new Date().getTime()){
+      alert("La hora de comienzo ya ha pasado.")
+    }
+    
     if (
       // solo si todos los campos tienen valores
       hfreqRef.current.value &&
