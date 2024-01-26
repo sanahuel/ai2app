@@ -8,14 +8,16 @@ import del from "../icons/clear.svg";
 import Dialog from "../components/dialog";
 import { useParams } from "react-router-dom";
 import jwt_decode from "jwt-decode";
-import HealthspanControl from './control/HealthspanControl'
-
+import HealthspanControl from "./control/HealthspanControl";
 
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
+
+import expand from "../icons/expand.svg";
+import pen from "../icons/pen.svg";
 
 const Control = () => {
   let navigate = useNavigate();
@@ -35,8 +37,9 @@ const Control = () => {
   const [results, setResults] = useState(false);
   let [dragEvent, setDragEvent] = useState({});
   let [ids, setIds] = useState(0);
-  const [isLoading, setIsLoading] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [temperatura, setTemperatura] = useState({});
+  const [humedad, setHumedad] = useState({});
 
   useEffect(() => {
     async function fetchData() {
@@ -46,8 +49,16 @@ const Control = () => {
         .then((response) => response.json())
         .then((data) => {
           setEnsayo(data);
-          setResults(data.show)
+          setResults(data.show);
           setEvents(data.capturas);
+          setTemperatura({
+            min: data.temperaturaMin,
+            max: data.temperaturaMax,
+          });
+          setHumedad({
+            min: data.humedadMin,
+            max: data.humedadMax,
+          });
         });
     }
     fetchData();
@@ -69,7 +80,6 @@ const Control = () => {
     // setEvents([...temporalEvents]);
   }, []);
 
-
   const [dialog, setDialog] = useState({
     message: "",
     isLoading: false,
@@ -80,23 +90,24 @@ const Control = () => {
 
   function formatDateWithTimezone(date) {
     const timezoneOffsetMinutes = date.getTimezoneOffset();
-    const timezoneOffsetHours = Math.abs(Math.floor(timezoneOffsetMinutes / 60));
-    const timezoneOffsetSign = timezoneOffsetMinutes < 0 ? '+' : '-';
-  
-    const pad = (number) => (number < 10 ? '0' : '') + number;
-  
+    const timezoneOffsetHours = Math.abs(
+      Math.floor(timezoneOffsetMinutes / 60)
+    );
+    const timezoneOffsetSign = timezoneOffsetMinutes < 0 ? "+" : "-";
+
+    const pad = (number) => (number < 10 ? "0" : "") + number;
+
     const year = date.getFullYear();
     const month = pad(date.getMonth() + 1);
     const day = pad(date.getDate());
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
-  
+
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-  
+
     return `${formattedDate}`;
   }
-
 
   const handleDelete = (index, message, table) => {
     setPut([table, index]);
@@ -123,14 +134,14 @@ const Control = () => {
         setDialog("", false, "");
         cancelDragCalendarEvent();
       }
-    } else if (put[0] == "New"){
-      if (choose){
+    } else if (put[0] == "New") {
+      if (choose) {
         setDialog("", false, "");
         putNewCalendarEvent();
       } else {
         setDialog("", false, "");
       }
-    }else {
+    } else {
       if (choose) {
         setDialog("", false, "");
         putEnsayo();
@@ -141,7 +152,7 @@ const Control = () => {
   };
 
   const deleteEnsayo = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     fetch(`http://${disp}:8000/control/` + id, {
       method: "DELETE",
       headers: {
@@ -179,14 +190,12 @@ const Control = () => {
       }),
     })
       .then((response) => response.json())
-      .then((data) => 
-      window.location.reload()
-      )
+      .then((data) => window.location.reload())
       .catch((error) => console.log(error));
   };
 
   let dragCalendarEvent = () => {
-    console.log(dragEvent)
+    console.log(dragEvent);
     let temporalEvents = events.filter((e) => e.id != dragEvent.id);
     setEvents([...temporalEvents, dragEvent]);
 
@@ -196,15 +205,13 @@ const Control = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        table: 'Tareas_Drag',
+        table: "Tareas_Drag",
         from: formatDateWithTimezone(dragEvent.from),
-        to: formatDateWithTimezone(dragEvent.to)
+        to: formatDateWithTimezone(dragEvent.to),
       }),
     })
       .then((response) => response.json())
-      .then((data) => 
-      window.location.reload()
-      )
+      .then((data) => window.location.reload())
       .catch((error) => console.log(error));
   };
 
@@ -213,12 +220,14 @@ const Control = () => {
   let checkCalendarEvents = (inicio) => {
     // capturas de otros ensayos
     // filtras si allDay===True porque esas son las canceladas
-    let capturasEvents = events.map((captura) => {
-      if (!captura.allDay) {
-        return [new Date(captura.start), 5, 5];
-      }
-      return null; // or []
-    }).filter(Boolean); // This will remove any null or empty array entries
+    let capturasEvents = events
+      .map((captura) => {
+        if (!captura.allDay) {
+          return [new Date(captura.start), 5, 5];
+        }
+        return null; // or []
+      })
+      .filter(Boolean); // This will remove any null or empty array entries
     let calendarEvents = [];
     Object.values(events).forEach((event) => {
       if (!event.allDay) {
@@ -275,7 +284,7 @@ const Control = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          table: 'Tareas_New',
+          table: "Tareas_New",
           time: formatDateWithTimezone(time),
           duracion: ensayo.duracion,
           userId: decodedToken.user_id,
@@ -290,10 +299,53 @@ const Control = () => {
     const j = new Date(dragEvent["time"].getTime());
     let i = checkCalendarEvents(dragEvent["time"]);
     if (i.getTime() === j.getTime()) {
-      fetchEvent(j)
+      fetchEvent(j);
     }
   };
 
+  // TEMPERATURA + HUMEDAD
+
+  async function fetchTemperatura() {
+    if (temperatura.min < temperatura.max) {
+      fetch(`http://${disp}:8000/control/` + id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          table: "Temperatura",
+          temperatura: `${temperatura.min}-${temperatura.max}`,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          window.location.reload();
+        });
+    } else {
+      alert("Temperatura mínima superior a temperatura máxima");
+    }
+  }
+
+  async function fetchHumedad() {
+    if (humedad.min < humedad.max) {
+      fetch(`http://${disp}:8000/control/` + id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          table: "Humedad",
+          humedad: `${humedad.min}-${humedad.max}`,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          window.location.reload();
+        });
+    } else {
+      alert("Humedad mínima superior a humedad máxima");
+    }
+  }
   // OPTIONS
   let CantidadMovOptions = {
     responsive: true,
@@ -384,7 +436,9 @@ const Control = () => {
       </div>
 
       {/* RESULTADOS */}
-      {results && ensayo.aplicacion=='healthspan' && <HealthspanControl resultData={ensayo.resultados} />}
+      {results && ensayo.aplicacion == "healthspan" && (
+        <HealthspanControl resultData={ensayo.resultados} />
+      )}
       {/* {results && ensayo.aplicacion=='lifespan' && <LifespanControl />} */}
 
       {/* CONDICIONES */}
@@ -396,18 +450,27 @@ const Control = () => {
         <div className="border-div" style={{ marginBottom: "5px" }}></div>
         {ensayo.condiciones.map((condicion, index) => (
           <div key={index} className="condicion-row-div">
-            <span style={{ fontStyle: "italic", color: condicion[1]===false?'#777':'black'  }}>Condición {condicion[0]}</span>
-            {condicion[1] && <button
-              onClick={() =>
-                handleDelete(
-                  condicion[0],
-                  "Eliminar una condición no es reversible",
-                  "Condiciones"
-                )
-              }
+            <span
+              style={{
+                fontStyle: "italic",
+                color: condicion[1] === false ? "#777" : "black",
+              }}
             >
-              <img src={del} alt="" />
-            </button>}
+              Condición {condicion[0]}
+            </span>
+            {condicion[1] && (
+              <button
+                onClick={() =>
+                  handleDelete(
+                    condicion[0],
+                    "Eliminar una condición no es reversible",
+                    "Condiciones"
+                  )
+                }
+              >
+                <img src={del} alt="" />
+              </button>
+            )}
           </div>
         ))}
       </div>
@@ -439,21 +502,177 @@ const Control = () => {
                   justifyContent: "center",
                 }}
               >
-                <span style={{ fontStyle: "italic", color: placa[1]===true?'#777':'black' }}>Placa {index+1} - {placa[2]}</span>
-                {placa[1] != true && <button
-                  onClick={() =>
-                    handleDelete(
-                      placa[0],
-                      "Eliminar una placa no es reversible",
-                      "Placas"
-                    )
-                  }
+                <span
+                  style={{
+                    fontStyle: "italic",
+                    color: placa[1] === true ? "#777" : "black",
+                  }}
                 >
-                  <img src={del} alt="" />
-                </button>}
+                  Placa {index + 1} - {placa[2]}
+                </span>
+                {placa[1] != true && (
+                  <button
+                    onClick={() =>
+                      handleDelete(
+                        placa[0],
+                        "Eliminar una placa no es reversible",
+                        "Placas"
+                      )
+                    }
+                  >
+                    <img src={del} alt="" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="container-div">
+        <div className="container-header">
+          <span>Parámetros de Captura</span>
+        </div>
+        <div className="border-div"></div>
+        <div className="input-div">
+          <span>Rango de Temperatura</span>
+          <input
+            className="input-field"
+            type="number"
+            step="0.01"
+            min="0"
+            value={temperatura.min}
+            onChange={(e) => {
+              setTemperatura({
+                min: e.currentTarget.value,
+                max: temperatura.max,
+              });
+            }}
+            style={{ position: "relative", width: "60px" }}
+          />
+          <span
+            id="min-span"
+            style={{
+              position: "relative",
+              left: "10px",
+              width: "2px",
+            }}
+          >
+            min
+          </span>
+          <span
+            style={{
+              width: "63px",
+              paddingLeft: "34px",
+              color: "#555",
+            }}
+          ></span>
+          <input
+            className="input-field"
+            type="number"
+            step="0.01"
+            min="0"
+            value={temperatura.max}
+            onChange={(e) => {
+              setTemperatura({
+                min: temperatura.min,
+                max: e.currentTarget.value,
+              });
+            }}
+            style={{
+              position: "relative",
+              left: "-13px",
+              width: "60px",
+            }}
+          />
+          <span
+            id="min-span"
+            style={{
+              position: "relative",
+              left: "-5px",
+              width: "30px",
+            }}
+          >
+            max
+          </span>
+          <button
+            className="button-editar"
+            onClick={() => {
+              fetchTemperatura();
+            }}
+          >
+            <img src={pen} alt="edit" />
+          </button>
+
+          {/* <button className="button-editar" onClick={() => console.log("...")}>
+            <img src={pen} alt="edit" />
+          </button> */}
+        </div>
+        <div className="input-div">
+          <span>Rango de Humedad</span>
+          <input
+            className="input-field"
+            type="number"
+            step="0.01"
+            min="0"
+            value={humedad.min}
+            onChange={(e) => {
+              setHumedad({
+                min: e.currentTarget.value,
+                max: humedad.max,
+              });
+            }}
+            style={{ position: "relative", width: "60px" }}
+          />
+          <span
+            id="min-span"
+            style={{
+              position: "relative",
+              left: "10px",
+              width: "2px",
+            }}
+          >
+            min
+          </span>
+          <span
+            style={{
+              width: "63px",
+              paddingLeft: "34px",
+              color: "#555",
+            }}
+          ></span>
+          <input
+            className="input-field"
+            type="number"
+            min="0"
+            step="0.01"
+            value={humedad.max}
+            onChange={(e) => {
+              setHumedad({
+                min: humedad.min,
+                max: e.currentTarget.value,
+              });
+            }}
+            style={{
+              position: "relative",
+              left: "-13px",
+              width: "60px",
+            }}
+          />
+          <span
+            id="min-span"
+            style={{ position: "relative", left: "-5px", width: "30px" }}
+          >
+            max
+          </span>
+          <button
+            className="button-editar"
+            onClick={() => {
+              fetchHumedad();
+            }}
+          >
+            <img src={pen} alt="edit" />
+          </button>
         </div>
       </div>
 
@@ -487,32 +706,37 @@ const Control = () => {
             events={events}
             dateClick={(dateClickInfo) => {
               if (dateClickInfo.date.getTime() >= new Date().getTime()) {
-                setPut(["New"])
+                setPut(["New"]);
                 setDialog({
                   message: "Vas a crear una nueva captura",
                   isLoading: true,
                   index: 0,
                 });
                 setDragEvent({
-                  time: dateClickInfo.date
+                  time: dateClickInfo.date,
                 });
               }
             }}
             eventClick={(eventClickInfo) => {
-              if(eventClickInfo.event.startEditable != false){
-              handleDelete(
-                formatDateWithTimezone(eventClickInfo.event.start),
-                "Eliminar una captura no es reversible",
-                "Tareas_Cancel"
-              )}
+              if (eventClickInfo.event.startEditable != false) {
+                handleDelete(
+                  formatDateWithTimezone(eventClickInfo.event.start),
+                  "Eliminar una captura no es reversible",
+                  "Tareas_Cancel"
+                );
+              }
             }}
             eventDrop={(eventDropInfo) => {
-              console.log('iiosai')
-              console.log(eventDropInfo)
+              console.log("iiosai");
+              console.log(eventDropInfo);
               if (eventDropInfo.event.start.getTime() >= new Date().getTime()) {
                 setDragEvent({
                   title: eventDropInfo.event.title,
-                  from: new Date(events.filter((e) => e.id == eventDropInfo.event.id)[0].start),
+                  from: new Date(
+                    events.filter(
+                      (e) => e.id == eventDropInfo.event.id
+                    )[0].start
+                  ),
                   to: eventDropInfo.event.start,
                   id: eventDropInfo.event.id,
                   color: ensayo.color,
@@ -529,8 +753,8 @@ const Control = () => {
                 setEvents([...events, ...old]);
               }
             }}
-            eventOverlap={(stillEvent, movingEvent) =>{
-              return stillEvent.allDay //return true -> se permite el drop
+            eventOverlap={(stillEvent, movingEvent) => {
+              return stillEvent.allDay; //return true -> se permite el drop
             }} // permitir "solape" si ese dia hay una captura allDay True (captura cancelada)
             //sin esta función no se permitiría el drag en días con una función cancelada
           />
@@ -555,9 +779,17 @@ const Control = () => {
       {/* SPINNER */}
       {isLoading && (
         <div className="outter-spinner-div">
-        <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+          <div className="lds-roller">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
-
       )}
     </div>
   );

@@ -157,3 +157,22 @@
   background-color: rgb(247, 247, 247);
   color: rgb(255, 74, 74);
 }
+
+.button-editar {
+  position: relative;
+  text-align: center;
+  left: 20px;
+  top: 1px;
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  background-color: rgba(220, 220, 220, 0);
+  border-style: hidden;
+  color: #333;
+  font-size: 15px;
+}
+
+.button-editar img {
+  filter: invert(40%);
+  width: 12px;
+}
