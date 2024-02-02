@@ -27,7 +27,7 @@ const EditPlanner = () => {
   const [configCondiciones, setConfigCondiciones] = useState([]);
   const [configCondicion, setConfigCondicion] = useState("DEFAULT");
   const [placasPorCond, setPlacasPorCond] = useState();
-  const [gusanosPorCond,setGusanosPorCond] = useState()
+  const [gusanosPorCond, setGusanosPorCond] = useState();
   const [temperaturaMin, setTemperaturaMin] = useState();
   const [temperaturaMax, setTemperaturaMax] = useState();
   const [humedadMin, setHumedadMin] = useState();
@@ -52,46 +52,66 @@ const EditPlanner = () => {
   });
 
   useEffect(() => {
-    async function fetchData() {
-      fetch(`http://${window.location.hostname}:8000/config/planif/` + id, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setNombre(data.nombre);
-          setAplicacion(data.aplicacion);
-          setHolguraPositiva(data.holguraPositiva);
-          setHolguraNegativa(data.holguraNegativa);
-          setCapturasTotales(data.capturasTotales);
-          setHFreq(data.hFreq);
-          setMinFreq(data.minFreq);
-          setTipoImg(data.tipoImg);
-          setResWidth(data.resWidth);
-          setResHeight(data.resHeight);
-          setFreqCaptura(data.freqCaptura);
-          setImgsPorCaptura(data.imgsPorCaptura);
-          setSelectedColor(data.color);
-          setCondiciones(data.condiciones);
-          setPlacasPorCond(data.placasPorCond);
-          setConfigCondicion(data.configCondicion);
-          setGusanosPorCond(data.gusanosPorCond);
-          setTemperaturaMin(data.temperaturaMin);
-          setTemperaturaMax(data.temperaturaMax);
-          setHumedadMin(data.humedadMin);
-          setHumedadMax(data.humedadMax);
+    async function fetchData(configs) {
+      try {
+        const response = await fetch(
+          `http://${window.location.hostname}:8000/config/planif/` + id,
+          {
+            method: "GET",
+          }
+        );
+        const data = await response.json();
+
+        const configCondicionesId = data.configCondicion.id;
+        console.log("configCondiciones", configCondiciones);
+        const selectedCondicion = configs.find((configCond) => {
+          return configCond.id == configCondicionesId;
         });
+        setNombre(data.nombre);
+        setAplicacion(data.aplicacion);
+        setHolguraPositiva(data.holguraPositiva);
+        setHolguraNegativa(data.holguraNegativa);
+        setCapturasTotales(data.capturasTotales);
+        setHFreq(data.hFreq);
+        setMinFreq(data.minFreq);
+        setTipoImg(data.tipoImg);
+        setResWidth(data.resWidth);
+        setResHeight(data.resHeight);
+        setFreqCaptura(data.freqCaptura);
+        setImgsPorCaptura(data.imgsPorCaptura);
+        setSelectedColor(data.color);
+        setCondiciones(data.condiciones);
+        setPlacasPorCond(data.placasPorCond);
+        // setConfigCondicion(data.configCondicion);
+        setConfigCondicion(selectedCondicion);
+        setGusanosPorCond(data.gusanosPorCond);
+        setTemperaturaMin(data.temperaturaMin);
+        setTemperaturaMax(data.temperaturaMax);
+        setHumedadMin(data.humedadMin);
+        setHumedadMax(data.humedadMax);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
-    async function fetchCondiciones() {
-      fetch(`http://${window.location.hostname}:8000/config/placas`, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setConfigCondiciones(data["placas"]);
-        });
+
+    async function fetchCondicionesAndData() {
+      try {
+        const response = await fetch(
+          `http://${window.location.hostname}:8000/config/placas`,
+          {
+            method: "GET",
+          }
+        );
+        const data = await response.json();
+        setConfigCondiciones(data["placas"]);
+
+        fetchData(data["placas"]);
+      } catch (error) {
+        console.error("Error fetching condiciones:", error);
+      }
     }
-    fetchData();
-    fetchCondiciones();
+
+    fetchCondicionesAndData();
   }, []);
 
   const postPlanif = () => {
@@ -272,8 +292,10 @@ const EditPlanner = () => {
               className="input-field"
               style={{ width: "145px" }}
               value={JSON.stringify(configCondicion)}
-              onChange={(e) => {changeConfigCondicion(e.target.value)}}
-        >
+              onChange={(e) => {
+                changeConfigCondicion(e.target.value);
+              }}
+            >
               <option value="DEFAULT" disabled>
                 {" "}
               </option>
@@ -302,24 +324,24 @@ const EditPlanner = () => {
             ></input>
           </div>
           <div
-                className="input-div"
-                style={{ marginLeft: "40px", paddingTop: "1px" }}
-              >
-                <span>Gusanos por condición</span>
-                <input
-                  className="input-field"
-                  type="number"
-                  min="1"
-                  placeholder=""
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="off"
-                  spellCheck="false"
-                  style={{ width: "104px" }}
-                  value={gusanosPorCond}
-                  onChange={(e) => setGusanosPorCond(e.target.value)}
-                ></input>
-              </div>
+            className="input-div"
+            style={{ marginLeft: "40px", paddingTop: "1px" }}
+          >
+            <span>Gusanos por condición</span>
+            <input
+              className="input-field"
+              type="number"
+              min="1"
+              placeholder=""
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              style={{ width: "104px" }}
+              value={gusanosPorCond}
+              onChange={(e) => setGusanosPorCond(e.target.value)}
+            ></input>
+          </div>
           {condiciones.map((condicion, index) => (
             <div key={condicion}>
               <div className="condicion-div">
@@ -541,97 +563,87 @@ const EditPlanner = () => {
             />
           </div>
           <div className="input-div">
-                  <span>Rango de Temperatura</span>
-                  <input
-                  className="input-field"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={temperaturaMin}
-                  style={{ position: "relative", width: "60px" }}
-                  onChange={(e) => setTemperaturaMin(e.target.value)}
-                />
-                <span
-                  id="min-span"
-                  style={{
-                    position: "relative",
-                    left: "10px",
-                    width: "2px",
-                  }}
-                >
-                  min
-                </span>
-                <span
-                  style={{
-                    width: "63px",
-                    paddingLeft: "34px",
-                    color: "#555",
-                  }}
-                >
-                  
-                </span>
-                <input
-                  className="input-field"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={temperaturaMax}
-                  style={{ position: "relative", left: "-13px", width: "60px" }}
-                  onChange={(e) => setTemperaturaMax(e.target.value)}
-                />
-                <span
-                  id="min-span"
-                  style={{ position: "relative", left: "-5px" }}
-                >
-                  max
-                </span>                
-                </div>
-                <div className="input-div">
-                  <span>Rango de Humedad</span>
-                  <input
-                  className="input-field"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={humedadMin}
-                  style={{ position: "relative", width: "60px" }}
-                  onChange={(e) => setHumedadMin(e.target.value)}
-                />
-                  <span
-                  id="min-span"
-                  style={{
-                    position: "relative",
-                    left: "10px",
-                    width: "2px",
-                  }}
-                >
-                  min
-                </span>
-                <span
-                  style={{
-                    width: "63px",
-                    paddingLeft: "34px",
-                    color: "#555",
-                  }}
-                >
-                  
-                </span>
-                <input
-                  className="input-field"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={humedadMax}
-                  style={{ position: "relative", left: "-13px", width: "60px" }}
-                  onChange={(e) => setHumedadMax(e.target.value)}
-                />
-                <span
-                  id="min-span"
-                  style={{ position: "relative", left: "-5px" }}
-                >
-                  max
-                </span>  
-                </div>
+            <span>Rango de Temperatura</span>
+            <input
+              className="input-field"
+              type="number"
+              step="0.01"
+              min="0"
+              value={temperaturaMin}
+              style={{ position: "relative", width: "60px" }}
+              onChange={(e) => setTemperaturaMin(e.target.value)}
+            />
+            <span
+              id="min-span"
+              style={{
+                position: "relative",
+                left: "10px",
+                width: "2px",
+              }}
+            >
+              min
+            </span>
+            <span
+              style={{
+                width: "63px",
+                paddingLeft: "34px",
+                color: "#555",
+              }}
+            ></span>
+            <input
+              className="input-field"
+              type="number"
+              step="0.01"
+              min="0"
+              value={temperaturaMax}
+              style={{ position: "relative", left: "-13px", width: "60px" }}
+              onChange={(e) => setTemperaturaMax(e.target.value)}
+            />
+            <span id="min-span" style={{ position: "relative", left: "-5px" }}>
+              max
+            </span>
+          </div>
+          <div className="input-div">
+            <span>Rango de Humedad</span>
+            <input
+              className="input-field"
+              type="number"
+              step="0.01"
+              min="0"
+              value={humedadMin}
+              style={{ position: "relative", width: "60px" }}
+              onChange={(e) => setHumedadMin(e.target.value)}
+            />
+            <span
+              id="min-span"
+              style={{
+                position: "relative",
+                left: "10px",
+                width: "2px",
+              }}
+            >
+              min
+            </span>
+            <span
+              style={{
+                width: "63px",
+                paddingLeft: "34px",
+                color: "#555",
+              }}
+            ></span>
+            <input
+              className="input-field"
+              type="number"
+              min="0"
+              step="0.01"
+              value={humedadMax}
+              style={{ position: "relative", left: "-13px", width: "60px" }}
+              onChange={(e) => setHumedadMax(e.target.value)}
+            />
+            <span id="min-span" style={{ position: "relative", left: "-5px" }}>
+              max
+            </span>
+          </div>
         </div>
       </div>
       <button className="crear-dispositivo" onClick={() => postPlanif()}>

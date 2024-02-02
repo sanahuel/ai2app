@@ -1878,6 +1878,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   };
 
   let changeConfigEnsayo = (config) => {
+    const configCondicionesId = JSON.parse(config).configCondicion.id;
+    const selectedCondicion = configCondiciones.find((configCond) => {
+      return configCond.id == configCondicionesId;
+    });
     aplicacionRef.current.value = JSON.parse(config).aplicacion;
     setSelectedColor(JSON.parse(config).color);
     holguraPositivaRef.current.value = JSON.parse(config).holguraPositiva;
@@ -1890,7 +1894,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     imgsPorCapturaRef.current.value = JSON.parse(config).imgsPorCaptura;
     resHeightRef.current.value = JSON.parse(config).resHeight;
     resWidthRef.current.value = JSON.parse(config).resWidth;
-    setConfigCondicion(JSON.parse(config).configCondicion);
+    setConfigCondicion(selectedCondicion);
     placasPorCondicionRef.current.value = JSON.parse(config).placasPorCond;
     setCondiciones(JSON.parse(config).condiciones);
     gusanosPorCondicionRef.current.value = JSON.parse(config).gusanosPorCond;
