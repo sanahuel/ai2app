@@ -6,9 +6,9 @@ import Healthspan from "./results/Healthspan";
 import IpContext from "../context/IpContext";
 
 const Results = () => {
-  console.log('sssssss')
+  console.log("sssssss");
+  console.log(new Date());
   const { disp, id } = useParams();
-  const ipData = useContext(IpContext);
 
   const [resultData, setResultData] = useState([]);
 
@@ -19,7 +19,8 @@ const Results = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
+          console.log("inside:", new Date());
+          console.log(data);
           setResultData(data);
         });
     }

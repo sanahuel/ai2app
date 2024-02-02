@@ -14,56 +14,62 @@ const Visualizar = () => {
   useEffect(() => {
     async function fetchData(ipData) {
       try {
-        const response = await fetch(`http://${ipData.IP}:8000/results/`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 200); // Set timeout for 10 seconds
+        const response = await fetch(`http://${ipData.IP}:8000/results/`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
         const data = await response.json();
-        console.log('DATA', data)
-  
+
         for (let i = 0; i < data["experimentos"].length; i++) {
           data["experimentos"][i].ip = ipData.IP;
         }
-  
+
         return {
           nDisp: ipData.nDisp,
-          experimentos: data["experimentos"]
+          experimentos: data["experimentos"],
         };
       } catch (error) {
         console.error(`Error fetching data for IP ${ipData.IP}:`, error);
         return null;
       }
     }
-  
+
     async function fetchAllData() {
       try {
-        const fetchedData = await Promise.all(ipData.map(async (data) => {
-          return await fetchData(data);
-        }));
-  
-        console.log('FETCHED', fetchedData)
+        const fetchedData = await Promise.all(
+          ipData.map(async (data) => {
+            return await fetchData(data);
+          })
+        );
 
-        const updatedEnsayos = {...ensayos};
+        console.log("FETCHED", fetchedData);
+
+        const updatedEnsayos = { ...ensayos };
         const updatedDisplay = [];
-        console.log('for each....')
-        fetchedData.forEach(item => {
+        console.log("for each....");
+        fetchedData.forEach((item) => {
           if (item) {
             updatedEnsayos[item.nDisp] = item.experimentos;
             updatedDisplay.push(...item.experimentos);
           }
         });
-        console.log('ENSAYOS', updatedEnsayos)
-        console.log('DISPLAY', updatedDisplay)
-  
+        console.log("ENSAYOS", updatedEnsayos);
+        console.log("DISPLAY", updatedDisplay);
+
         setEnsayos(updatedEnsayos);
-        setDisplay(prevDisplay => [...prevDisplay, ...updatedDisplay]);
+        setDisplay((prevDisplay) => [...prevDisplay, ...updatedDisplay]);
       } catch (error) {
         console.error("Error fetching multiple IPs:", error);
       }
     }
-  
+
     if (ipData.length > 0) {
       fetchAllData();
     }
   }, []);
-  
+
   return (
     <div className="nuevo-ensayo">
       {/* DISPOSITIVOS */}
@@ -113,7 +119,12 @@ const Visualizar = () => {
                   </span>
                 </div>
                 <div className="control-row-div">
-                  <span style={{ color: "rgb(112, 112, 112)", whiteSpace: "nowrap"  }}>
+                  <span
+                    style={{
+                      color: "rgb(112, 112, 112)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     Proyecto {data.proyecto}
                   </span>
                 </div>

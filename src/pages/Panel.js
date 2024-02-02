@@ -38,55 +38,61 @@ const Panel = () => {
   useEffect(() => {
     async function fetchData(ipData) {
       try {
-        const response = await fetch(`http://${ipData.IP}:8000/control/`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 200); // Set timeout for 10 seconds
+        const response = await fetch(`http://${ipData.IP}:8000/control/`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
         const data = await response.json();
-  
+
         for (let i = 0; i < data["experimentos"].length; i++) {
           data["experimentos"][i].ip = ipData.IP;
         }
-  
+
         const sortedArray = data["experimentos"].sort(
           (a, b) => a.porcentaje - b.porcentaje
         );
-  
+
         return {
           nDisp: ipData.nDisp,
-          sortedExperimentos: sortedArray
+          sortedExperimentos: sortedArray,
         };
       } catch (error) {
         console.error(`Error fetching data for IP ${ipData.IP}:`, error);
         return null;
       }
     }
-  
+
     async function fetchAllData() {
       try {
-        const fetchedData = await Promise.all(ipData.map(async (data) => {
-          return await fetchData(data);
-        }));
-  
-        const updatedEnsayos = {...ensayos};
+        const fetchedData = await Promise.all(
+          ipData.map(async (data) => {
+            return await fetchData(data);
+          })
+        );
+
+        const updatedEnsayos = { ...ensayos };
         const updatedDisplay = [];
-  
-        fetchedData.forEach(item => {
+
+        fetchedData.forEach((item) => {
           if (item) {
             updatedEnsayos[item.nDisp] = item.sortedExperimentos;
             updatedDisplay.push(...item.sortedExperimentos);
           }
         });
-  
+
         setEnsayos(updatedEnsayos);
-        setDisplay(prevDisplay => [...prevDisplay, ...updatedDisplay]);
+        setDisplay((prevDisplay) => [...prevDisplay, ...updatedDisplay]);
       } catch (error) {
         console.error("Error fetching multiple IPs:", error);
       }
     }
-  
+
     if (ipData.length > 0) {
       fetchAllData();
     }
   }, []);
-  
 
   return (
     <div className="nuevo-ensayo">
@@ -104,7 +110,7 @@ const Panel = () => {
                 window.open(`http://${data.IP}:3001/`, "_blank");
               }}
             >
-             <span>{data.Nombre}</span> 
+              <span>{data.Nombre}</span>
             </div>
           );
         })}
@@ -137,7 +143,12 @@ const Panel = () => {
                   </span>
                 </div>
                 <div className="control-row-div">
-                  <span style={{ color: "rgb(112, 112, 112)", whiteSpace: "nowrap" }}>
+                  <span
+                    style={{
+                      color: "rgb(112, 112, 112)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     Proyecto {data.proyecto}
                   </span>
                 </div>

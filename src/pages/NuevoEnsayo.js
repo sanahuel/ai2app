@@ -502,7 +502,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
             60; //min
 
           // FETCH
-          const disp = ipData.find((obj) => obj.nDis === selectedOption);
+          const disp = ipData.find((obj) => obj.nDis == selectedOption);
+          console.log("IP DATA", ipData);
+          console.log("SELECTED OPTION....", selectedOption);
+          console.log("SELECTED OPTION TO FETCH", disp);
           const decodedToken = jwt_decode(authTokens.access);
           setIsLoading(true);
 
@@ -571,19 +574,25 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         alert("Debe haber capturas programadas");
       }
     } else {
-      if(nombreRef.current.value === ""){
-        alert("El Nombre del ensayo debe estar completo")
-      } else if(aplicacionRef.current.value === "DEFAULT"){
-        alert("El campo Aplicación debe estar completo")
-      } else if(numRef.current.value === ""){
+      if (nombreRef.current.value === "") {
+        alert("El Nombre del ensayo debe estar completo");
+      } else if (aplicacionRef.current.value === "DEFAULT") {
+        alert("El campo Aplicación debe estar completo");
+      } else if (numRef.current.value === "") {
         alert("El campo Nº de Capturas debe estar completo");
-      } else if(hfreqRef.current.value === "" || minfreqRef.current.value === ""){
+      } else if (
+        hfreqRef.current.value === "" ||
+        minfreqRef.current.value === ""
+      ) {
         alert("Los campos de Holgura deben estar completos");
-      } else if(imgsPorCapturaRef.current.value === ""){
+      } else if (imgsPorCapturaRef.current.value === "") {
         alert("El campo Nº de Imagenes debe estar completo");
-      } else if(freqCapturaRef.current.value === ""){
+      } else if (freqCapturaRef.current.value === "") {
         alert("El campo Frecuencia de Captura debe estar completo");
-      } else if(resHeightRef.current.value === "" || resWidthRef.current.value === ""){
+      } else if (
+        resHeightRef.current.value === "" ||
+        resWidthRef.current.value === ""
+      ) {
         alert("Los campos de Resolución debe estar completo");
       }
     }
@@ -673,6 +682,8 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   // +Info -> Calendario.md
   let newCheckEvents = (inicio, dispositivo) => {
     // oldEvents = [[fechayHora, holguraPositiva, holguraNegativa, idTareas, duracion], [fechayHora, holguraPositiva, holguraNegativa, idTareas, duracion], ...]
+
+    console.log("FETCHED DATA: ", fetchedData);
 
     let oldEvents = fetchedData[dispositivo].capturas.map((captura) => {
       return [
@@ -1645,10 +1656,14 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   };
 
   let updateCalendar = () => {
-    if (new Date(inicioRef.current.value + " " + horaRef.current.value).getTime() <= new Date().getTime()){
-      alert("La hora de comienzo ya ha pasado.")
+    if (
+      new Date(
+        inicioRef.current.value + " " + horaRef.current.value
+      ).getTime() <= new Date().getTime()
+    ) {
+      alert("La hora de comienzo ya ha pasado.");
     }
-    
+
     if (
       // solo si todos los campos tienen valores
       hfreqRef.current.value &&
@@ -1656,13 +1671,21 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       minfreqRef.current.value &&
       horaRef.current.value &&
       inicioRef.current.value &&
-      new Date(inicioRef.current.value + " " + horaRef.current.value).getTime() >= new Date().getTime() //solo si comienza ahora o en el futuro
+      new Date(
+        inicioRef.current.value + " " + horaRef.current.value
+      ).getTime() >= new Date().getTime() //solo si comienza ahora o en el futuro
     ) {
       //reset capturas por si se han desplazado y se quiere volver a planificar
+      console.log("SELECTED OPTION", selectedOption);
+      console.log("FETCHED DATA", fetchedData);
+      console.log("IP DATA", ipData);
       let captCopy = [];
-      for (let i = 0; i < ipData.length; i++) {
-        captCopy.push(formatCapturas(fetchedData[i + 1].capturas));
-      }
+      // for (let i = 0; i < ipData.length; i++) {
+      //   captCopy.push(formatCapturas(fetchedData[ipData[i].nDis].capturas));
+      // }
+      Object.keys(fetchedData).map((key) => {
+        captCopy.push(formatCapturas(fetchedData[key].capturas));
+      });
       setCapturas(...captCopy);
       setChangesBBDD({});
 
@@ -1729,11 +1752,13 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         setCapturas(formatedData);
       } else {
         // calcular para el dispositivo seleccionado
+        console.log("--- Selected Option: ", selectedOption);
         let inicio,
           newEvents = newCheckEvents(
             new Date(inicioRef.current.value + " " + horaRef.current.value),
             selectedOption
           );
+        console.log("CALCULADOS: ", newEvents);
         let temp_ids = ids;
         const formatedEvents = newEvents.map((subarray) => {
           temp_ids++;
@@ -1748,6 +1773,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         });
         temp_ids++;
         setIds(temp_ids);
+        console.log("FORMATED: ", formatedEvents);
         setEvents(formatedEvents);
         setRawEvents(newEvents);
         // Changes
@@ -1993,7 +2019,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                 >
                   {ipData.length > 1 && <option value="0">Cualquiera</option>}
                   {ipData.map((ip) => (
-                    <option value={ip.ip} key={ip.ip}>
+                    <option value={ip.nDis} key={ip.nDis}>
                       {ip.Nombre}
                     </option>
                   ))}
