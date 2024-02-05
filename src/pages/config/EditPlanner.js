@@ -25,7 +25,7 @@ const EditPlanner = () => {
   const [freqCaptura, setFreqCaptura] = useState();
   const [imgsPorCaptura, setImgsPorCaptura] = useState();
   const [configCondiciones, setConfigCondiciones] = useState([]);
-  const [configCondicion, setConfigCondicion] = useState("DEFAULT");
+  const [configCondicion, setConfigCondicion] = useState({ value: "DEFAULT" });
   const [placasPorCond, setPlacasPorCond] = useState();
   const [gusanosPorCond, setGusanosPorCond] = useState();
   const [temperaturaMin, setTemperaturaMin] = useState();
@@ -62,11 +62,6 @@ const EditPlanner = () => {
         );
         const data = await response.json();
 
-        const configCondicionesId = data.configCondicion.id;
-        console.log("configCondiciones", configCondiciones);
-        const selectedCondicion = configs.find((configCond) => {
-          return configCond.id == configCondicionesId;
-        });
         setNombre(data.nombre);
         setAplicacion(data.aplicacion);
         setHolguraPositiva(data.holguraPositiva);
@@ -80,15 +75,25 @@ const EditPlanner = () => {
         setFreqCaptura(data.freqCaptura);
         setImgsPorCaptura(data.imgsPorCaptura);
         setSelectedColor(data.color);
-        setCondiciones(data.condiciones);
-        setPlacasPorCond(data.placasPorCond);
-        // setConfigCondicion(data.configCondicion);
-        setConfigCondicion(selectedCondicion);
-        setGusanosPorCond(data.gusanosPorCond);
         setTemperaturaMin(data.temperaturaMin);
         setTemperaturaMax(data.temperaturaMax);
         setHumedadMin(data.humedadMin);
         setHumedadMax(data.humedadMax);
+
+        const configCondicionesId = data.configCondicion.id;
+        let selectedCondicion = configs.find((configCond) => {
+          return configCond.id == configCondicionesId;
+        });
+        if (selectedCondicion === undefined) {
+          selectedCondicion = "DEFAULT";
+        }
+        console.log("selected", selectedCondicion);
+        if (selectedCondicion != "DEFAULT") {
+          setCondiciones(data.condiciones);
+          setPlacasPorCond(data.placasPorCond);
+          setGusanosPorCond(data.gusanosPorCond);
+          setConfigCondicion(selectedCondicion);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -296,7 +301,7 @@ const EditPlanner = () => {
                 changeConfigCondicion(e.target.value);
               }}
             >
-              <option value="DEFAULT" disabled>
+              <option value={JSON.stringify({ value: "DEFAULT" })} disabled>
                 {" "}
               </option>
               {configCondiciones.map((config) => (
