@@ -87,7 +87,7 @@ const EditPlanner = () => {
         if (selectedCondicion === undefined) {
           selectedCondicion = "DEFAULT";
         }
-        console.log("selected", selectedCondicion);
+
         if (selectedCondicion != "DEFAULT") {
           setCondiciones(data.condiciones);
           setPlacasPorCond(data.placasPorCond);

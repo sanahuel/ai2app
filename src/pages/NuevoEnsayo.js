@@ -144,15 +144,10 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   };
 
   useEffect(() => {
-    let checkResponse = (data) => {
-      if (data.capturas != null) {
-        updateSemaphore(true);
-      }
-      if (data.status === "repeat") {
-        setRepeat(true);
-      }
-    };
-    async function fetchData(ipData) {
+    let intervalIds = {};
+
+    const fetchDataRepeatedly = (ipData) => {
+      console.log("FETCHING FOR ", ipData.IP);
       fetch(`http://${ipData.IP}:8000/new/`, {
         method: "GET",
         headers: {
@@ -161,32 +156,19 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
       })
         .then((response) => response.json())
         .then((data) => {
-          checkResponse(data);
-          const copy = fetchedData;
-          copy[ipData.nDis] = data;
-          // console.log('COPY', copy)
-          setFetchedData(copy);
-
-          const captCopy = capturas;
-          captCopy[ipData.nDis] = formatCapturas(data.capturas);
-          // console.log('CAPTCOPY', captCopy)
-          setCapturas(captCopy[ipData.nDis]);
+          if (data.capturas != null) {
+            updateSemaphore(true);
+            // No need to clear the interval here
+          } else {
+            setRepeat(true);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
         });
-    }
 
-    for (let i = 0; i < ipData.length; i++) {
-      fetchData(ipData[i]);
-    }
-  }, []);
-
-  // Cada X segundos fetch esperando semáforo
-  useEffect(() => {
-    let intervalId;
-    if (repeat) {
-      // Start the interval when repeat is true
-      intervalId = setInterval(() => {
-        // Perform the fetch request here
-        fetch(`http://${window.location.hostname}:8000/new/`, {
+      intervalIds[ipData.nDis] = setInterval(() => {
+        fetch(`http://${ipData.IP}:8000/new/`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authTokens.access}`,
@@ -194,24 +176,29 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         })
           .then((response) => response.json())
           .then((data) => {
-            // Process the fetched data
             if (data.capturas != null) {
               updateSemaphore(true);
-              setRepeat(false);
+              clearInterval(intervalIds[ipData.nDis]);
+              // Stop fetching when capturas is not null
             }
           })
           .catch((error) => {
-            // Handle any errors
             console.error(error);
           });
       }, 1000 * 60 * 0.25);
-    }
+    };
+
+    ipData.forEach((ipData) => {
+      fetchDataRepeatedly(ipData);
+    });
 
     return () => {
-      // Clean up the interval when the component unmounts or repeat is set to false
-      clearInterval(intervalId);
+      // Clean up all intervals when the component unmounts
+      for (const id in intervalIds) {
+        clearInterval(intervalIds[id]);
+      }
     };
-  }, [repeat]);
+  }, []);
 
   // Format Dates
   function formatDateWithTimezone(date) {
