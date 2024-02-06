@@ -173,6 +173,7 @@ export const IpProvider = ({ children }) => {
   useEffect(() => {
     const reloadLocations = ["/", "/control", "/visualize", "/config"]; //solo recargar en estas paginas
     if (reloadLocations.includes(location.pathname)) {
+      setIpData([]);
       fetch(`http://${window.location.hostname}:8000/config/disp`, {
         method: "GET",
       })
