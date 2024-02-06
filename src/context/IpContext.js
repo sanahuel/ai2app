@@ -11,7 +11,7 @@ export const IpProvider = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const reloadLocations = ["/", "/new", "/control", "/visualize", "/config"]; //solo recargar en estas paginas
+    const reloadLocations = ["/", "/control", "/visualize", "/config"]; //solo recargar en estas paginas
     if (reloadLocations.includes(location.pathname)) {
       function checkIPs(dispositivos) {
         // Fetch on timeout
@@ -64,13 +64,15 @@ export const IpProvider = ({ children }) => {
           .then((results) => {
             // Filtrar null
             const reachableIPs = results.filter((ip) => ip !== null);
-            /////////// if reachableIPs.length === 0 change localInfo
+            /////////// TODO if reachableIPs.length === 0 change localInfo
+
             const newData = dispositivos.filter((dispositivo) => {
               return !reachableIPs.some(
                 (reachableIP) => reachableIP.nDis === dispositivo.nDis
               );
             });
             setUnreachableIPs(newData);
+
             setIpData(reachableIPs);
             console.log("IPS DISPONIBLES :", reachableIPs);
           })

@@ -5,13 +5,13 @@ import "./NewDevice.css";
 
 const NewDevice = () => {
   const ip = useRef();
+  const ip2 = useRef();
   const dis = useRef();
   const nombre = useRef();
 
   let navigate = useNavigate();
 
   const postDevice = () => {
-
     if (ip.current.value === "") {
       alert("El dispositivo debe tener IP");
       return;
@@ -25,6 +25,7 @@ const NewDevice = () => {
         method: "POST",
         body: JSON.stringify({
           IP: ip.current.value,
+          IP2: ip2.current.value,
           Dis: dis.current.value,
           Nombre: nombre.current.value,
         }),
@@ -49,7 +50,7 @@ const NewDevice = () => {
         </div>
         <div className="border-div" style={{ width: "250px" }}></div>
         <div className="container-content">
-        <div className="input-div">
+          <div className="input-div">
             <span>Nombre de Dispositivo</span>
             <input
               className="input-field"
@@ -60,13 +61,23 @@ const NewDevice = () => {
             />
           </div>
           <div className="input-div">
-            <span>IP Dispositivo</span>
+            <span>IP Principal</span>
             <input
               className="input-field"
               min="0"
               defaultValue=""
               style={{ width: "138.4px" }}
               ref={ip}
+            />
+          </div>
+          <div className="input-div">
+            <span>IP Secundaria</span>
+            <input
+              className="input-field"
+              min="0"
+              defaultValue=""
+              style={{ width: "138.4px" }}
+              ref={ip2}
             />
           </div>
           <div className="input-div">

@@ -22,7 +22,12 @@ import calendar from "../icons/refresh.svg";
 import loading from "../icons/clock_loading.svg";
 import expand from "../icons/expand.svg";
 
-const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
+const NuevoEnsayo = ({
+  semaphore,
+  updateSemaphore,
+  lockedIPs,
+  updateLockedIPs,
+}) => {
   let { authTokens } = useContext(AuthContext);
   let navigate = useNavigate();
 
@@ -58,7 +63,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
   const [configCondicion, setConfigCondicion] = useState({ value: "DEFAULT" });
   const [events, setEvents] = useState([]);
   const [ids, setIds] = useState(0);
-  let [selectedOption, setSelectedOption] = useState(ipData[0].nDis);
+  let [selectedOption, setSelectedOption] = useState("DEFAULT");
   let [rawEvents, setRawEvents] = useState([]);
   let [repeat, setRepeat] = useState(null);
   let [expandDiv, setExpandDiv] = useState("none");
@@ -147,7 +152,6 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
     let intervalIds = {};
 
     const fetchDataRepeatedly = (ipData) => {
-      console.log("FETCHING FOR ", ipData.IP);
       fetch(`http://${ipData.IP}:8000/new/`, {
         method: "GET",
         headers: {
@@ -158,6 +162,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
         .then((data) => {
           if (data.capturas != null) {
             updateSemaphore(true);
+            updateLockedIPs((prevLockedIPs) => [...prevLockedIPs, ipData]); // Using functional form of setState
             // No need to clear the interval here
           } else {
             setRepeat(true);
@@ -178,6 +183,7 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
           .then((data) => {
             if (data.capturas != null) {
               updateSemaphore(true);
+              updateLockedIPs((prevLockedIPs) => [...prevLockedIPs, ipData]); // Using functional form of setState
               clearInterval(intervalIds[ipData.nDis]);
               // Stop fetching when capturas is not null
             }
@@ -2014,8 +2020,13 @@ const NuevoEnsayo = ({ semaphore, updateSemaphore }) => {
                   }}
                   style={{ width: "145px" }}
                 >
-                  {ipData.length > 1 && <option value="0">Cualquiera</option>}
-                  {ipData.map((ip) => (
+                  <option value="DEFAULT" disabled>
+                    {" "}
+                  </option>
+                  {lockedIPs.length > 1 && (
+                    <option value="0">Cualquiera</option>
+                  )}
+                  {lockedIPs.map((ip) => (
                     <option value={ip.nDis} key={ip.nDis}>
                       {ip.Nombre}
                     </option>

@@ -23,45 +23,55 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import { AuthProvider } from "./context/AuthContext";
 import { IpProvider } from "./context/IpContext";
 import { useLocation } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 
 import { withOneTabEnforcer } from "react-one-tab-enforcer";
 
 function App() {
   const router = useLocation();
+
   const [prev, setPrev] = useState(localStorage.getItem("prev") || null);
   let [semaphore, setSemaphore] = useState(
     localStorage.getItem("semaphoreFlag") || false
-  );
+  ); // se utiliza el localStorage para no perder información en caso de refrescar o cerrar
 
-  const releaseLock = () => {
-    // console.log('--RELEASE--')
+  const [lockedIPs, setLockedIPs] = useState([]); // se almacenan las IPs de los semáforos bloqueados para liberarlos después
+
+  const releaseLock = async () => {
+    localStorage.setItem("semaphoreFlag", false);
+
     let token = localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
       : null;
 
-    if (semaphore === true) {
-      fetch(`http://${window.location.hostname}:8000/new/`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.access}`,
-        },
-        body: JSON.stringify({
-          release: "release",
-        }),
-      });
+    try {
+      const fetchPromises = [];
+      for (let i = 0; i < lockedIPs.length; i++) {
+        const dispositivo = lockedIPs[i];
+        const fetchPromise = fetch(`http://${dispositivo.IP}:8000/new/`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.access}`,
+          },
+          body: JSON.stringify({
+            release: "release",
+          }),
+        });
+        fetchPromises.push(fetchPromise);
+      }
+
+      await Promise.all(fetchPromises);
 
       setSemaphore(false);
-      localStorage.setItem("semaphoreFlag", false);
+      setLockedIPs([]);
+    } catch (error) {
+      console.error("Error releasing lock:", error);
     }
-    setSemaphore(false);
-    localStorage.setItem("semaphoreFlag", false);
   };
 
   // liberar semáforo si sale de la página
   useEffect(() => {
-    console.log("Semaphore; ", semaphore);
     const semaphoreFlag = localStorage.getItem("semaphoreFlag");
 
     if (prev === "/new" && semaphoreFlag === "true") {
@@ -71,17 +81,12 @@ function App() {
 
     setPrev(router.pathname);
 
-    // Store the updated `prev` value in localStorage
     localStorage.setItem("prev", router.pathname);
   }, [router.pathname]);
 
   //liberar semáforo si cierra o refresca la página
   useEffect(() => {
-    // console.log("1) USE EFFECT")
-    console.log("Semaphore: ", semaphore);
-
     const handleBeforeUnload = (event) => {
-      // console.log("2) HANDLE")
       event.preventDefault();
       if (semaphore == true) {
         releaseLock();
@@ -90,14 +95,13 @@ function App() {
     };
 
     if (semaphore === true) {
-      // console.log("EVENT LISTENER SET UP")
       window.addEventListener("beforeunload", handleBeforeUnload);
     }
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [semaphore]);
+  }, [lockedIPs]); // es importante que este useEffect se recargue cada vez que se modifica lockedIPs o almacenará un estado antiguo (= no libera todos los semáforos)
 
   const updateSemaphore = (data) => {
     setSemaphore(data);
@@ -127,6 +131,8 @@ function App() {
                     <NuevoEnsayo
                       semaphore={semaphore}
                       updateSemaphore={updateSemaphore}
+                      lockedIPs={lockedIPs}
+                      updateLockedIPs={setLockedIPs}
                     />
                   }
                 />
@@ -140,8 +146,6 @@ function App() {
                 <Route path="config/planner/:id" element={<EditPlanner />} />
                 <Route path="config/plates/new" element={<NewPlate />} />
                 <Route path="config/plates/:id" element={<EditPlate />} />
-                {/* <Route path="config/ip/new" element={<NewIP />} /> */}
-                {/* <Route path="config/ip/:id" element={<EditIP />} /> */}
               </Route>
             </Routes>
           </div>

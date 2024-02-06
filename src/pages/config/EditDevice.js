@@ -9,6 +9,7 @@ const EditDevice = () => {
   const navigate = useNavigate();
 
   const [ip, setIp] = useState();
+  const [ip2, setIp2] = useState();
   const [dis, setDis] = useState("DEFAULT");
   const [nombre, setNombre] = useState();
 
@@ -23,6 +24,7 @@ const EditDevice = () => {
             alert(data.error);
           } else {
             setIp(data.IP);
+            setIp2(data.IP2);
             setDis(data.Dis);
             setNombre(data.Nombre);
           }
@@ -45,9 +47,10 @@ const EditDevice = () => {
         method: "PUT",
         body: JSON.stringify({
           IP: ip,
+          IP2: ip2,
           Dis: dis,
           Nombre: nombre,
-          nDis: parseFloat(id)
+          nDis: parseFloat(id),
         }),
       })
         .then((response) => response.json())
@@ -72,7 +75,7 @@ const EditDevice = () => {
         </div>
         <div className="border-div" style={{ width: "250px" }}></div>
         <div className="container-content">
-        <div className="input-div">
+          <div className="input-div">
             <span>Nombre de Dispositivo</span>
             <input
               className="input-field"
@@ -83,13 +86,23 @@ const EditDevice = () => {
             />
           </div>
           <div className="input-div">
-            <span>IP Dispositivo</span>
+            <span>IP Principal</span>
             <input
               className="input-field"
               min="0"
               defaultValue={ip}
               style={{ width: "138.4px" }}
-              onChange={(e) => setIp(e.target.value)}
+              onInput={(e) => setIp(e.target.value)}
+            />
+          </div>
+          <div className="input-div">
+            <span>IP Secundaria</span>
+            <input
+              className="input-field"
+              min="0"
+              defaultValue={ip2}
+              style={{ width: "138.4px" }}
+              onInput={(e) => setIp2(e.target.value)}
             />
           </div>
           <div className="input-div">
