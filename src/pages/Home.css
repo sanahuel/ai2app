@@ -20,11 +20,11 @@
   margin-right: 30px;
 }
 
-.dispositivo-container span{
+.dispositivo-container span {
   user-select: none;
 }
 
-.dispositivo-container input{
+.dispositivo-container input {
   cursor: pointer;
   user-select: none;
 }
@@ -42,4 +42,20 @@
 
 .info-div input {
   padding-left: 3px;
+}
+
+.ip-error-div {
+  display: flex;
+  flex-direction: row;
+  padding: 15px;
+  height: 120px;
+  align-items: center;
+}
+
+.ip-error-img-div {
+  padding-right: 15px;
+}
+
+.ip-error-span-div span {
+  color: #888;
 }

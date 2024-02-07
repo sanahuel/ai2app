@@ -7,13 +7,16 @@ import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 
 import "./Home.css";
+import error from "../icons/error.svg";
 import IpContext from "../context/IpContext";
 
 const Home = () => {
   const ipData = useContext(IpContext);
   const [info, setInfo] = useState([]);
+  const [ipError, setIpError] = useState(false);
   const [selectedDispositivos, setSelectedDispositivos] = useState([]);
   const [events, setEvents] = useState([]);
+  const TIMEOUT = 800;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,17 +56,7 @@ const Home = () => {
         }
         fetchTareas(nonNullDisp[5]);
         setSelectedDispositivos(nonNullDisp[0]);
-
         setInfo(filteredInfo);
-
-        // if (filteredInfo.length === 1) {
-        //   const copy = Array(ipData.length).fill(0);
-        //   copy[0] = 1;
-        //   setSelectedDispositivos(copy);
-        //   fetchTareas(0);
-        // } else {
-        //   setSelectedDispositivos(Array(ipData.length).fill(0));
-        // }
       } catch (error) {
         console.error("Error fetching multiple IPs:", error);
       }
@@ -72,6 +65,14 @@ const Home = () => {
     if (ipData.length > 0) {
       fetchData();
     }
+
+    const timer = setTimeout(() => {
+      if (ipData.length === 0) {
+        setIpError(true);
+      }
+    }, TIMEOUT);
+
+    return () => clearTimeout(timer);
   }, [ipData]);
 
   async function fetchTareas(nDis) {
@@ -157,6 +158,38 @@ const Home = () => {
             </div>
           );
         })}
+        {/* AVISO SI NO HAY DISPOSITIVOS */}
+        <div
+          className="ip-error-div"
+          style={{ visibility: ipError ? "visible" : "hidden" }}
+        >
+          <div className="ip-error-img-div">
+            <img
+              src={error}
+              alt=""
+              style={{
+                filter: "invert(50%)",
+                width: "50px",
+              }}
+            />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <div className="ip-error-span-div">
+              <span>No se han encontrado dispositivos</span>
+            </div>
+            <div className="ip-error-span-div">
+              <span>
+                Por favor compruebe su conexión y las IPs configuradas
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* CALENDARIO */}
