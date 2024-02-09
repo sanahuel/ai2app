@@ -152,6 +152,11 @@ const NuevoEnsayo = ({
     let intervalIds = {};
 
     const fetchDataRepeatedly = (ipData) => {
+      // Check if an interval already exists for this IP data
+      if (intervalIds[ipData.nDis]) {
+        return; // Interval already set up, no need to proceed
+      }
+
       fetch(`http://${ipData.IP}:8000/new/`, {
         method: "GET",
         headers: {
@@ -160,38 +165,60 @@ const NuevoEnsayo = ({
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log("DATA. . . ", data);
           if (data.capturas != null) {
             updateSemaphore(true);
             updateLockedIPs((prevLockedIPs) => [...prevLockedIPs, ipData]); // Using functional form of setState
             // No need to clear the interval here
+
+            const copy = fetchedData;
+            copy[ipData.nDis] = data;
+            console.log("COPY ON ", ipData.IP, copy);
+            setFetchedData(copy);
+            const captCopy = capturas;
+            captCopy[ipData.nDis] = formatCapturas(data.capturas);
+            console.log("CAPTCOPY ON ", ipData.IP, captCopy);
+            setCapturas(captCopy[ipData.nDis]);
+            return;
           } else {
             setRepeat(true);
+            intervalIds[ipData.nDis] = setInterval(() => {
+              fetch(`http://${ipData.IP}:8000/new/`, {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${authTokens.access}`,
+                },
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.capturas != null) {
+                    updateSemaphore(true);
+                    updateLockedIPs((prevLockedIPs) => [
+                      ...prevLockedIPs,
+                      ipData,
+                    ]); // Using functional form of setState
+                    clearInterval(intervalIds[ipData.nDis]);
+                    // Stop fetching when capturas is not null
+
+                    const copy = fetchedData;
+                    copy[ipData.nDis] = data;
+                    console.log("COPY ON ", ipData.IP, copy);
+                    setFetchedData(copy);
+                    const captCopy = capturas;
+                    captCopy[ipData.nDis] = formatCapturas(data.capturas);
+                    console.log("CAPTCOPY ON ", ipData.IP, captCopy);
+                    setCapturas(captCopy[ipData.nDis]);
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            }, 1000 * 60 * 0.25);
           }
         })
         .catch((error) => {
           console.error(error);
         });
-
-      intervalIds[ipData.nDis] = setInterval(() => {
-        fetch(`http://${ipData.IP}:8000/new/`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${authTokens.access}`,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.capturas != null) {
-              updateSemaphore(true);
-              updateLockedIPs((prevLockedIPs) => [...prevLockedIPs, ipData]); // Using functional form of setState
-              clearInterval(intervalIds[ipData.nDis]);
-              // Stop fetching when capturas is not null
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }, 1000 * 60 * 0.25);
     };
 
     ipData.forEach((ipData) => {

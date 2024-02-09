@@ -182,7 +182,6 @@ export const IpProvider = ({ children }) => {
           let dispositivos = data["dispositivos"]; // Declare and initialize dispositivos directly here
 
           const localInfo = localStorage.getItem("localInfo") || "Principales"; //se almacena a qué IPs hacer fetch primero para tener una respuesta más rápida
-          console.clear();
           console.log("LOCAL INFO: ", localInfo);
 
           if (localInfo === "Principales") {
