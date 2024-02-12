@@ -179,6 +179,7 @@ const NuevoEnsayo = ({
             captCopy[ipData.nDis] = formatCapturas(data.capturas);
             console.log("CAPTCOPY ON ", ipData.IP, captCopy);
             setCapturas(captCopy[ipData.nDis]);
+            setRepeat(false);
             return;
           } else {
             setRepeat(true);
@@ -208,6 +209,7 @@ const NuevoEnsayo = ({
                     captCopy[ipData.nDis] = formatCapturas(data.capturas);
                     console.log("CAPTCOPY ON ", ipData.IP, captCopy);
                     setCapturas(captCopy[ipData.nDis]);
+                    setRepeat(false);
                   }
                 })
                 .catch((error) => {
